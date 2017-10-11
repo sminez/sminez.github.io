@@ -14,7 +14,8 @@ plugins: ['jekyll-paginate', 'jekyll-gist']
 
 paginate: 4
 
-logo: logo.png
+logo: assets/jumpy.png
+disqus_shortname: "sminez-github-io"
 
 owner:
   name: Innes
