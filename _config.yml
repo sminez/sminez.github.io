@@ -1,7 +1,8 @@
 # theme: jekyll-theme-slate
 
 name: sminez.github.io
-description: My internet homepage
+description: >
+    Innes Anderson-Morrison: Father, husband, programmer, photographer, teacher, musician, fool.
 about: >
     This is my little corner of the internet.
 
@@ -22,4 +23,4 @@ owner:
   avatar: ""
   email: "innesdmorrison@gmail.com"
   twitter: "InnesMorrison"
-  github: "https://github.com/sminez/"
+  github: "sminez"

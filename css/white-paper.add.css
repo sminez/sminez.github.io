@@ -484,7 +484,8 @@ code.html span.doctype {
 
 /* @end */
 
-.hll { background-color: #ebdbb2 }
+.hll { background-color: #f9f5f0 }
+.highlight  { background: #f9f5f0; color: #504945 }
 .c { color: #bdae93; font-style: italic } /* Comment */
 .err { color: #cc241d; background-color: #e3d2d2 } /* Error */
 .k { color: #504945; font-weight: bold } /* Keyword */
