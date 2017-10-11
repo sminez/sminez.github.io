@@ -1,1 +1,25 @@
-theme: jekyll-theme-slate
+# theme: jekyll-theme-slate
+
+name: sminez.github.io
+description: My internet homepage
+about: >
+    This is my little corner of the internet.
+
+master_repo: false
+url: "http://github.com/sminez/sminez.github.io"
+markdown: kramdown
+highlighter: rouge
+
+plugins: ['jekyll-paginate', 'jekyll-gist']
+
+paginate: 3
+
+logo:             logo.png
+disqus_shortname:
+
+owner:
+  name: Innes
+  avatar: ""
+  email: "innesdmorrison@gmail.com"
+  twitter: "InnesMorrison"
+  github: "https://github.com/sminez/"
