@@ -9,6 +9,9 @@ about: >
 markdown: kramdown
 highlighter: rouge
 
+master_repo: false
+url: "sminez.github.io"
+
 plugins: ['jekyll-paginate', 'jekyll-gist']
 
 paginate: 3
