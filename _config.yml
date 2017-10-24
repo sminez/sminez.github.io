@@ -4,21 +4,17 @@ description: >
 about: >
     This is my little corner of the internet.
 
-markdown: kramdown
-highlighter: rouge
-
 master_repo: false
 url: "sminez.github.io"
-
+markdown: kramdown
+highlighter: rouge
 plugins: ['jekyll-paginate', 'jekyll-gist']
-
 paginate: 4
-
 logo: assets/jumpy.png
 disqus_shortname: "sminez-github-io"
 
 owner:
-  name: Innes
+  name: sminez.github.io
   avatar: ""
   email: "innesdmorrison@gmail.com"
   twitter: "InnesMorrison"
