@@ -5,7 +5,7 @@ galleries:
    -
      - { url: '/assets/sandpiles/22_img/H.png', alt: 'H', height: 150, width: 150, link: 'https://raw.githubusercontent.com/sminez/recreational_mathematics/master/Sandpiles/images/highres/sandpile_H_22.png'}
      - { url: '/assets/sandpiles/22_img/+o.png', alt: '+o, height: 150, width: 150', link: 'https://raw.githubusercontent.com/sminez/recreational_mathematics/master/Sandpiles/images/highres/sandpile_+o_22.png'}
-     - { url: '/assets/sandpiles/22_img/o-+.png', alt: 'o-+', height: 150, width: 150, link: 'https://raw.githubusercontent.com/sminez/recreational_mathematics/master/Sandpiles/images/highres/sandpile_+-o_22.png'}
+     - { url: '/assets/sandpiles/22_img/o-+.png', alt: 'o-+', height: 150, width: 150, link: 'https://raw.githubusercontent.com/sminez/recreational_mathematics/master/Sandpiles/images/highres/sandpile_o-+_22.png'}
      - { url: '/assets/sandpiles/22_img/o.png', alt: 'o', height: 150, width: 150, link: 'https://raw.githubusercontent.com/sminez/recreational_mathematics/master/Sandpiles/images/highres/sandpile_o_22.png'}
    -
      - { url: '/assets/sandpiles/22_img/o+.png', alt: 'o+', height: 150, width: 150, link: 'https://raw.githubusercontent.com/sminez/recreational_mathematics/master/Sandpiles/images/highres/sandpile_o+_22.png'}
