@@ -1,12 +1,5 @@
-{% comment %}-----------------
-  - This page receives a gallery index (include.gallery)
-  - It then assign the gallery[include.gallery] to the rows variable
-%}-----------------{% endcomment %}
 {% assign rows = page.galleries[include.gallery] %}
 
-{% comment %}%}-----------------
-  We now loop over rows
-%}-----------------{% endcomment %}
 {% for row in rows %}
 <div class="row">
     {% comment %}%}-----------------
@@ -16,7 +9,7 @@
         {% if img.link %}
         <a href="{{ img.link }}"><img src="{{ img.url }}" alt="{{ img.alt }}" title="{{ img.alt }}" style="width:{{ img.height }}px;height:{{ img.width }}px;"></a>
         {% else %}
-        <img src="{{ img.url }}" alt="{{ img.alt }}" title="{{ img.alt }}" style="width:{{ img.height }}px;height:{{ img.width }}px;">
+        <a href="{{ img.url }}"><img src="{{ img.url }}" alt="{{ img.alt }}" title="{{ img.alt }}" style="width:{{ img.height }}px;height:{{ img.width }}px;"></a>
         {% endif %}
     {% endfor %}
 </div>
