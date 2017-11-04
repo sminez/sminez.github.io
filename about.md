@@ -27,6 +27,7 @@ twitter:   [@I_D_A_M](https://twitter.com/I_D_A_M)<br>
 linkedIn:  [Innes Anderson-Morrison](https://www.linkedin.com/in/innes-anderson-morrison-4a67b1b9/)<br>
 github:    [sminez](https://github.com/sminez/)<br>
 instagram: [i.d.a_m](https://www.instagram.com/i.d.a_m/)<br>
+flickr:    [sminez](https://www.flickr.com/photos/sminez/)<br>
 
   [0]: https://cocoon.life/
   [1]: https://github.com/sminez/arpy

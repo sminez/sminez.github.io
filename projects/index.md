@@ -6,7 +6,6 @@ title: Projects I'm working on
 ## A selection of projects that I've been working on recently
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
 <style> .cell { stroke: #404040; shape-rendering: crispEdges; } </style>
 <div id='chart'></div>
 <script>
@@ -89,7 +88,7 @@ var col = row.selectAll(".cell")
 
 ![jumpy](/assets/jumpy.png){:class="img-responsive"} [jumpy pig][2]: A 2D platformer for my daughter Lila<br>
 
-[sandpiles][4]: A look at sandpile fractals, inspired by numberphile.
+⚄ [sandpiles][4]: A look at sandpile fractals, inspired by numberphile.
 
 
   [0]: https://github.com/sminez/arpy
