@@ -95,4 +95,4 @@ var col = row.selectAll(".cell")
   [1]: https://github.com/sminez/gigl
   [2]: https://github.com/sminez/jumpy-pig
   [3]: https://streetconversations.tumblr.com/
-  [4]: /sandpiles
+  [4]: /projects/sandpiles
