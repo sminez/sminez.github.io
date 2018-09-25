@@ -42,9 +42,9 @@ galleries:
 
 Inspired by [Numberphile][0] I created a program to generate sandpile fractals
 for different toppling patterns. The code can be found [here][1] on GitHub: it
-generates a csv of the final pile heights which can then be visualised in a
-number of different ways. The images below we created using a `heatmap` plot
-from the Python Seaborn plotting library.
+generates a json file describing the final pile heights which can then be
+visualised in a number of different ways. The images below we created using a
+`heatmap` plot from the Python Seaborn plotting library.
 
 
 {% include gallery.html  gallery=1 %}
@@ -58,5 +58,4 @@ amount of starting sand is increased from 16 to 4194304 grains.
 
 
   [0]: https://www.youtube.com/watch?v=1MtEUErz7Gg
-  [1]: https://github.com/sminez/recreational_mathematics/blob/master/Sandpiles/sandpile.go
-  [2]: https://github.com/sminez/recreational_mathematics/tree/master/Sandpiles/images/highres
+  [1]: https://github.com/sminez/sandpiles

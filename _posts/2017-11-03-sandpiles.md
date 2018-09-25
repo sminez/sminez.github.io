@@ -2,7 +2,7 @@
 title: sandpiles
 published: true
 comments: true
-categories:
+categories: python math
 
 galleries:
  1:
@@ -34,4 +34,4 @@ I've added my work on [Sandpile Fractals][0] to my projects page. [Take a
 look][1]!
 
   [0]: https://www.youtube.com/watch?v=1MtEUErz7Gg
-  [1]: /sandpiles
+  [1]: /projects/sandpiles

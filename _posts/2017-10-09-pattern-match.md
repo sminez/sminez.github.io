@@ -2,7 +2,7 @@
 title: Pattern matching in Python
 published: true
 comments: true
-categories:
+categories: python tutorial functional
 ---
 
 Pattern matching is awesome. Python has tuple unpacking that can be used to
