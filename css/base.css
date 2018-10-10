@@ -35,9 +35,10 @@ body {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 17px;
   line-height: 1.4;
-  color: #333;
-  text-shadow: 0 1px 0 rgba(255,255,255,1.0);
-  border-top: 4px solid #556270;
+  /* color: #333; */
+  color: #32302f;
+  /* text-shadow: 0 1px 0 rgba(255,255,255,1.0); */
+  /* border-top: 4px solid #556270; */
 }
 
 strong {
@@ -82,7 +83,7 @@ header {
 }
 
 ul.nav {
-  background-color: #eee;
+  background-color: #fff;
   margin: 0;
   padding: 12px 0 10px 0;
   list-style-type: none;
@@ -198,7 +199,7 @@ ul.nav li.logo a {
 }
 
 .listing blockquote {
-  border-left-color: #ddd;
+  border-left-color: #ebdbb2;
 }
 
 @media only screen and (max-width: 520px) {
@@ -420,20 +421,21 @@ p > a > img {
 pre {
   margin: 16px 0;
   padding: 10px;
-  color: #444;
-  background: #fff;
-  border-bottom: 1px solid #eee;
+  color: #ebdbb2;
+  /* background: #32302f; */
+  /* border-bottom: 1px solid #eee; */
   border-radius: 4px;
   overflow: auto;
   -webkit-font-smoothing: subpixel-antialiased;
 }
 code{
   padding: 0 4px;
-  font-family: "Source Code Pro", "Courier New", Courier, sans-serif;
+  font-family: "Source Code Pro", monospace, monospace;
   font-size: 0.9em;
-  color: #556270;
-  background: #F4FAFF;
+  /* color: #ebdbb2; */
+  /* background: #F4FAFF; */
   border-radius: 3px;
+  text-shadow:0 1px 0 #32302f
 }
 pre code {
   padding: 0;
