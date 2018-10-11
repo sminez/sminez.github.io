@@ -1,4 +1,5 @@
 name: sminez.github.io
+title: sminez.github.io
 description: >
     Innes Anderson-Morrison: Father, husband, programmer, photographer, teacher, musician, fool.
 about: >
@@ -9,7 +10,7 @@ url: "sminez.github.io"
 markdown: kramdown
 highlighter: rouge
 plugins: ['jekyll-paginate', 'jekyll-gist']
-paginate: 4
+paginate: 6
 logo: assets/jumpy.png
 disqus_shortname: "sminez-github-io"
 

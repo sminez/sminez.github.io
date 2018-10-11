@@ -1,5 +1,5 @@
 ---
-title: sandpiles
+title: Sandpiles
 published: true
 comments: true
 categories: python math

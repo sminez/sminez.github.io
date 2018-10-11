@@ -83,7 +83,8 @@ header {
 }
 
 ul.nav {
-  background-color: #fff;
+  /* background-color: #fff; */
+  background-color: #ededed;
   margin: 0;
   padding: 12px 0 10px 0;
   list-style-type: none;
@@ -518,7 +519,7 @@ code.html span.doctype {
 .nb { color: #fe8019 } /* Name.Builtin */
 .nc { color: #83a598 } /* Name.Class */
 .no { color: #b16286 } /* Name.Constant */
-.nd { color: #83a598; font-weight: bold } /* Name.Decorator */
+.nd { color: #b8bb26; font-weight: bold } /* Name.Decorator */
 .ni { color: #b16286 } /* Name.Entity */
 .ne { color: #fb4934; font-weight: bold } /* Name.Exception */
 .nf { color: #8ec07c } /* Name.Function */

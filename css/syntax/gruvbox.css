@@ -30,7 +30,7 @@
 .nb { color: #fe8019 } /* Name.Builtin */
 .nc { color: #83a598 } /* Name.Class */
 .no { color: #b16286 } /* Name.Constant */
-.nd { color: #83a598; font-weight: bold } /* Name.Decorator */
+.nd { color: #b8bb26; font-weight: bold } /* Name.Decorator */
 .ni { color: #b16286 } /* Name.Entity */
 .ne { color: #fb4934; font-weight: bold } /* Name.Exception */
 .nf { color: #8ec07c } /* Name.Function */

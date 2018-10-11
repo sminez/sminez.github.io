@@ -2,15 +2,16 @@
 
 {% for row in rows %}
 <div class="row">
-    {% comment %}%}-----------------
-      and then loop over images in row
-    %}-----------------{% endcomment %}
-    {% for img in row %}
-        {% if img.link %}
-        <a href="{{ img.link }}"><img src="{{ img.url }}" alt="{{ img.alt }}" title="{{ img.alt }}" style="width:{{ img.height }}px;height:{{ img.width }}px;"></a>
-        {% else %}
-        <a href="{{ img.url }}"><img src="{{ img.url }}" alt="{{ img.alt }}" title="{{ img.alt }}" style="width:{{ img.height }}px;height:{{ img.width }}px;"></a>
-        {% endif %}
-    {% endfor %}
+  {% for img in row %}
+    {% if img.link %}
+      <a href="{{ img.link }}">
+        <img src="{{ img.url }}" alt="{{ img.alt }}" title="{{ img.alt }}" style="width:{{ img.height }}px;height:{{ img.width }}px;">
+      </a>
+    {% else %}
+      <a href="{{ img.url }}">
+        <img src="{{ img.url }}" alt="{{ img.alt }}" title="{{ img.alt }}" style="width:{{ img.height }}px;height:{{ img.width }}px;">
+      </a>
+    {% endif %}
+  {% endfor %}
 </div>
 {% endfor %}
