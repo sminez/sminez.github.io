@@ -23,6 +23,7 @@ wonderful/trouble making daughters.
 -----------------
 
 email:     [innes.andersonmorrison](mailto:innes.andersonmorrison@gmail.com)<br>
+keybase:   [profile](https://keybase.io/idam), [verification for this site](https://sminez.github.io/keybase.txt)<br>
 sei:       [Staff Profile](https://www.sei.org/people/innes-anderson-morrison/)<br>
 github:    [sminez](https://github.com/sminez/)<br>
 linkedIn:  [Innes Anderson-Morrison](https://www.linkedin.com/in/innes-anderson-morrison-4a67b1b9/)<br>
