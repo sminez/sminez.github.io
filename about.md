@@ -26,6 +26,7 @@ email:     [innes.andersonmorrison](mailto:innes.andersonmorrison@gmail.com)<br>
 keybase:   [profile](https://keybase.io/idam), [verification for this site](https://sminez.github.io/keybase.txt)<br>
 sei:       [Staff Profile](https://www.sei.org/people/innes-anderson-morrison/)<br>
 github:    [sminez](https://github.com/sminez/)<br>
+gitlab:    [sminez](https://gitlab.com/sminez)<br>
 linkedIn:  [Innes Anderson-Morrison](https://www.linkedin.com/in/innes-anderson-morrison-4a67b1b9/)<br>
 twitter:   [@I_D_A_M](https://twitter.com/I_D_A_M)<br>
 flickr:    [sminez](https://www.flickr.com/photos/sminez/)<br>
