@@ -8,7 +8,8 @@ title: About Innes Anderson-Morrison
 ![me](assets/me.jpeg){:class="img-responsive"}
 
 Hi, I'm Innes. A former software engineer and "data guy" over at
-[Cocoon Labs][0] in Leeds, now a Software developer for [SEI-Y][4] in York.
+[Cocoon Labs][0] in Leeds and Software developer for [SEI-Y][4] in York. Now I
+work at [Anaplan][5].
 
 Day to day I work on a variety of projects, supporting the research being
 carried out by colleagues based here in York and further afield.
@@ -39,3 +40,4 @@ instagram: [i.d.a_m](https://www.instagram.com/i.d.a_m/)<br>
   [2]: http://eprints.gla.ac.uk/110966/1/110966.pdf
   [3]: http://www.katieanderson-morrison.com/
   [4]: https://www.york.ac.uk/sei/
+  [5]: https://www.anaplan.com/
