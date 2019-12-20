@@ -31,7 +31,7 @@ gitlab:    [sminez](https://gitlab.com/sminez)<br>
 linkedIn:  [Innes Anderson-Morrison](https://www.linkedin.com/in/innes-anderson-morrison-4a67b1b9/)<br>
 twitter:   [@I_D_A_M](https://twitter.com/I_D_A_M)<br>
 flickr:    [sminez](https://www.flickr.com/photos/sminez/)<br>
-instagram: [i.d.a_m](https://www.instagram.com/i.d.a_m/)<br>
+instagram: [i.d.a_m](https://www.instagram.com/idam_daily_photo/)<br>
 
 -----------------
 
