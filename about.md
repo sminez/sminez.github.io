@@ -5,7 +5,7 @@ title: About Innes Anderson-Morrison
 
 {{site.about}}
 
-![me](assets/me.jpeg){:class="img-responsive"}
+![me](assets/me.png){:class="img-responsive"}
 
 Hi, I'm Innes. A software engineer living in York.
 
@@ -21,14 +21,15 @@ wonderful/trouble making daughters.
 
 -----------------
 
-email:     [innes.andersonmorrison](mailto:innes.andersonmorrison@gmail.com)<br>
-keybase:   [profile](https://keybase.io/idam), [verification for this site](https://sminez.github.io/keybase.txt)<br>
-quicycle:  [Computational Tools](https://quicycle.com/index.php/computational-tools/)<br>
-github:    [sminez](https://github.com/sminez/)<br>
-linkedIn:  [Innes Anderson-Morrison](https://www.linkedin.com/in/innes-anderson-morrison-4a67b1b9/)<br>
-twitter:   [@I_D_A_M](https://twitter.com/I_D_A_M)<br>
-flickr:    [sminez](https://www.flickr.com/photos/sminez/)<br>
-instagram: [i.d.a_m](https://www.instagram.com/idam_daily_photo/)<br>
+email:      [innes.andersonmorrison](mailto:innes.andersonmorrison@gmail.com)<br>
+keybase:    [profile](https://keybase.io/idam), [verification for this site](https://sminez.github.io/keybase.txt)<br>
+quicycle:   [Computational Tools](https://quicycle.com/index.php/computational-tools/)<br>
+github:     [sminez](https://github.com/sminez/)<br>
+linkedIn:   [Innes Anderson-Morrison](https://www.linkedin.com/in/innes-anderson-morrison-4a67b1b9/)<br>
+twitter:    [@I_D_A_M](https://twitter.com/I_D_A_M)<br>
+instagram:  [innes_photo](https://www.instagram.com/innes_photo/)<br>
+flickr:     [sminez](https://www.flickr.com/photos/sminez/)<br>
+soundcloud: [Sminez](https://soundcloud.com/innes-anderson-morrison)
 
 -----------------
 

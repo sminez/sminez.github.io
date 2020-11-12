@@ -80,19 +80,19 @@ var col = row.selectAll(".cell")
     .style("fill", function(d) { return getColor(d); });
 </script>
 
-∮ [arpy][0]: A computation framework for Clifford Algebra in the theory of Absolute Relativity<br>
+[penrose][3]: A tiling window manager written in Rust<br>
 
-λ [gigl][1]: A LISP interpretor written in go<br>
+[arpy][0]: A computation framework for Clifford Algebra in the theory of Absolute Relativity<br>
 
-📷 [conversations with strangers][3]: Street photography and a few chats along the way<br>
+[gigl][1]: A LISP interpretor written in go<br>
 
-![jumpy](/assets/jumpy.png){:class="img-responsive"} [jumpy pig][2]: A 2D platformer for my daughter Lila<br>
+[jumpy pig][2]: A 2D platformer for my daughter Lila<br>
 
-⚄ [sandpiles][4]: A look at sandpile fractals, inspired by numberphile.
+[sandpiles][4]: A look at sandpile fractals, inspired by numberphile.
 
 
   [0]: https://github.com/sminez/arpy
   [1]: https://github.com/sminez/gigl
   [2]: https://github.com/sminez/jumpy-pig
-  [3]: https://streetconversations.tumblr.com/
+  [3]: https://github.com/sminez/penrose
   [4]: /projects/sandpiles
