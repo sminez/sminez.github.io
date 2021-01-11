@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Direction","A direction to permute a Ring"],["InsertPoint","Where a given element should be inserted into a Ring"],["Selector","Used with WindowManager helper functions to select an element from the known workspaces or clients."]]});

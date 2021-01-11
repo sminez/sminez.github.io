@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Position","The position of a status bar"]],"fn":[["dwm_bar","Create a default dwm style status bar that displays content pulled from the WM_NAME property of the root window."]],"struct":[["StatusBar","A simple status bar that works via hooks"]]});

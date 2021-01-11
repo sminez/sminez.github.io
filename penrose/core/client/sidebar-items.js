@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Client","Meta-data around a client window that we are handling."]]});

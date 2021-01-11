@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["create_or_switch_to_workspace","Jump to, or create, a [Workspace]"],["focus_or_spawn","Focus a [Client] with the given class as `WM_CLASS` or spawn the program with the given command if no such Client exists."],["update_monitors_via_xrandr","Detect the current monitor set up and arrange the monitors if needed using xrandr."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["XKeySym","X keysym mappings: auto generated from X11/keysymdef.h"]],"struct":[["XKeySymIter",""]]});

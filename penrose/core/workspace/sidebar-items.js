@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Workspace","A Workspace represents a named set of clients that are tiled according to a specific layout. Layout properties are tracked per workspace and clients are referenced by ID. Workspaces are independant of monitors and can be moved between monitors freely, bringing their clients with them."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Screen","Display information for a connected screen"]]});

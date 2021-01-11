@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["ActiveWindowName","A text widget that is set via updating the root window name a la dwm"],["CurrentLayout","A simple widget that displays the active layout symbol"],["RootWindowName","A text widget that is set via updating the root window name a la dwm"],["Workspaces","A simple workspace indicator for a status bar"]]});

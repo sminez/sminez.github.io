@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["XcbDraw","An XCB based [Draw] implementation backed by pango and cairo"],["XcbDrawContext","An XCB based drawing context using pango and cairo"]]});

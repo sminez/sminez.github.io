@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["paper","A layout that aims to mimic the feel of having multiple pieces of paper fanned out on a desk, inspired by http://10gui.com/"]]});

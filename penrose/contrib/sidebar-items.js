@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["actions","Additional helper functions and actions for use with penrose."],["extensions","Functionality extensions for penrose"],["hooks","Additional common hooks that can be used out of the box with minimal config."],["layouts","Additional layout functions"]]});

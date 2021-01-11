@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `penrose` crate."><meta name="keywords" content="rust, rustlang, rust-lang, penrose"><title>penrose - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../penrose/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/sminez/penrose/develop/icon.svg' alt='logo'></div></a><p class="location">Crate penrose</p><div class="block version"><p>Version 0.2.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all penrose's items</p></a><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class="location"></p><script>window.sidebarCurrent = {name: "penrose", ty: "mod", relpath: "../"};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/penrose/lib.rs.html#1-222" title="goto source code">[src]</a></span><span class="in-band">Crate <a class="mod" href="">penrose</a></span></h1><div class="docblock"><h1 id="penrose-a-library-for-building-your-very-own-tiling-window-manager" class="section-header"><a href="#penrose-a-library-for-building-your-very-own-tiling-window-manager">Penrose: a library for building your very own tiling window manager</a></h1>
+<p>Penrose is inspired by similar projects such as <a href="https://dwm.suckless.org/">dwm</a>, <a href="https://xmonad.org/">xmonad</a> and <a href="http://www.qtile.org/">qtile</a> which
+allow you to configure your window manager in code and compile it for your system. It is most
+similar to <code>xmonad</code> in that it is more of a library for building a window manager (with low
+level details taken care of for you) rather than a minimal window manager that you edit and
+patch directly (such as <code>dwm</code>). Penrose strives to be as simple as possible in its
+implementation in order to make the guts of the window manager easier to understand. Given the
+nature of what this involves, this is not always possible but effort has been made to make the
+source readable and with relatively little magic.</p>
+<h1 id="using-penrose" class="section-header"><a href="#using-penrose">Using Penrose</a></h1>
+<p>Penrose itself is not a binary application that you can build, install and run. You need to
+write your own <strong>main.rs</strong> as a rust binary crate that uses Penrose to set up, configure and
+run your very own window manager exactly how you want it. In short, you <em>will</em> need to write
+some code and you <em>will</em> need to know rust so some degree.</p>
+<p>For learning rust itself, there is some fantastic official <a href="https://www.rust-lang.org/learn">guides</a> available on
+<a href="https://www.rust-lang.org">rust-lang.org</a> and if you are sticking to using the out of the box
+functionality provided by the penrose crate, working through <a href="https://doc.rust-lang.org/book/">the book</a> before diving into
+Penrose should be more than enough to get you started.</p>
+<p>On GitHub you can find up to date <a href="https://github.com/sminez/penrose/tree/develop/examples">examples</a> of how to set up and configure penrose as your
+window manager, ranging from bare bones minimal to custom extensions and hooks.</p>
+<h1 id="getting-started" class="section-header"><a href="#getting-started">Getting started</a></h1>
+<p>At it's simplest you will need to create a new binary crate to build your window manager and
+add penrose as a project dependency:</p>
+<blockquote>
+<p>$ cargo new --bin my_penrose_config</p>
+</blockquote>
+<p>As a bare minimum, you will need to the following in your <strong>main.rs</strong>:</p>
+<ul>
+<li>keybindings (typically set up using the <a href="../penrose/macro.gen_keybindings.html">gen_keybindings</a> macro)</li>
+<li>A <a href="../penrose/core/xconnection/trait.XConn.html">XConn</a> instance to handle communication with the X server</li>
+<li>A <a href="../penrose/core/config/struct.Config.html">Config</a> instance which contains the rest of your top level configuration for Penrose.
+Things like workspace names, layout functions and settings for gaps and borders.</li>
+</ul>
+<p>With that, you will be able to create a <a href="../penrose/core/manager/struct.WindowManager.html">WindowManager</a> and start running Penrose after
+building and installing your binary. (It is also suggested that you set up a loging handler so
+that debugging any issues with your config is easier. <a href="https://crates.io/crates/simplelog">simplelog</a> is a good choice if you
+are unsure where to start with this.)</p>
+<h1 id="example" class="section-header"><a href="#example">Example</a></h1>
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+ <span class="attribute">#[<span class="ident">macro_use</span>]</span>
+ <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">penrose</span>;
+
+ <span class="kw">use</span> <span class="ident">penrose</span>::{
+     <span class="ident">core</span>::<span class="ident">helpers</span>::<span class="ident">index_selectors</span>,
+     <span class="ident">logging_error_handler</span>,
+     <span class="ident">xcb</span>::<span class="ident">new_xcb_backed_window_manager</span>,
+     <span class="ident">Backward</span>, <span class="ident">Config</span>, <span class="ident">Forward</span>, <span class="ident">Less</span>, <span class="ident">More</span>, <span class="ident">WindowManager</span>
+ };
+
+ <span class="kw">fn</span> <span class="ident">main</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">penrose</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+     <span class="kw">let</span> <span class="ident">key_bindings</span> <span class="op">=</span> <span class="macro">gen_keybindings</span><span class="macro">!</span> {
+         <span class="string">&quot;M-j&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">cycle_client</span>, <span class="ident">Forward</span>);
+         <span class="string">&quot;M-k&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">cycle_client</span>, <span class="ident">Backward</span>);
+         <span class="string">&quot;M-S-j&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">drag_client</span>, <span class="ident">Forward</span>);
+         <span class="string">&quot;M-S-k&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">drag_client</span>, <span class="ident">Backward</span>);
+         <span class="string">&quot;M-S-q&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">kill_client</span>);
+         <span class="string">&quot;M-Tab&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">toggle_workspace</span>);
+         <span class="string">&quot;M-grave&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">cycle_layout</span>, <span class="ident">Forward</span>);
+         <span class="string">&quot;M-S-grave&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">cycle_layout</span>, <span class="ident">Backward</span>);
+         <span class="string">&quot;M-A-Up&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">update_max_main</span>, <span class="ident">More</span>);
+         <span class="string">&quot;M-A-Down&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">update_max_main</span>, <span class="ident">Less</span>);
+         <span class="string">&quot;M-A-Right&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">update_main_ratio</span>, <span class="ident">More</span>);
+         <span class="string">&quot;M-A-Left&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">update_main_ratio</span>, <span class="ident">Less</span>);
+         <span class="string">&quot;M-semicolon&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_external</span><span class="macro">!</span>(<span class="string">&quot;dmenu_run&quot;</span>);
+         <span class="string">&quot;M-Return&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_external</span><span class="macro">!</span>(<span class="string">&quot;alacritty&quot;</span>);
+         <span class="string">&quot;M-A-Escape&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">run_internal</span><span class="macro">!</span>(<span class="ident">exit</span>);
+
+         <span class="ident">refmap</span> [ <span class="number">1</span>..<span class="number">10</span> ] <span class="kw">in</span> {
+             <span class="string">&quot;M-{}&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">focus_workspace</span> [ <span class="ident">index_selectors</span>(<span class="number">9</span>) ];
+             <span class="string">&quot;M-S-{}&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">client_to_workspace</span> [ <span class="ident">index_selectors</span>(<span class="number">9</span>) ];
+         };
+     };
+
+     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">wm</span> <span class="op">=</span> <span class="ident">new_xcb_backed_window_manager</span>(
+         <span class="ident">Config</span>::<span class="ident">default</span>(),
+         <span class="macro">vec</span><span class="macro">!</span>[],
+         <span class="ident">logging_error_handler</span>()
+     )<span class="question-mark">?</span>;
+     <span class="ident">wm</span>.<span class="ident">grab_keys_and_run</span>(<span class="ident">key_bindings</span>, <span class="macro">map</span><span class="macro">!</span>{})
+ }</pre></div>
+<h1 id="digging-into-the-api" class="section-header"><a href="#digging-into-the-api">Digging into the API</a></h1>
+<p>To add more functionality and flexability, you can start to add things like <a href="../penrose/core/hooks/index.html">Hooks</a>, a
+<a href="../penrose/draw/bar/index.html">status bar</a> and custom actions for running as part of key bindings. You will want to read
+the documentation of the <code>core</code> module which contains all of the core functionality of Penrose
+as a window manager. After that, the <code>draw</code> module contains utilities for rendering things like
+status bars and widgets, the <code>contrib</code> module has examples of simple hooks, extensions and key
+binding actions and the <code>xcb</code> module contains the referencing trait implementations for
+interacting with the X server via the <a href="https://xcb.freedesktop.org/">XCB</a> api.</p>
+<p><strong>NOTE</strong>: in order to use the xcb implementation of penrose, you will need to install the C
+libraries that are dependencies (namely xcb, Cairo and Pango).</p>
+</div><h2 id="reexports" class="section-header"><a href="#reexports">Re-exports</a></h2>
+<table><tr><td><code>pub use crate::core::data_types::<a class="enum" href="../penrose/core/data_types/enum.Change.html" title="enum penrose::core::data_types::Change">Change</a>::*;</code></td></tr><tr><td><code>pub use crate::core::ring::<a class="enum" href="../penrose/core/ring/enum.Direction.html" title="enum penrose::core::ring::Direction">Direction</a>::*;</code></td></tr></table><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
+<table><tr class="module-item"><td><a class="mod" href="contrib/index.html" title="penrose::contrib mod">contrib</a></td><td class="docblock-short"><p>Extensions and additional functionality for penrose</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="core/index.html" title="penrose::core mod">core</a></td><td class="docblock-short"><p>Core functionality for the Penrose window manager library</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="draw/index.html" title="penrose::draw mod">draw</a></td><td class="docblock-short"><p>Traits and utilities for rendering custom windows</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="xcb/index.html" title="penrose::xcb mod">xcb</a></td><td class="docblock-short"><p>Helpers and utilities for using XCB as a back end for penrose</p>
+</td></tr></table><h2 id="macros" class="section-header"><a href="#macros">Macros</a></h2>
+<table><tr class="module-item"><td><a class="macro" href="macro.gen_keybindings.html" title="penrose::gen_keybindings macro">gen_keybindings</a></td><td class="docblock-short"><p>make creating all of the key bindings less verbose</p>
+</td></tr><tr class="module-item"><td><a class="macro" href="macro.gen_mousebindings.html" title="penrose::gen_mousebindings macro">gen_mousebindings</a></td><td class="docblock-short"><p>make creating all of the mouse bindings less verbose</p>
+</td></tr><tr class="module-item"><td><a class="macro" href="macro.map.html" title="penrose::map macro">map</a></td><td class="docblock-short"><p>make creating a hash-map a little less verbose</p>
+</td></tr><tr class="module-item"><td><a class="macro" href="macro.run_external.html" title="penrose::run_external macro">run_external</a></td><td class="docblock-short"><p>kick off an external program as part of a key/mouse binding.
+explicitly redirects stderr to /dev/null</p>
+</td></tr><tr class="module-item"><td><a class="macro" href="macro.run_internal.html" title="penrose::run_internal macro">run_internal</a></td><td class="docblock-short"><p>kick off an internal method on the window manager as part of a key binding</p>
+</td></tr></table><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2>
+<table><tr class="module-item"><td><a class="struct" href="struct.Config.html" title="penrose::Config struct">Config</a></td><td class="docblock-short"><p>The main user facing configuration details.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.WindowManager.html" title="penrose::WindowManager struct">WindowManager</a></td><td class="docblock-short"><p>WindowManager is the primary struct / owner of the event loop for penrose.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.XcbConnection.html" title="penrose::XcbConnection struct">XcbConnection</a></td><td class="docblock-short"><p>Handles communication with an X server via the XCB library.</p>
+</td></tr></table><h2 id="enums" class="section-header"><a href="#enums">Enums</a></h2>
+<table><tr class="module-item"><td><a class="enum" href="enum.InsertPoint.html" title="penrose::InsertPoint enum">InsertPoint</a></td><td class="docblock-short"><p>Where a given element should be inserted into a Ring</p>
+</td></tr><tr class="module-item"><td><a class="enum" href="enum.PenroseError.html" title="penrose::PenroseError enum">PenroseError</a></td><td class="docblock-short"><p>Enum to store the various ways that operations can fail in Penrose</p>
+</td></tr><tr class="module-item"><td><a class="enum" href="enum.Selector.html" title="penrose::Selector enum">Selector</a></td><td class="docblock-short"><p>Used with WindowManager helper functions to select an element from the
+known workspaces or clients.</p>
+</td></tr></table><h2 id="functions" class="section-header"><a href="#functions">Functions</a></h2>
+<table><tr class="module-item"><td><a class="fn" href="fn.logging_error_handler.html" title="penrose::logging_error_handler fn">logging_error_handler</a></td><td class="docblock-short"><p>A simple error handler that just logs the error to the penrose log stream</p>
+</td></tr><tr class="module-item"><td><a class="fn" href="fn.new_xcb_backed_window_manager.html" title="penrose::new_xcb_backed_window_manager fn">new_xcb_backed_window_manager</a></td><td class="docblock-short"><p>Construct a penrose <a href="../penrose/core/manager/struct.WindowManager.html" title="WindowManager">WindowManager</a> backed by the default <a href="../penrose/xcb/index.html" title="crate::xcb">xcb</a> backend.</p>
+</td></tr></table><h2 id="types" class="section-header"><a href="#types">Type Definitions</a></h2>
+<table><tr class="module-item"><td><a class="type" href="type.ErrorHandler.html" title="penrose::ErrorHandler type">ErrorHandler</a></td><td class="docblock-short"><p>A function that can be registered to handle errors that occur during <a href="../penrose/core/manager/struct.WindowManager.html" title="WindowManager">WindowManager</a> operation</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.Result.html" title="penrose::Result type">Result</a></td><td class="docblock-short"><p>Top level penrose Result type</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.WinId.html" title="penrose::WinId type">WinId</a></td><td class="docblock-short"><p>An X window ID</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "penrose";</script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

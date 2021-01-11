@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Scratchpad","Spawn and manage a single [Client] which can then be shown above the current layout."]]});

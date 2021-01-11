@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["NotifyLevel","A notification level when calling notify-send"]],"fn":[["notify_send","Send a notification using the `notify-send` command line program"],["notify_send_error_handler","A simple error handler that uses 'notify-send' to display a dialog window with the error message."]],"struct":[["NotifyConfig","Notification configuration"]]});

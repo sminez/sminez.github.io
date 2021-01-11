@@ -80,7 +80,7 @@ var col = row.selectAll(".cell")
     .style("fill", function(d) { return getColor(d); });
 </script>
 
-[penrose][3]: A tiling window manager written in Rust<br>
+<image width="40px" src="penrose.svg" align="left"></image> [penrose][3]: A tiling window manager library for X11<br>
 
 [arpy][0]: A computation framework for Clifford Algebra in the theory of Absolute Relativity<br>
 
@@ -94,5 +94,5 @@ var col = row.selectAll(".cell")
   [0]: https://github.com/sminez/arpy
   [1]: https://github.com/sminez/gigl
   [2]: https://github.com/sminez/jumpy-pig
-  [3]: https://github.com/sminez/penrose
+  [3]: https://crates.io/crates/penrose
   [4]: /projects/sandpiles

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["EventAction","Actions that will be carried out by the [WindowManager][crate::core::manager::WindowManager] in response to individual each [XEvent] received from the provided [XConn][crate::core::xconnection::XConn]."]],"struct":[["WindowManager","WindowManager is the primary struct / owner of the event loop for penrose."]]});

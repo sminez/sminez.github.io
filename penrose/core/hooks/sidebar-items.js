@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["Hook","User defined functionality triggered by [WindowManager] actions."]],"type":[["Hooks","Utility type for defining hooks in your penrose configuration."]]});

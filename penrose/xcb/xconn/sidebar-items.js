@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["XcbConnection","Handles communication with an X server via the XCB library."]]});

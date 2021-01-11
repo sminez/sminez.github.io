@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Config","The main user facing configuration details."],["ConfigBuilder","Builder struct for generating user [Config]"]]});

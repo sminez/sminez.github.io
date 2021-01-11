@@ -1,0 +1,3 @@
+var N = null;var sourcesIndex = {};
+sourcesIndex["penrose"] = {"name":"","dirs":[{"name":"contrib","dirs":[{"name":"extensions","files":["dmenu.rs","mod.rs","notify_send.rs","scratchpad.rs"]}],"files":["actions.rs","hooks.rs","layouts.rs","mod.rs"]},{"name":"core","dirs":[{"name":"manager","files":["event.rs","mod.rs","util.rs"]}],"files":["bindings.rs","client.rs","config.rs","data_types.rs","helpers.rs","hooks.rs","layout.rs","macros.rs","mod.rs","ring.rs","screen.rs","workspace.rs","xconnection.rs"]},{"name":"draw","dirs":[{"name":"widget","files":["bar.rs","base.rs","mod.rs"]}],"files":["bar.rs","mod.rs"]},{"name":"xcb","files":["api.rs","conversions.rs","draw.rs","helpers.rs","keysyms.rs","mod.rs","xconn.rs"]}],"files":["lib.rs"]};
+createSourceSidebar();
