@@ -1,0 +1,19 @@
+title = "sminez.github.io"
+description = "Thoughts and ideas: some better than others"
+base_url = "https://sminez.github.io"
+
+compile_sass = true
+build_search_index = true
+taxonomies = [
+    {name = "tags", rss = true},
+]
+
+[markdown]
+# Whether to do syntax highlighting
+# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
+highlight_code = true
+highlight_theme = "gruvbox-dark"
+smart_punctuation = false
+
+[extra]
+toc_at_n_headings = 8

@@ -1,0 +1,2 @@
+{% set response = load_data(url=url) %}
+{{ response | markdown(inline=true) | safe }}
