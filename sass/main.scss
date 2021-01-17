@@ -35,6 +35,13 @@ $theme-dark-heading-color: #fabd2f;
   #{$property}: var($var, $fallback);
 }
 
+.theme-light {
+  --first-text-color: #{$theme-light-first-text-color};
+  --second-text-color: #{$theme-light-second-text-color};
+  --heading-color: #{$theme-light-heading-color};
+  --bg-color: #{$theme-light-bg-color};
+}
+
 .theme-dark {
   --first-text-color: #{$theme-dark-first-text-color};
   --second-text-color: #{$theme-dark-second-text-color};
@@ -51,8 +58,8 @@ body {
   display: flex;
   flex-flow: row wrap;
   hyphens: auto;
-  @include color(background, --bg-color, $theme-light-bg-color);
-  @include color(color, --first-text-color, $theme-light-first-text-color);
+  @include color(background, --bg-color, $theme-dark-bg-color);
+  @include color(color, --first-text-color, $theme-dark-first-text-color);
 }
 
 @keyframes fade-in {
@@ -101,7 +108,7 @@ a:link {
 }
 
 a:hover {
-  @include color(color, --second-text-color, $theme-light-second-text-color);
+  @include color(color, --second-text-color, $theme-dark-second-text-color);
 }
 
 a:visited {
@@ -111,13 +118,13 @@ a:visited {
 h3,
 h4,
 h5 {
-  @include color(color, --heading-color, $theme-light-heading-color);
+  @include color(color, --heading-color, $theme-dark-heading-color);
 
   .anchor {
     text-decoration: none;
     border-bottom-color: transparent;
     cursor: pointer;
-    @include color(color, --heading-color, $theme-light-heading-color);
+    @include color(color, --heading-color, $theme-dark-heading-color);
   }
 }
 
@@ -129,7 +136,7 @@ h2 {
     text-decoration: none;
     border-bottom-color: transparent;
     cursor: pointer;
-    @include color(color, --heading-color, $theme-light-heading-color);
+    @include color(color, --heading-color, $theme-dark-heading-color);
   }
 }
 
@@ -175,7 +182,7 @@ nav {
   ul {
     list-style-type: none;
     text-align: left;
-    @include color(color, --second-text-color, $theme-light-second-text-color);
+    @include color(color, --second-text-color, $theme-dark-second-text-color);
   }
 
   em {
@@ -216,6 +223,8 @@ main {
 
   code {
     font-size: 1.2rem;
+    font-weight: 120;
+    color: #fabd2f;
   }
 }
 
@@ -225,7 +234,7 @@ main {
   font-size: 1rem;
 
   date {
-    @include color(color, --second-text-color, $theme-light-second-text-color);
+    @include color(color, --second-text-color, $theme-dark-second-text-color);
   }
 
   ul {
@@ -238,7 +247,7 @@ main {
 
 #toc {
   list-style: none;
-  @include color(color, --second-text-color, $theme-light-second-text-color);
+  @include color(color, --second-text-color, $theme-dark-second-text-color);
   margin-top: 1rem;
 
   ul {
@@ -253,7 +262,7 @@ main {
 
 #tax_list {
   list-style: circle;
-  @include color(color, --second-text-color, $theme-light-second-text-color);
+  @include color(color, --second-text-color, $theme-dark-second-text-color);
 }
 
 @media screen and (max-width: 1023px) {
