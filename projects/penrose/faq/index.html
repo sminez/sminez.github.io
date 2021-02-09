@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> sminez.github.io | FAQs </title>
+    <link rel="stylesheet" href="https://sminez.github.io/main.css">
+  </head>
+
+  <body>
+    <nav>
+      <div id="subnav">
+        <form class="theme-selector">
+          <button type="button" id="theme-light-button" class="theme-button" onclick="enableTheme('light', true)">&#9706;</button>
+          <button type="button" id="theme-dark-button"  class="theme-button enabled" onclick="enableTheme('dark', true)">&#9705;</button>
+        </form>
+      </div>
+
+    
+  <ul id="breadcrumbs">
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;">
+          sminez.github.io
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;projects&#x2F;">
+          Software Projects
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;projects&#x2F;penrose&#x2F;">
+          Penrose
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+  </ul>
+  <h1>FAQs</h1><em></em>
+
+    </nav>
+
+    <main>
+    
+  <div id="taxonomies">
+    
+  </div>
+
+  
+  
+
+  
+
+  <article>
+    <image width="60px" src="https://raw.githubusercontent.com/sminez/penrose/develop/icon.svg" align="left"></image></p>
+<h1 id="penrose-faqs">Penrose FAQs</h1>
+<br>
+<h2 id="how-do-i-install-penrose">How do I install Penrose?</h2>
+<p>You don't: Penrose is a library that you use to write your own window manager.
+Take a look at the <a href="https://github.com/sminez/penrose/blob/develop/docs/getting_started.md">getting started guide</a> for details of how to use Penrose
+as a library.
+<br><br></p>
+<h2 id="where-can-i-view-the-penrose-source-code">Where can I view the Penrose source code?</h2>
+<p>Penrose is developed openly on <a href="https://github.com/sminez/penrose">GitHub</a> and published to <a href="https://crates.io/crates/penrose">crates.io</a>
+periodically as new features are added. The <code>develop</code> branch always has the
+latest code and is what I use for running Penrose on my personal laptop. It
+is not advised that you pin your use of Penrose to the GitHub <code>develop</code> branch
+as a typically end user however: breaking changes (and weird and wonderful bugs)
+are highly likely. You have been warned!
+<br><br></p>
+<h2 id="how-does-penrose-differ-from-other-tiling-window-managers">How does Penrose differ from other tiling window managers?</h2>
+<p>Penrose is a tiling window manager <em>library</em> rather than a tiling window
+manager. It provides core logic and traits (interfaces) for writing your own
+tiling window manager, along with default implementations that can be used out
+of the box. That said, you can't <strong>install</strong> Penrose: you need to write your own
+Rust <a href="https://doc.rust-lang.org/book/ch07-01-packages-and-crates.html">crate</a> that brings in Penrose as a dependency.</p>
+<p>The Penrose repository has several up to date examples of what a typical
+<code>main.rs</code> ends up looking like and there is a guide on how to go from installing
+rust to running Penrose as your window manager located <a href="https://github.com/sminez/penrose/blob/develop/docs/getting_started.md">here</a>
+<br><br></p>
+<h2 id="does-penrose-support-wayland-as-a-back-end">Does Penrose support Wayland as a back end?</h2>
+<p>Short answer: not currently.</p>
+<p>Long answer: Wayland merges the concept of the window manager with the that of the
+compositor, which results in significantly more work (which I'm not planning on
+doing given that I'm perfectly happy with X11 as a back end). The internal APIs
+of Penrose only expect to be managing window positioning and workspaces (as far
+as X is concerned) so while it <em>may</em> be possibly to add Wayland support, it's
+not a simple task. It is definitely something that I'd be interested in looking
+into in the future but it's not a high priority for me personally as I am
+perfectly happy running X11 for now.
+<br><br></p>
+<h2 id="where-s-the-eye-candy">Where's the eye candy?</h2>
+<p>Penrose is, first and foremost, designed with simplicity, speed and stability in
+mind. This means that the default, out of the box offering is pretty minimal.
+I'm a big fan of the <a href="https://en.wikipedia.org/wiki/Unix_philosophy">unix philosophy</a> and with that in mind, Penrose largely
+restricts its core functionality to managing your windows. Decorations and
+animation are not first class citizens but can be added through extensions and
+user code if desired.
+<br><br></p>
+<h2 id="are-you-accepting-contributions">Are you accepting contributions?</h2>
+<h3 id="labelled-good-first-issue">Labelled 'good first issue'</h3>
+<p>Short answer: yes!</p>
+<p>Long answer:</p>
+<p>Any issues marked with <code>good first issue</code> should have sufficient detail to
+allow you to get started working with the current state of develop. Please
+comment on the issue asking to pick it up before starting work and I can assign
+it to you. Depending on how old the issue is, it may need to be updated before
+you can get going.</p>
+<h3 id="contrib-alternate-trait-impls">Contrib &amp; alternate trait impls</h3>
+<p>Short answer: yes, but please raise an &quot;enhancement&quot; issue explaining the idea.</p>
+<p>Long answer:</p>
+<p>Please raise an issue first outlining what it is you would like to add (e.g. a
+new layout function, a hook, <a href="https://github.com/sminez/penrose/issues/104">an entire new backend</a> (!), documentation,
+examples) and make sure that you are working from latest <code>develop</code>. Depending on
+how much free time I currently have, I may be making large changes or additions
+to the codebase at any given time and you will want to make sure that you are
+following any work that is being done to the core of <code>penrose</code> itself.</p>
+<h3 id="picking-up-issues-in-core-draw-or-existing-trait-impls">Picking up issues in Core, Draw or existing trait impls</h3>
+<p>Short answer: ask on the issue if it is unassigned.</p>
+<p>Long answer:</p>
+<p>I tend to use the GitHub issue system as a way of communicating the state of
+development on <code>penrose</code> to those who are interested and also as a bit of a
+project diary. It helps to document how and why things were done (in addition to
+the git log) in a way that is easily accesible without having to hunt through
+commit messages. I try to make sure that issues that are more my personal <code>TODO</code>
+list items are assigned to me in GitHub, but please ask on any issue you want to
+pick up before starting work: I can be forgetful sometimes and may already be
+working on it!</p>
+<br>
+<h2 id="can-you-add-feature-x-from-this-other-window-manager">Can you add 'feature X' from this other window manager?</h2>
+<p>Short answer: probably not as a core feature, but raise an issue to discuss.</p>
+<p>Long answer:</p>
+<p>I started <code>penrose</code> because 1) I like hacking on stuff and it seemed like a fun
+idea and 2) I was dissatisfied with the feature sets offered by other window
+managers. Some had everything I wanted, but came with things that I really
+didn't like, while others felt like they were missing features. <code>penrose</code> has
+been written to be a base layer that you can build from to write a window
+manager that works how you want it to: this means that there is a small set of
+opinionated, core functionality and then a variety of ways to extend this. There
+are likely a few pieces of functionality that I have missed that <em>can</em> be added
+to core without disrupting what is already there, but most &quot;missing&quot; features
+from other window managers are missing on purpose. If you would like to add them
+as an extension, please see the contribution guidelines above.</p>
+<p>One important category of functionality that will not be added to the <code>penrose</code>
+crate itself is any sort of helper program or additional scripts that aim to
+wrap <code>penrose</code> and make it look like a stand alone binary.</p>
+<p><code>penrose</code> is (as clearly stated in the README) a library, <em>not</em> a binary.</p>
+<p>If writing your own crate and compiling and installing the resulting binary is
+not something you want to manage and maintain, then <code>penrose</code> is not for you.
+
+  </article>
+
+    </main>
+
+    <script type="text/javascript" src="https://sminez.github.io/themes.js"></script>
+
+    <script>
+      function burger() {
+        var x = document.getElementById("bger");
+        if (x.style.display === "block") {
+          x.style.display = "none";
+        } else {
+          x.style.display = "block";
+        }
+      }
+      </script>
+  </body>
+</html>

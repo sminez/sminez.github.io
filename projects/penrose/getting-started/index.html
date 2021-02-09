@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> sminez.github.io | Getting Started </title>
+    <link rel="stylesheet" href="https://sminez.github.io/main.css">
+  </head>
+
+  <body>
+    <nav>
+      <div id="subnav">
+        <form class="theme-selector">
+          <button type="button" id="theme-light-button" class="theme-button" onclick="enableTheme('light', true)">&#9706;</button>
+          <button type="button" id="theme-dark-button"  class="theme-button enabled" onclick="enableTheme('dark', true)">&#9705;</button>
+        </form>
+      </div>
+
+    
+  <ul id="breadcrumbs">
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;">
+          sminez.github.io
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;projects&#x2F;">
+          Software Projects
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;projects&#x2F;penrose&#x2F;">
+          Penrose
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+  </ul>
+  <h1>Getting Started</h1><em></em>
+
+    </nav>
+
+    <main>
+    
+  <div id="taxonomies">
+    
+  </div>
+
+  
+  
+
+  
+
+  <article>
+    <image width="60px" src="https://raw.githubusercontent.com/sminez/penrose/develop/icon.svg" align="left"></image></p>
+<h1 id="getting-started-with-penrose">Getting Started With Penrose</h1>
+<br>
+<p>So, you've heard about Penrose and you'd like to take it for a spin. Maybe
+you've watched one of the <a href="https://www.youtube.com/channel/UC04N-5DxEWH4ioK0bvZmF_Q">YouTube</a> videos, or found it on <a href="https://crates.io/crates/penrose">crates.io</a>
+while searching for window managers. The following is a quick guide for how to
+get your system set up for building your window manager binary and running it.</p>
+<br>
+<h3 id="step-0-programming-basics">Step 0. Programming basics</h3>
+<p>Before reading any further, please understand one very important thing about
+Penrose:</p>
+<p><b>Penrose is a window manager library, not a program.</b></p>
+<p>This means that in order to use Penrose as your window manager, you will need to
+write some code. A quick, minimal set up (what we will build out now) is
+possible with relatively little programming experience, but you <em>will</em> be
+interacting with the Rust compiler and build tools (such as <a href="https://doc.rust-lang.org/book/ch01-03-hello-cargo.html">cargo</a>).</p>
+<p>It is <em>strongly</em> recommended that you read through the <a href="https://doc.rust-lang.org/book/title-page.html">rust book</a> and try
+some of the examples there before diving too deep into writing your window
+manager with Penrose. It is worthwhile taking a look at the <a href="https://www.rust-lang.org/learn">learn</a> section
+of the Rust website if you have never used Rust before. There is a bit of a
+learning curve (as with all programming languages) but once you get started you
+will likely find yourself quickly hooked!</p>
+<br>
+<h3 id="step-1-install-rust">Step 1. Install Rust</h3>
+<p>If you have Rust on your system already, congrats! You can skip this section.</p>
+<p>For everyone else, head on over to <a href="https://www.rust-lang.org/">rust-lang.org</a>
+and click on the big &quot;Get Started button&quot; which will advise you to curl a
+setup script straight into <strong>sh</strong>. If you'd prefer to see what you are about to
+run, the following should do the trick:</p>
+<pre style="background-color:#282828;">
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl --proto </span><span style="color:#b8bb26;">&#39;=https&#39;</span><span style="color:#fdf4c1;"> --tlsv1.2 -sSf https://sh.rustup.rs </span><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1;"> rustup.sh
+
+</span><span style="font-style:italic;color:#928374;"># Open and peruse in your editor of choice
+</span><span style="color:#fdf4c1;">$ vim rustup.sh
+
+</span><span style="font-style:italic;color:#928374;"># Then, to carry out the actual install
+</span><span style="color:#fdf4c1;">$ chmod +x rustup.sh
+$ ./rustup.sh
+</span></code>
+<p>Now simply sit back and wait for while Rust is installed on your system.</p>
+<br>
+<h3 id="step-2-create-a-new-crate">Step 2. Create a new crate</h3>
+<p>&quot;Crates&quot; are Rust's term for what you might be more used to calling a package or
+project. Either way, for your window manager you are going to want to make a new
+<em>binary</em> crate like so:</p>
+<pre style="background-color:#282828;">
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cargo new --bin my_penrose_config
+$ cd my_penrose_config
+$ exa -T
+</span><span style="color:#fabd2f;">.
+</span><span style="color:#fdf4c1;">├── Cargo.toml
+└── src
+   └── main.rs
+</span></code></pre><br>
+<h3 id="step-3-add-dependencies">Step 3. Add dependencies</h3>
+<p>You should now have a new git repo with the content shown above. At the moment,
+your <strong>main.rs</strong> is just a simple Hello World program (we'll be fixing that
+soon) but first, open up <strong>Cargo.toml</strong> and add Penrose as a dependency. While
+you're at it, it's worthwhile adding a logging handler as well so that you can
+see what Penrose is up to, should you encounter any issues (I prefer simplelog
+but feel free to use whatever you wish):</p>
+<p><em>Cargo.toml</em></p>
+<pre style="background-color:#282828;">
+<code class="language-toml" data-lang="toml"><span style="color:#fdf4c1aa;">[</span><span style="color:#8ec07c;">package</span><span style="color:#fdf4c1aa;">]
+</span><span style="font-weight:bold;color:#8ec07c;">name </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;my_penrose_config&quot;
+</span><span style="font-weight:bold;color:#8ec07c;">version </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;0.1.0&quot;
+</span><span style="font-weight:bold;color:#8ec07c;">authors </span><span style="color:#fdf4c1aa;">= [</span><span style="color:#b8bb26;">&quot;You &lt;you@your-email-provider.com&gt;&quot;</span><span style="color:#fdf4c1aa;">]
+</span><span style="font-weight:bold;color:#8ec07c;">edition </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;2018&quot;
+<p></span><span style="font-style:italic;color:#928374;"># See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html</p>
+<p></span><span style="color:#fdf4c1aa;">[</span><span style="color:#8ec07c;">dependencies</span><span style="color:#fdf4c1aa;">]
+</span><span style="font-weight:bold;color:#8ec07c;">penrose </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;0.2&quot;
+</span><span style="font-weight:bold;color:#8ec07c;">simplelog </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;0.8&quot;
+</span></code></pre><br></p>
+<h3 id="step-4-write-your-main-rs">Step 4. Write your main.rs</h3>
+<p>The following snippet is a good example of a minimal <strong>main.rs</strong> that will give
+you functionality similar to that of a minimal tiling window manager such as
+<strong>dwm</strong>. Have a look at the <a href="https://docs.rs/penrose">documentation</a> on <strong>doc.rs</strong> to learn more about
+what each function and data structure is doing:</p>
+<p><em>src/main.rs</em></p>
+<pre style="background-color:#282828;">
+<code class="language-rust" data-lang="rust"><span style="color:#fdf4c1aa;">#[</span><span style="color:#fdf4c1;">macro_use</span><span style="color:#fdf4c1aa;">]
+</span><span style="color:#fa5c4b;">extern crate</span><span style="color:#fdf4c1aa;"> penrose;
+<p></span><span style="color:#fa5c4b;">use </span><span style="color:#fdf4c1aa;">penrose::{
+core::{
+bindings::KeyEventHandler,
+config::Config,
+helpers::index_selectors,
+manager::WindowManager,
+},
+logging_error_handler,
+xcb::new_xcb_backed_window_manager,
+Backward, Forward, Less, More,
+};</p>
+<p></span><span style="color:#fa5c4b;">use </span><span style="color:#fdf4c1aa;">simplelog::{LevelFilter, SimpleLogger};</p>
+<p></span><span style="font-style:italic;color:#928374;">// Replace these with your preferred terminal and program launcher
+</span><span style="color:#fa5c4b;">const </span><span style="color:#fdf4c1;">TERMINAL</span><span style="color:#fdf4c1aa;">: </span><span style="color:#fe8019;">&amp;</span><span style="color:#fa5c4b;">str </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;alacritty&quot;</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fa5c4b;">const </span><span style="color:#fdf4c1;">LAUNCHER</span><span style="color:#fdf4c1aa;">: </span><span style="color:#fe8019;">&amp;</span><span style="color:#fa5c4b;">str </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;dmenu_run&quot;</span><span style="color:#fdf4c1aa;">;</p>
+<p></span><span style="color:#fa5c4b;">fn </span><span style="color:#8ec07c;">main</span><span style="color:#fdf4c1aa;">() -&gt; penrose::</span><span style="color:#fabd2f;">Result</span><span style="color:#fdf4c1aa;">&lt;()&gt; {
+</span><span style="font-style:italic;color:#928374;">// Initialise the logger (use LevelFilter::Debug to enable debug logging)
+</span><span style="color:#fa5c4b;">if let </span><span style="color:#fabd2f;">Err</span><span style="color:#fdf4c1aa;">(e) </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">SimpleLogger::init(LevelFilter::Info, simplelog::Config::default()) {
+</span><span style="color:#fabd2f;">panic!</span><span style="color:#fdf4c1aa;">(</span><span style="color:#b8bb26;">&quot;unable to set log level: {}&quot;</span><span style="color:#fdf4c1aa;">, e);
+};</p>
+<pre style="background-color:#282828;">
+<code>&lt;/span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;let&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt; config &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;Config::default();
+&lt;/span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;let&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt; key_bindings &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;gen_keybindings! &lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+    &lt;/span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;// Program launchers
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-semicolon&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_external!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;LAUNCHER&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-Return&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_external!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;TERMINAL&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;);
+
+    &lt;/span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;// Exit Penrose (important to remember this one!)
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-A-C-Escape&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(exit);
+
+    &lt;/span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;// client management
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-j&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(cycle_client, Forward);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-k&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(cycle_client, Backward);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-S-j&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(drag_client, Forward);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-S-k&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(drag_client, Backward);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-S-f&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(toggle_client_fullscreen, &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;Selector::Focused);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-S-q&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(kill_client);
+
+    &lt;/span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;// workspace management
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-Tab&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(toggle_workspace);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-A-period&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(cycle_workspace, Forward);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-A-comma&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(cycle_workspace, Backward);
+
+    &lt;/span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;// Layout management
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-grave&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(cycle_layout, Forward);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-S-grave&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(cycle_layout, Backward);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-A-Up&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(update_max_main, More);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-A-Down&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(update_max_main, Less);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-A-Right&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(update_main_ratio, More);
+    &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-A-Left&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt; &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;run_internal!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(update_main_ratio, Less);
+
+    refmap [ config.&lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;ws_range&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;() ] &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;in &lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+        &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-{}&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt;&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt; focus_workspace [ &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;index_selectors&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(config.&lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;workspaces&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;().&lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;len&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;()) ];
+        &lt;/span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;M-S-{}&amp;quot; &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&amp;gt;&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt; client_to_workspace [ &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;index_selectors&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(config.&lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;workspaces&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;().&lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;len&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;()) ];
+    };
+};
+
+&lt;/span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;let mut&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt; wm &lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;new_xcb_backed_window_manager&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(config, &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;vec!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;[], &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;logging_error_handler&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;())&lt;/span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;?&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+wm.&lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;grab_keys_and_run&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;(key_bindings, &lt;/span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;map!&lt;/span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{})
+</code></pre>
+<p>}
+</span></code></pre></p>
+<p>Here we are using the default <strong>xcb</strong> based back end for Penrose which will
+require you to install the C xcb library on your system. Currently, this is the
+only backend offered &quot;out of the box&quot;, though it is possible to write your own
+should you wish.</p>
+<br>
+<h3 id="step-5-compile-and-run">Step 5. Compile and run</h3>
+<p>Compiling your new window manager is pretty simple:</p>
+<pre style="background-color:#282828;">
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cargo build --release
+</span></code></pre>
+<p>You'll see a lot of output the first time round as the dependencies of Penrose
+itself are compiled, but after that your re-compile should be pretty quick
+following any changes that you make. Once the binary is compiled you should see
+it as a new executable in <strong>target/release</strong>.</p>
+<p>My preferred way of running Penrose (and my system) is to login via TTY and
+place the following in my <strong>~/.xinitrc</strong>:</p>
+<p><em>.xinitrc</em></p>
+<pre style="background-color:#282828;">
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">/home/innes/.config/penrose/target/release/penrose </span><span style="color:#fe8019;">&amp;&gt; </span><span style="color:#fdf4c1;">~/.penrose.log
+</span></code></pre>
+<p>Then, I can simply type <strong>startx</strong> after logging in and Penrose will start up,
+with my current session log available in my home directory as <strong>.penrose.log</strong>.</p>
+<p>If logging in and starting your graphical session from a TTY is too hipster for
+you, you might want to look at installing and running a <a href="https://wiki.archlinux.org/index.php/Display_manager">display manager</a>
+which will require you writing a Desktop Entry for Penrose. Details of how to do
+this (for any program) are available online.</p>
+<br>
+<h3 id="step-6-profit">Step 6. Profit</h3>
+<p>And that's it!</p>
+<p>You are now the proud owner of a shiny new window manager. From this point on
+you can start tinkering to your heart's content and setting things up exactly
+how you want. Speaking from personal experience, I would advise that you commit
+your changes to your window manager <em>regularly</em> and that you make sure you know
+how to revert to your last good state in case you manage to introduce any
+particularly nasty bugs into your setup. If that happens, simply rebuild your
+previous good state and get to work on fixing your bug.</p>
+<p>Happy coding!</pre>
+
+  </article>
+
+    </main>
+
+    <script type="text/javascript" src="https://sminez.github.io/themes.js"></script>
+
+    <script>
+      function burger() {
+        var x = document.getElementById("bger");
+        if (x.style.display === "block") {
+          x.style.display = "none";
+        } else {
+          x.style.display = "block";
+        }
+      }
+      </script>
+  </body>
+</html>

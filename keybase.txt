@@ -1,0 +1,57 @@
+==================================================================
+https://keybase.io/idam
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://sminez.github.io
+  * I am idam (https://keybase.io/idam) on keybase.
+  * I have a public key ASAKykKLjc8yWMY51k2SnCGRpSpQytrLXqQEWyogLTQMUwo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "0120082302f2ecc3519cb510dc37b96930e79609e12f253af7063b516de76ed7fc780a",
+      "host": "keybase.io",
+      "kid": "01200aca428b8dcf3258c639d64d929c2191a52a50cadacb5ea4045b2a202d340c530a",
+      "uid": "ada86df81ee50cabe8a9cbe14c2ff919",
+      "username": "idam"
+    },
+    "merkle_root": {
+      "ctime": 1541591024,
+      "hash": "841b36ade2226a8afb7bf440203da235ae093dfeadd518e21a9b615ae4712138c4087fde13408967188368a290a3bba631190d6433612e71256bfd981f23ffa2",
+      "hash_meta": "530b98a1ca9314727ebc14da4a5eb98326cf5d79dd9351a01d1528118e4ad273",
+      "seqno": 3914036
+    },
+    "service": {
+      "entropy": "q8fuaUEAPmMP26tQhIOMDxJX",
+      "hostname": "sminez.github.io",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "2.10.0"
+  },
+  "ctime": 1541591073,
+  "expire_in": 504576000,
+  "prev": "d1be6bc646e30df250e87dff405d516bed265322b8d93405c2aadefa248a4192",
+  "seqno": 9,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgCspCi43PMljGOdZNkpwhkaUqUMray16kBFsqIC00DFMKp3BheWxvYWTESpcCCcQg0b5rxkbjDfJQ6H3/QF1Ra+0mUyK42TQFwqre+iSKQZLEIJzcS9F+UTsyxCb2qPUGdhux3F+Ep39Mk8qU0CoZJ60nAgHCo3NpZ8RAfIwuqrZGZQLjxKcrKHspIIbWFRlnDguZXDm2AmrFtREaN9qI7DVVQYzgBc788JTj1dJZQh8Fw2lnbb6nAXflCahzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEICcZ3oF7N7tg5Rcxz/mkTmYSr0wTxic/hFEwrAHD95tUo3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/idam
+
+==================================================================
+

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> sminez.github.io | Arpy </title>
+    <link rel="stylesheet" href="https://sminez.github.io/main.css">
+  </head>
+
+  <body>
+    <nav>
+      <div id="subnav">
+        <form class="theme-selector">
+          <button type="button" id="theme-light-button" class="theme-button" onclick="enableTheme('light', true)">&#9706;</button>
+          <button type="button" id="theme-dark-button"  class="theme-button enabled" onclick="enableTheme('dark', true)">&#9705;</button>
+        </form>
+      </div>
+
+    
+  <ul id="breadcrumbs">
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;">sminez.github.io</a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;projects&#x2F;">Software Projects</a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+    <li>Arpy</li>
+  </ul>
+  <h1>Arpy</h1>
+  
+  <a href="javascript:void(0);" onclick="burger()" id="mobile">&#9776;</a>
+    <ul id="bger">
+      
+
+      
+    </ul>
+
+
+    </nav>
+
+    <main>
+    
+
+      
+      
+
+      
+
+      <article>
+      <a href="https://travis-ci.org/sminez/arpy"><img src="https://travis-ci.org/sminez/arpy.svg?branch=master" alt="Build Status" /></a> <a href="https://coveralls.io/github/sminez/arpy?branch=master"><img src="https://coveralls.io/repos/github/sminez/arpy/badge.svg?branch=master" alt="Coverage Status" /></a></p>
+<p>arpy (Absolute Relativity in Python)</p>
+<p>Copyright (C) 2016-2020 Innes D. Anderson-Morrison All rights reserved.</p>
+<p><img src="readme_icon.png" alt="Cayley Table for AR" /></p>
+<h2 id="overview">Overview</h2>
+<p>arpy is a module for performing calculations within the theory of Absolute Relativity
+as devised by <a href="https://quicycle.com">Dr J.G.Williamson</a>.</p>
+<p>This repository is under active development. If you have any questions or
+suggestions for features / bug fixes please <a href="https://github.com/sminez/arpy/issues">open an issue</a>.</p>
+<h3 id="installing-and-updating-arpy">Installing and updating arpy</h3>
+<p>To install the module on your system you will need Python version 3.6 or
+greater. From this directory run <code>make install</code> and the script
+will take care of the rest.</p>
+<p>In order to update the the latest version of the code it is <em>strongly</em> advised
+to clone this repo using git rather than manually downloading a zip each time</p>
+<ul>
+<li>Though the second option <em>is</em> possible if using git is not something you want
+to do. To update using git run the following commands from the root directory of
+this repo (where this README file is located):</li>
+</ul>
+<pre style="background-color:#282828;">
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ git pull
+$ make install
+</span></code>
+<p>After install, the module can be imported into a Python repl session in the
+usual way. While it is generally regarded as bad practice when developing
+stand-alone programs, the <code>from arpy import *</code> command is the recommended way to
+work with arpy when in an interactive terminal session.</p>
+<h3 id="installing-the-jupyter-qtconsole">Installing the Jupyter qtconsole</h3>
+<p>The default Python command line interpreter leaves a lot to be desired. It is
+strongly recommended that you also install the <a href="https://qtconsole.readthedocs.io/en/latest/">Jupyter QT console</a>
+for working with arpy as it provides syntax highlighting, interactive help and
+access to your system shell. Install using the following commands:</p>
+<pre style="background-color:#282828;">
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ python3 -m pip install python3-pyqt5
+$ python3 -m pip install jupyter
+</span></code></pre>
+<p>Start the console using:</p>
+<pre style="background-color:#282828;">
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ python3 -m qtconsole
+</span><span style="font-style:italic;color:#928374;"># or if you want a larger font size: in this example 18pt
+</span><span style="color:#fdf4c1;">$ python3 -m qtconsole --JupyterWidget.font_size=18
+</span></code></pre><h3 id="reporting-issues-and-requesting-features">Reporting issues and requesting features</h3>
+<p>Github has a built in issue tracker that makes it much easier to keep on top of
+changes and bug fixes. In either case, please <a href="https://github.com/sminez/arpy/issues">create a new issue</a> using this link or by going to the
+<code>Issues</code> panel at the top of the page in Github.</p>
+<p>(If it is a bug report, please copy in and error messages you get when describing
+the problem.)</p>
+<h3 id="running-the-test-suite">Running the test suite</h3>
+<p>If you would like to run the current test suite (you're working on a patch /
+you're just curious!) then simply run the following command in the root
+directory of the repo:</p>
+<pre style="background-color:#282828;">
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ make test
+</span></code></pre>
+<p>If you are trying to write new tests for the module then please follow the
+example of the tests written so far. I am using <a href="http://doc.pytest.org/en/latest/">pytest</a>
+as the test runner and wherever possible I am trying to paramaterize test cases
+to cover all possible inputs to eliminate edge cases as far as possible.
+All tests should have a clear docstring description of what it is the test is
+attempting to prove about the code.</pre>
+
+      </article>
+    
+    </main>
+
+    <script type="text/javascript" src="https://sminez.github.io/themes.js"></script>
+
+    <script>
+      function burger() {
+        var x = document.getElementById("bger");
+        if (x.style.display === "block") {
+          x.style.display = "none";
+        } else {
+          x.style.display = "block";
+        }
+      }
+      </script>
+  </body>
+</html>

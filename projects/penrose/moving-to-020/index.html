@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> sminez.github.io | Migrating to 0.2 </title>
+    <link rel="stylesheet" href="https://sminez.github.io/main.css">
+  </head>
+
+  <body>
+    <nav>
+      <div id="subnav">
+        <form class="theme-selector">
+          <button type="button" id="theme-light-button" class="theme-button" onclick="enableTheme('light', true)">&#9706;</button>
+          <button type="button" id="theme-dark-button"  class="theme-button enabled" onclick="enableTheme('dark', true)">&#9705;</button>
+        </form>
+      </div>
+
+    
+  <ul id="breadcrumbs">
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;">
+          sminez.github.io
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;projects&#x2F;">
+          Software Projects
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;projects&#x2F;penrose&#x2F;">
+          Penrose
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+  </ul>
+  <h1>Migrating to 0.2</h1><em></em>
+
+    </nav>
+
+    <main>
+    
+  <div id="taxonomies">
+    
+  </div>
+
+  
+  
+
+  
+
+  <article>
+    <image width="60px" src="https://raw.githubusercontent.com/sminez/penrose/develop/icon.svg" align="left"></image></p>
+<h1 id="migrating-your-config-from-0-1-to-0-2">Migrating your config from 0.1 to 0.2</h1>
+<br>
+<p>The following is a high level overview of the main user facing changes to the
+Penrose API when updating your <code>0.1.X</code> config to <code>0.2.0</code>. For the most part,
+the compiler should guide you through the changes but it is worthwhile reading
+through the changes that follow in order to guide you through what you need to
+do.</p>
+<p>There are multiple other internal changes, refactors and additions that can all
+be found in the <a href="https://docs.rs/penrose/0.2.0/penrose/index.html">documentation</a>, but these are the main breaking changes that
+are likely to leave you scratching your head if you just trying bumping the
+minor verison!</p>
+<br>
+<h2 id="errors">Errors</h2>
+<p>Penrose now uses the <a href="https://crates.io/crates/thiserror">thiserror</a> crate for defining <code>Error</code> values instead
+of <a href="https://crates.io/crates/anyhow">anyhow</a>. This allows for better error handling both inside of Penrose
+itself and within user code as well. There is a top level <a href="https://docs.rs/penrose/0.2.0/penrose/enum.PenroseError.html">PenroseError</a> type
+that is returned by most functions and methods in the crate, but there are also
+specific <a href="https://docs.rs/penrose/0.2.0/penrose/draw/enum.DrawError.html">DrawError</a> and <a href="https://docs.rs/penrose/0.2.0/penrose/xcb/enum.XcbError.html">XcbError</a> types for those respective modules.</p>
+<br>
+<h2 id="results">Results</h2>
+<p>Previously, keybindings were attached to functions matching the <code>FireAndForget</code>
+function signature which simply ran your code and expected you to handle all
+failures internally. This type has been renamed to <a href="https://docs.rs/penrose/0.2.0/penrose/core/bindings/type.KeyEventHandler.html">KeyEventHandler</a> and now
+returns a <code>penrose::Result</code>. All corresponding public methods on <code>WindowManager</code>
+have been updated to match this signature and now propagate errors back to
+callers when they occur.</p>
+<p>In some cases this has also resulted in modified return types of these methods:
+now returning an <code>Error</code> in cases where previously you would have received a
+default value.</p>
+<br>
+<h2 id="windowmanager-is-now-generic-over-xconn">WindowManager is now generic over XConn</h2>
+<p>In <code>Penrose 0.1</code>, the <code>WindowManager</code> struct took a <code>Box&lt;dyn XConn&gt;</code> which was
+used to communicate with the X server. This was then inaccessible to user code
+once the manager was created, meaning that there was no way for user code to
+interact directly with the X server. In <code>0.2</code>, the <a href="https://docs.rs/penrose/0.2.0/penrose/struct.WindowManager.html">WindowManager</a> is generic
+over the <a href="https://docs.rs/penrose/0.2.0/penrose/core/xconnection/trait.XConn.html">XConn</a> implementation that is provided (non-boxed) and it is now
+possible to write specific <code>impl</code> blocks for a <code>WindowManager</code> using your
+implementation of <code>XConn</code> should you wish.</p>
+<p><b>NOTE</b>: Interacting with the X server directly without going through the
+<code>WindowManager</code> can (depending on what you do) lead to invalid state in the
+<code>WindowManager</code>. Please be careful with how you make use of this!</p>
+<p>One knock on effect of this is that types and traits that take references to a
+<code>WindowManager</code> are now generic as well. This means that you will have to add
+generic types to any custom hooks, widgets and keybinding functions you have
+written. (It also means that you can customise the behaviour of these depending
+on what <code>XConn</code> is being used, if that is of any interest.)</p>
+<br>
+<h2 id="config-is-now-immutable">Config is now immutable</h2>
+<p>The <code>Config</code> struct is now immutable by default and requires that you follow a
+<a href="https://docs.rs/penrose/0.2.0/penrose/core/config/struct.ConfigBuilder.html">builder pattern</a>. This provides more flexability in how you build up your
+config while also ensuring that you are not able to inadvertantly create invalid
+config which is then only caught at runtime.
+
+  </article>
+
+    </main>
+
+    <script type="text/javascript" src="https://sminez.github.io/themes.js"></script>
+
+    <script>
+      function burger() {
+        var x = document.getElementById("bger");
+        if (x.style.display === "block") {
+          x.style.display = "none";
+        } else {
+          x.style.display = "block";
+        }
+      }
+      </script>
+  </body>
+</html>
