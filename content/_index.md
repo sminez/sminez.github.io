@@ -24,10 +24,10 @@ you might find interesting over on [GitHub](https://github.com/sminez).
 -----------------
 
 <br>email:      [innes.andersonmorrison](mailto:innes.andersonmorrison@gmail.com)<br>
+mastodon:   <a rel="me" href="https://hachyderm.io/@sminez">@sminez@hachyderm.io</a><br>
 keybase:    [profile](https://keybase.io/idam), [verification for this site](https://sminez.github.io/keybase.txt)<br>
 github:     [sminez](https://github.com/sminez/)<br>
 youtube:    [Innes Anderson-Morison](https://www.youtube.com/channel/UC04N-5DxEWH4ioK0bvZmF_Q)<br>
-twitter:    [@I_D_A_M](https://twitter.com/I_D_A_M)<br>
 instagram:  [innes_photo](https://www.instagram.com/innes_photo/)<br>
 flickr:     [sminez](https://www.flickr.com/photos/sminez/)<br>
 soundcloud: [Sminez](https://soundcloud.com/innes-anderson-morrison)<br>

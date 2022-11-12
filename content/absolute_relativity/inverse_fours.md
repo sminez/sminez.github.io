@@ -4,7 +4,7 @@ title = "Inverse Fours"
 
 ## Finding inverses for 4 element multi-vectors
 
-The following program makes use of the [arthroprod][0] library to find inverse
+The following program makes use of the arthroprod library to find inverse
 multi-vectors for Zet based, 4-element multi-vectors.
 
 ### Program
@@ -298,5 +298,3 @@ VdM_scalar: {
   )
 }
 ```
-
-  [0]: https://github.com/sminez/arthroprod

@@ -2,4 +2,4 @@
 title = "FAQs"
 +++
 
-{{ remotemd(url="https://raw.githubusercontent.com/sminez/penrose/develop/docs/faq.md") }}
+{{ remotemd(url="https://raw.githubusercontent.com/sminez/penrose/develop/docs/src/faq.md") }}

@@ -4,7 +4,7 @@ title = "Zet Properties"
 
 ## Checking sign distributions of Zets under product
 
-The following program makes use of the [arthroprod][0] library to observe their
+The following program makes use of the arthroprod library to observe their
 common properties under the full product.
 
 ### Program
@@ -94,5 +94,3 @@ Parity: a0_Z_a0
   ZA: ----
   ZE: ----
 ```
-
-  [0]: https://github.com/sminez/arthroprod
