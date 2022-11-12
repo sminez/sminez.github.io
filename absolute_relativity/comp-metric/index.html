@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> sminez.github.io | Comparing metrics </title>
+    <link rel="stylesheet" href="https://sminez.github.io/main.css">
+  </head>
+
+  <body>
+    <nav>
+      <div id="subnav">
+        <form class="theme-selector">
+          <button type="button" id="theme-light-button" class="theme-button" onclick="enableTheme('light', true)">&#9706;</button>
+          <button type="button" id="theme-dark-button"  class="theme-button enabled" onclick="enableTheme('dark', true)">&#9705;</button>
+        </form>
+      </div>
+
+    
+  <ul id="breadcrumbs">
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;">
+          sminez.github.io
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;absolute_relativity&#x2F;">
+          Absolute Relativity
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+  </ul>
+  <h1>Comparing metrics</h1><em></em>
+
+    </nav>
+
+    <main>
+    
+  <div id="taxonomies">
+    
+  </div>
+
+  
+  
+    
+    
+      
+      
+    
+      
+      
+    
+  
+
+  
+
+  <article>
+    <h2 id="comparing-space-time-metrics">Comparing Space-Time Metrics</h2>
+<p>An attempt at categorising the differences between the <code>+---</code> and <code>-+++</code> metrics
+when used with the 0i (&quot;logical&quot;) space-time bivector ordering.</p>
+<p>At present, this is NOT complete and should be added to as further cases and
+examples are found.</p>
+<h3 id="program">Program</h3>
+<pre data-lang="python" style="background-color:#282828;color:#fdf4c1aa;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#fa5c4b;">from </span><span>itertools </span><span style="color:#fa5c4b;">import </span><span>groupby
+</span><span style="color:#fa5c4b;">from </span><span>functools </span><span style="color:#fa5c4b;">import </span><span style="color:#fabd2f;">reduce
+</span><span style="color:#fa5c4b;">from </span><span>operator </span><span style="color:#fa5c4b;">import </span><span>mul
+</span><span style="color:#fa5c4b;">from </span><span>arpy </span><span style="color:#fa5c4b;">import </span><span>ARContext, __version__, commutator, dagger, sign_cayley, sign_distribution
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">PRINT_ALL </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">False
+</span><span style="color:#fdf4c1;">ALLOWED </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;p 23 31 12 0 023 031 012 123 1 2 3 0123 01 02 03&quot;</span><span style="color:#fdf4c1;">.split()
+</span><span style="color:#fdf4c1;">EXYZ_ALLOWED </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;p 0 123 0123 23 023 1 01 31 031 2 02 12 012 3 03&quot;</span><span style="color:#fdf4c1;">.split()
+</span><span>
+</span><span>
+</span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;Computed using arpy version </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">__version__)
+</span><span>
+</span><span>
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">compare_configs</span><span>(</span><span style="color:#fdf4c1;">allowed</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">ALLOWED</span><span>, </span><span style="color:#fdf4c1;">func</span><span style="color:#fe8019;">=</span><span style="color:#d3869b;">None</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    Take a function and feed it both configs so we can compare the two.
+</span><span style="font-style:italic;color:#928374;">    This is _not_ a normal decorator, it will call the functions immediately
+</span><span style="font-style:italic;color:#928374;">    when the script is run.
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    </span><span style="font-style:italic;color:#928374;"># Hack to add arguments to a decorator
+</span><span>    </span><span style="color:#fa5c4b;">if </span><span>func </span><span style="color:#fe8019;">is </span><span style="color:#d3869b;">None</span><span>:
+</span><span>        </span><span style="color:#fa5c4b;">return lambda </span><span style="color:#fdf4c1;">f</span><span>: </span><span style="color:#fdf4c1;">compare_configs(allowed</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">allowed, func</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">f)
+</span><span>
+</span><span>    pmmm </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ARContext(allowed, </span><span style="color:#b8bb26;">&quot;+---&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;into&quot;</span><span style="color:#fdf4c1;">, print_all</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">PRINT_ALL)
+</span><span>    mppp </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ARContext(allowed, </span><span style="color:#b8bb26;">&quot;-+++&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;by&quot;</span><span style="color:#fdf4c1;">, print_all</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">PRINT_ALL)
+</span><span>
+</span><span>    </span><span style="font-style:italic;color:#928374;"># Print the name of the function and its docstring
+</span><span>    qname </span><span style="color:#fe8019;">= </span><span>func.</span><span style="color:#fabd2f;">__qualname__
+</span><span>    </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;\n.: </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;"> :.&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">qname)
+</span><span>    </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;=&quot; </span><span style="color:#fe8019;">* </span><span style="color:#fdf4c1;">(</span><span style="color:#fabd2f;">len</span><span style="color:#fdf4c1;">(qname) </span><span style="color:#fe8019;">+ </span><span style="color:#d3869b;">6</span><span style="color:#fdf4c1;">))
+</span><span>    </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(func.</span><span style="color:#fabd2f;">__doc__</span><span style="color:#fdf4c1;">)
+</span><span>
+</span><span>    </span><span style="font-style:italic;color:#928374;"># Iterate over the configs
+</span><span>    </span><span style="color:#fa5c4b;">for </span><span>ctx </span><span style="color:#fa5c4b;">in </span><span>[pmmm, mppp]:
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;[</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">]&quot; </span><span style="color:#fe8019;">% </span><span style="color:#b8bb26;">&quot;&quot;</span><span style="color:#fdf4c1;">.join(</span><span style="color:#b8bb26;">&quot;+&quot; </span><span style="color:#fa5c4b;">if </span><span style="color:#fdf4c1;">m </span><span style="color:#fe8019;">== </span><span style="color:#d3869b;">1 </span><span style="color:#fa5c4b;">else </span><span style="color:#b8bb26;">&quot;-&quot; </span><span style="color:#fa5c4b;">for </span><span style="color:#fdf4c1;">m </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">ctx.metric))
+</span><span>        </span><span style="color:#fdf4c1;">func(ctx)
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;&quot;</span><span style="color:#fdf4c1;">)
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">squaring_to_neg_alpha_p</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    One of the primary differences between metrics is in which elements
+</span><span style="font-style:italic;color:#928374;">    square to -αp. This affects which elements support oscillations amongst
+</span><span style="font-style:italic;color:#928374;">    other things.
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    pos </span><span style="color:#fe8019;">= </span><span>[]
+</span><span>    neg </span><span style="color:#fe8019;">= </span><span>[]
+</span><span>
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        </span><span style="color:#fa5c4b;">for </span><span>a </span><span style="color:#fa5c4b;">in </span><span>ar.allowed:
+</span><span>            res </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;a</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;"> a</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">(a, a))</span><span>.sign
+</span><span>            </span><span style="color:#fa5c4b;">if </span><span>res </span><span style="color:#fe8019;">== </span><span style="color:#d3869b;">1</span><span>:
+</span><span>                </span><span style="color:#fdf4c1;">pos.append(</span><span style="color:#b8bb26;">&quot;α</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">a)
+</span><span>            </span><span style="color:#fa5c4b;">else</span><span>:
+</span><span>                </span><span style="color:#fdf4c1;">neg.append(</span><span style="color:#b8bb26;">&quot;α</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">a)
+</span><span>
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot; αp:  </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#b8bb26;">&quot;, &quot;</span><span style="color:#fdf4c1;">.join(pos))
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;-αp:  </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#b8bb26;">&quot;, &quot;</span><span style="color:#fdf4c1;">.join(neg))
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">square_of_a_vector</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    The square of a 4Vector should be an invariant scalar (== 0 for light).
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        v </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;{0 1 2 3}&quot;</span><span style="color:#fdf4c1;">)
+</span><span>        v_2 </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;v v&quot;</span><span style="color:#fdf4c1;">)
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;v = </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">v)
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;\nv² = </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">v_2)
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">handedness_under_product</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    The 3D handedness of each of the 3Vectors when forming products
+</span><span style="font-style:italic;color:#928374;">    between the elements of the 3Vector. This is computed using:
+</span><span style="font-style:italic;color:#928374;">        x y = z    --&gt; Right Handed
+</span><span style="font-style:italic;color:#928374;">        x y = -z   --&gt; Left Handed
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        </span><span style="font-style:italic;color:#928374;"># Pull out the definitions of B, T, A, E
+</span><span>        </span><span style="color:#fa5c4b;">for </span><span>vec </span><span style="color:#fa5c4b;">in </span><span style="color:#b8bb26;">&quot;BTAE&quot;</span><span>:
+</span><span>            comps </span><span style="color:#fe8019;">= </span><span>ar.cfg.zet_comps[vec]
+</span><span>            sign </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;a</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;"> a</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">(comps[</span><span style="color:#b8bb26;">&quot;x&quot;</span><span style="color:#fdf4c1;">], comps[</span><span style="color:#b8bb26;">&quot;y&quot;</span><span style="color:#fdf4c1;">]))</span><span>.sign
+</span><span>            handedness </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;RH&quot; </span><span style="color:#fa5c4b;">if </span><span>sign </span><span style="color:#fe8019;">== </span><span style="color:#d3869b;">1 </span><span style="color:#fa5c4b;">else </span><span style="color:#b8bb26;">&quot;LH&quot;
+</span><span>            </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">:  </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">(vec, handedness))
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">handedness_under_rotation</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    The 3D handedness of each of the 3Vectors when forming products
+</span><span style="font-style:italic;color:#928374;">    between the elements of the 3Vector and a space-space bivector.
+</span><span style="font-style:italic;color:#928374;">        α23 y = z     --&gt; Right Handed
+</span><span style="font-style:italic;color:#928374;">        α23 y = -z    --&gt; Left Handed
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        </span><span style="font-style:italic;color:#928374;"># Pull out the definitions of B, T, A, E
+</span><span>        </span><span style="color:#fa5c4b;">for </span><span>vec </span><span style="color:#fa5c4b;">in </span><span style="color:#b8bb26;">&quot;BTAE&quot;</span><span>:
+</span><span>            comps </span><span style="color:#fe8019;">= </span><span>ar.cfg.zet_comps[vec]
+</span><span>            sign </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;a</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;"> a</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;23&quot;</span><span style="color:#fdf4c1;">, comps[</span><span style="color:#b8bb26;">&quot;y&quot;</span><span style="color:#fdf4c1;">]))</span><span>.sign
+</span><span>            handedness </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;RH&quot; </span><span style="color:#fa5c4b;">if </span><span>sign </span><span style="color:#fe8019;">== </span><span style="color:#d3869b;">1 </span><span style="color:#fa5c4b;">else </span><span style="color:#b8bb26;">&quot;LH&quot;
+</span><span>            </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">:  </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">(vec, handedness))
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">full_handedness</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    Look at the handedness of all 3Vector interactions.
+</span><span style="font-style:italic;color:#928374;">        x y = z   --&gt; Right Handed (□)
+</span><span style="font-style:italic;color:#928374;">        x y = -z  --&gt; Left Handed  (■)
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        </span><span style="font-style:italic;color:#928374;"># Pull out the definitions of B, T, A, E
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;   B T A E&quot;</span><span style="color:#fdf4c1;">)
+</span><span>        </span><span style="color:#fa5c4b;">for </span><span>vec1 </span><span style="color:#fa5c4b;">in </span><span style="color:#b8bb26;">&quot;BTAE&quot;</span><span>:
+</span><span>            </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(vec1, end</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;  &quot;</span><span style="color:#fdf4c1;">)
+</span><span>            </span><span style="color:#fa5c4b;">for </span><span>vec2 </span><span style="color:#fa5c4b;">in </span><span style="color:#b8bb26;">&quot;BTAE&quot;</span><span>:
+</span><span>                comps </span><span style="color:#fe8019;">= </span><span>ar.cfg.zet_comps
+</span><span>                v1, v2 </span><span style="color:#fe8019;">= </span><span>comps[vec1], comps[vec2]
+</span><span>                sign </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;a</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;"> a</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">(v1[</span><span style="color:#b8bb26;">&quot;x&quot;</span><span style="color:#fdf4c1;">], v2[</span><span style="color:#b8bb26;">&quot;y&quot;</span><span style="color:#fdf4c1;">]))</span><span>.sign
+</span><span>                handedness </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;□&quot; </span><span style="color:#fa5c4b;">if </span><span>sign </span><span style="color:#fe8019;">== </span><span style="color:#d3869b;">1 </span><span style="color:#fa5c4b;">else </span><span style="color:#b8bb26;">&quot;■&quot;
+</span><span>                </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(handedness, end</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot; &quot;</span><span style="color:#fdf4c1;">)
+</span><span>            </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;&quot;</span><span style="color:#fdf4c1;">)
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">zet_sign_distribution</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    The full sign Cayley table above can be broken down into five groups that
+</span><span style="font-style:italic;color:#928374;">    always have a consistent sign:
+</span><span style="font-style:italic;color:#928374;">
+</span><span style="font-style:italic;color:#928374;">      ∂e |■ □ □ □|  ∂Ξ |□ ■ ■ ■|   ∇ |□ □ □ □|  ∇• |□ □ □ □|  ∇x |□ □ □ □|
+</span><span style="font-style:italic;color:#928374;">         |□ □ □ □|     |□ □ □ □|     |■ □ □ □|     |□ ■ □ □|     |□ □ ■ ■|
+</span><span style="font-style:italic;color:#928374;">         |□ □ □ □|     |□ □ □ □|     |■ □ □ □|     |□ □ ■ □|     |□ ■ □ ■|
+</span><span style="font-style:italic;color:#928374;">         |□ □ □ □|     |□ □ □ □|     |■ □ □ □|     |□ □ □ ■|     |□ ■ ■ □|
+</span><span style="font-style:italic;color:#928374;">
+</span><span style="font-style:italic;color:#928374;">    (Note that, in the case of the curl (∇x), □ represents a Right Handed
+</span><span style="font-style:italic;color:#928374;">     set and ■ a Left Handed set.)
+</span><span style="font-style:italic;color:#928374;">    In the following diagrams, the rows and columns are the 3Vector(+extra)
+</span><span style="font-style:italic;color:#928374;">    sets: `B T A E`.
+</span><span style="font-style:italic;color:#928374;">
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        </span><span style="color:#fdf4c1;">sign_distribution(cfg</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">ar.cfg)
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>(</span><span style="color:#fdf4c1;">allowed</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">EXYZ_ALLOWED</span><span>)
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">exyz_sign_distribution</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    When the grouping / ordering of the components is changed to group
+</span><span style="font-style:italic;color:#928374;">    by exyz first and then by 3Vector, the sign distribution may shed
+</span><span style="font-style:italic;color:#928374;">    some light on the sign distribution of the algebra.
+</span><span style="font-style:italic;color:#928374;">
+</span><span style="font-style:italic;color:#928374;">    This time, the rows/columns are `e x y z` and the meaning of the diagrams
+</span><span style="font-style:italic;color:#928374;">    is no longer the traditional vector calculus indicated by the notation.
+</span><span style="font-style:italic;color:#928374;">    (Strictly, I should write another function that uses different notation but
+</span><span style="font-style:italic;color:#928374;">     I&#39;m not sure what to use yet / if this is at all useful!)
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        </span><span style="color:#fdf4c1;">sign_distribution(cfg</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">ar.cfg)
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">maxwell_is_maintained</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    Maxwell&#39;s Equations should have the correct or inverted signs. The sign
+</span><span style="font-style:italic;color:#928374;">    of vector, trivector, pivot, hedgehog and quedgehog terms are unknown
+</span><span style="font-style:italic;color:#928374;">    as of now.
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    </span><span style="font-style:italic;color:#928374;"># These are the signs of the relevant components, computed using division
+</span><span>    </span><span style="font-style:italic;color:#928374;"># into and i0 using the following code:
+</span><span>    </span><span style="font-style:italic;color:#928374;"># ------------------------------------------------------------------------
+</span><span>    </span><span style="font-style:italic;color:#928374;"># Dg = Dmu(G)
+</span><span>    </span><span style="font-style:italic;color:#928374;"># MAXWELL = [
+</span><span>    </span><span style="font-style:italic;color:#928374;">#     [
+</span><span>    </span><span style="font-style:italic;color:#928374;">#         k.sign
+</span><span>    </span><span style="font-style:italic;color:#928374;">#         for k in sorted(Dg[blade], key=lambda k: k._component_partials)
+</span><span>    </span><span style="font-style:italic;color:#928374;">#         if k._components[0].val not in [&quot;p&quot;, &quot;0123&quot;]
+</span><span>    </span><span style="font-style:italic;color:#928374;">#     ]
+</span><span>    </span><span style="font-style:italic;color:#928374;">#     for blade in &quot;123 1 2 3 0 023 031 012&quot;.split()
+</span><span>    </span><span style="font-style:italic;color:#928374;"># ]
+</span><span>    </span><span style="font-style:italic;color:#928374;"># NEG_MAXWELL = [
+</span><span>    </span><span style="font-style:italic;color:#928374;">#     [
+</span><span>    </span><span style="font-style:italic;color:#928374;">#         k.sign * -1
+</span><span>    </span><span style="font-style:italic;color:#928374;">#         for k in sorted(Dg[blade], key=lambda k: k._component_partials)
+</span><span>    </span><span style="font-style:italic;color:#928374;">#         if k._components[0].val not in [&quot;p&quot;, &quot;0123&quot;]
+</span><span>    </span><span style="font-style:italic;color:#928374;">#     ]
+</span><span>    </span><span style="font-style:italic;color:#928374;">#     for blade in &quot;123 1 2 3 0 023 031 012&quot;.split()
+</span><span>    </span><span style="font-style:italic;color:#928374;"># ]
+</span><span>    </span><span style="color:#fdf4c1;">MAXWELL </span><span style="color:#fe8019;">= </span><span>[
+</span><span>        [</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>],
+</span><span>    ]
+</span><span>    </span><span style="color:#fdf4c1;">NEG_MAXWELL </span><span style="color:#fe8019;">= </span><span>[
+</span><span>        [</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>],
+</span><span>        [</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>],
+</span><span>    ]
+</span><span>
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        XiG </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;{</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">}&quot; </span><span style="color:#fe8019;">% </span><span style="color:#b8bb26;">&quot; &quot;</span><span style="color:#fdf4c1;">.join(ar.allowed)
+</span><span>        Dg </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;&lt;0 1 2 3&gt; </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">XiG)
+</span><span>
+</span><span>        </span><span style="font-style:italic;color:#928374;"># Ignoring the sign of pivot terms as they are not governed by maxwell
+</span><span>        maxwell_signs </span><span style="color:#fe8019;">= </span><span>[
+</span><span>            [
+</span><span>                k.sign
+</span><span>                </span><span style="color:#fa5c4b;">for </span><span>k </span><span style="color:#fa5c4b;">in </span><span style="color:#fabd2f;">sorted</span><span style="color:#fdf4c1;">(Dg[blade], key</span><span style="color:#fe8019;">=</span><span style="color:#fa5c4b;">lambda </span><span style="color:#fdf4c1;">k: k._component_partials)
+</span><span>                </span><span style="color:#fa5c4b;">if </span><span>k._components[</span><span style="color:#d3869b;">0</span><span>].val </span><span style="color:#fe8019;">not in </span><span>[</span><span style="color:#b8bb26;">&quot;p&quot;</span><span>, ar.cfg.allowed[</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">4</span><span>]]
+</span><span>            ]
+</span><span>            </span><span style="color:#fa5c4b;">for </span><span>blade </span><span style="color:#fa5c4b;">in </span><span>[</span><span style="color:#b8bb26;">&quot;0&quot;</span><span>, </span><span style="color:#b8bb26;">&quot;1&quot;</span><span>, </span><span style="color:#b8bb26;">&quot;2&quot;</span><span>, </span><span style="color:#b8bb26;">&quot;3&quot;</span><span>, </span><span style="color:#b8bb26;">&quot;123&quot;</span><span>, </span><span style="color:#b8bb26;">&quot;023&quot;</span><span>, </span><span style="color:#b8bb26;">&quot;031&quot;</span><span>, </span><span style="color:#b8bb26;">&quot;012&quot;</span><span>]
+</span><span>        ]
+</span><span>
+</span><span>        </span><span style="color:#fa5c4b;">if </span><span>maxwell_signs </span><span style="color:#fe8019;">== </span><span style="color:#fdf4c1;">MAXWELL</span><span>:
+</span><span>            </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;Gives conventional Maxwell&quot;</span><span style="color:#fdf4c1;">)
+</span><span>        </span><span style="color:#fa5c4b;">elif </span><span>maxwell_signs </span><span style="color:#fe8019;">== </span><span style="color:#fdf4c1;">NEG_MAXWELL</span><span>:
+</span><span>            </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;Gives inverted Maxwell&quot;</span><span style="color:#fdf4c1;">)
+</span><span>        </span><span style="color:#fa5c4b;">else</span><span>:
+</span><span>            </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;Does not give Maxwell&quot;</span><span style="color:#fdf4c1;">)
+</span><span>
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(Dg)
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">FF_dagger_force_equation</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    F F_dagger style products should exhibit cancelation and lead to force
+</span><span style="font-style:italic;color:#928374;">    equations.
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        F </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;{ 23 31 12 01 02 03 }&quot;</span><span style="color:#fdf4c1;">)
+</span><span>        res </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;F F!&quot;</span><span style="color:#fdf4c1;">)
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;F = </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">\n&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">F)
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;F_dagger = </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">\n&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">dagger(F, cfg</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">ar.cfg))
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;F F_dagger = </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">res)
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">GG_dagger_force_equation</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    G G_dagger style products should exhibit cancelation and lead to force
+</span><span style="font-style:italic;color:#928374;">    equations.
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        G </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;{</span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">}&quot; </span><span style="color:#fe8019;">% </span><span style="color:#b8bb26;">&quot; &quot;</span><span style="color:#fdf4c1;">.join(ar.cfg.allowed))
+</span><span>        res </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;G G!&quot;</span><span style="color:#fdf4c1;">)
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;G = </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">\n&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">G)
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;G_dagger = </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">\n&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">dagger(G, cfg</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">ar.cfg))
+</span><span>        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;G G_dagger = </span><span style="color:#fdf4c1;">%s</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">% </span><span style="color:#fdf4c1;">res)
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">group_commutator_full</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    Compute the group commutator [a, b] = (a b a^-1 b^-1) for each combination
+</span><span style="font-style:italic;color:#928374;">    of a and b in the algebra.
+</span><span style="font-style:italic;color:#928374;">
+</span><span style="font-style:italic;color:#928374;">    [a, b] =  αp  --&gt; □
+</span><span style="font-style:italic;color:#928374;">    [a, b] = -αp  --&gt; ■
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        </span><span style="color:#fdf4c1;">sign_cayley(commutator, cfg</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">ar.cfg)
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">group_commutator_distribution</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    This is the same idea as above, combined with the sign distribution format
+</span><span style="font-style:italic;color:#928374;">    from before that looks at vector calculus groupings.
+</span><span style="font-style:italic;color:#928374;">
+</span><span style="font-style:italic;color:#928374;">    [a, b] =  αp  --&gt; □
+</span><span style="font-style:italic;color:#928374;">    [a, b] = -αp  --&gt; ■
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        </span><span style="color:#fdf4c1;">sign_distribution(commutator, cfg</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">ar.cfg)
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">FF_dagger_signs</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    Sign distributions for FF! force equations
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        </span><span style="color:#fa5c4b;">for </span><span>alpha, terms </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">groupby(ar(</span><span style="color:#b8bb26;">&quot;F F!&quot;</span><span style="color:#fdf4c1;">), </span><span style="color:#fa5c4b;">lambda </span><span style="color:#fdf4c1;">t: t._alpha)</span><span>:
+</span><span>            signs </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot; &quot;</span><span style="color:#fdf4c1;">.join([</span><span style="color:#b8bb26;">&quot;□&quot; </span><span style="color:#fa5c4b;">if </span><span style="color:#fdf4c1;">t._sign </span><span style="color:#fe8019;">== -</span><span style="color:#d3869b;">1 </span><span style="color:#fa5c4b;">else </span><span style="color:#b8bb26;">&quot;■&quot; </span><span style="color:#fa5c4b;">for </span><span style="color:#fdf4c1;">t </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">terms])
+</span><span>            </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#fa5c4b;">f</span><span style="color:#b8bb26;">&quot;</span><span style="color:#fdf4c1;">{</span><span style="color:#fabd2f;">str</span><span style="color:#fdf4c1;">(alpha).ljust(</span><span style="color:#d3869b;">5</span><span style="color:#fdf4c1;">)} {signs}</span><span style="color:#b8bb26;">&quot;</span><span style="color:#fdf4c1;">)
+</span><span>
+</span><span>
+</span><span>@</span><span style="color:#fdf4c1;">compare_configs</span><span>()
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">split_sign</span><span>(</span><span style="color:#fdf4c1;">ctx</span><span>):
+</span><span>    </span><span style="font-style:italic;color:#928374;">&quot;&quot;&quot;
+</span><span style="font-style:italic;color:#928374;">    There are (at least) two sources of sign under the full product: ordering of
+</span><span style="font-style:italic;color:#928374;">    terms so that they can be contracted and the effect of the metric on contraction.
+</span><span style="font-style:italic;color:#928374;">    The sign due to ordering is independent of the metric but _not_ of the defined
+</span><span style="font-style:italic;color:#928374;">    positive orientations of each element.
+</span><span style="font-style:italic;color:#928374;">
+</span><span style="font-style:italic;color:#928374;">    In the output below:
+</span><span style="font-style:italic;color:#928374;">        cancellation negative = &#39;◢ &#39;
+</span><span style="font-style:italic;color:#928374;">        ordering negative     = &#39;◤ &#39;
+</span><span style="font-style:italic;color:#928374;">        both negative         = &#39;■ &#39;
+</span><span style="font-style:italic;color:#928374;">        both positive         = &#39;□ &#39;
+</span><span style="font-style:italic;color:#928374;">    &quot;&quot;&quot;
+</span><span>    neg_cancel </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;◢&quot;
+</span><span>    neg_pop </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;◤&quot;
+</span><span>    neg_both </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;■&quot;
+</span><span>    pos_both </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;□&quot;
+</span><span>    signs </span><span style="color:#fe8019;">= </span><span>{
+</span><span>        (</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>): pos_both,
+</span><span>        (</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#d3869b;">1</span><span>): neg_cancel,
+</span><span>        (</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>): neg_pop,
+</span><span>        (</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>, </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span>): neg_both,
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#fa5c4b;">with </span><span>ctx </span><span style="color:#fa5c4b;">as </span><span>ar:
+</span><span>        G </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;G&quot;</span><span style="color:#fdf4c1;">)
+</span><span>        metric </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">dict</span><span style="color:#fdf4c1;">(</span><span style="color:#fabd2f;">zip</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot;0123&quot;</span><span style="color:#fdf4c1;">, ar.cfg.metric))
+</span><span>
+</span><span>        </span><span style="color:#fa5c4b;">for </span><span>i, left </span><span style="color:#fa5c4b;">in </span><span style="color:#fabd2f;">enumerate</span><span style="color:#fdf4c1;">(G)</span><span>:
+</span><span>            </span><span style="color:#fa5c4b;">if </span><span>i </span><span style="color:#fe8019;">% </span><span style="color:#d3869b;">4 </span><span style="color:#fe8019;">== </span><span style="color:#d3869b;">0</span><span>:
+</span><span>                </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">()
+</span><span>
+</span><span>            </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#fabd2f;">repr</span><span style="color:#fdf4c1;">(left.alpha).ljust(</span><span style="color:#d3869b;">7</span><span style="color:#fdf4c1;">), end</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot; &quot;</span><span style="color:#fdf4c1;">)
+</span><span>
+</span><span>            </span><span style="color:#fa5c4b;">for </span><span>j, right </span><span style="color:#fa5c4b;">in </span><span style="color:#fabd2f;">enumerate</span><span style="color:#fdf4c1;">(G)</span><span>:
+</span><span>                cancelled_indices </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">set</span><span style="color:#fdf4c1;">(left.index).intersection(</span><span style="color:#fabd2f;">set</span><span style="color:#fdf4c1;">(right.index))
+</span><span>                </span><span style="color:#fa5c4b;">if </span><span style="color:#fabd2f;">len</span><span style="color:#fdf4c1;">(cancelled_indices) </span><span style="color:#fe8019;">&gt; </span><span style="color:#d3869b;">0</span><span>:
+</span><span>                    c_sign </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">reduce</span><span style="color:#fdf4c1;">(mul, (metric.get(i, </span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1;">) </span><span style="color:#fa5c4b;">for </span><span style="color:#fdf4c1;">i </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">cancelled_indices))
+</span><span>                </span><span style="color:#fa5c4b;">else</span><span>:
+</span><span>                    c_sign </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1
+</span><span>
+</span><span>                p_sign </span><span style="color:#fe8019;">= </span><span>c_sign </span><span style="color:#fe8019;">/ </span><span style="color:#fdf4c1;">ar(</span><span style="color:#b8bb26;">&quot;left ^ right&quot;</span><span style="color:#fdf4c1;">)</span><span>.sign
+</span><span>                </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(signs[(p_sign, c_sign)], end</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot; &quot;</span><span style="color:#fdf4c1;">)
+</span><span>                </span><span style="color:#fa5c4b;">if </span><span>j </span><span style="color:#fe8019;">% </span><span style="color:#d3869b;">4 </span><span style="color:#fe8019;">== </span><span style="color:#d3869b;">3</span><span>:
+</span><span>                    </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#b8bb26;">&quot; &quot;</span><span style="color:#fdf4c1;">, end</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;&quot;</span><span style="color:#fdf4c1;">)
+</span><span>
+</span><span>            </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">()
+</span></code></pre>
+<h3 id="output">Output</h3>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>$ python3 comp_metric.py
+</span><span>
+</span><span>Computed using arpy version 0.3.7
+</span><span>
+</span><span>.: squaring_to_neg_alpha_p :.
+</span><span>=============================
+</span><span>
+</span><span>    One of the primary differences between metrics is in which elements
+</span><span>    square to -αp. This affects which elements support oscillations amongst
+</span><span>    other things.
+</span><span>
+</span><span>[+---]
+</span><span> αp:  αp, α0, α123, α01, α02, α03
+</span><span>-αp:  α23, α31, α12, α023, α031, α012, α1, α2, α3, α0123
+</span><span>
+</span><span>[-+++]
+</span><span> αp:  αp, α023, α031, α012, α1, α2, α3, α01, α02, α03
+</span><span>-αp:  α23, α31, α12, α0, α123, α0123
+</span><span>
+</span><span>
+</span><span>.: square_of_a_vector :.
+</span><span>========================
+</span><span>
+</span><span>    The square of a 4Vector should be an invariant scalar (== 0 for light).
+</span><span>
+</span><span>[+---]
+</span><span>v = {
+</span><span>  α₀   ( ξ₀ )
+</span><span>  α₁   ( ξ₁ )
+</span><span>  α₂   ( ξ₂ )
+</span><span>  α₃   ( ξ₃ )
+</span><span>}
+</span><span>
+</span><span>v² = {
+</span><span>  αₚ   ( ξ₀^2 - ξ₁^2 - ξ₂^2 - ξ₃^2 )
+</span><span>  α₂₃  ( ξ₂.ξ₃ - ξ₂.ξ₃ )
+</span><span>  α₃₁  ( - ξ₁.ξ₃ + ξ₁.ξ₃ )
+</span><span>  α₁₂  ( ξ₁.ξ₂ - ξ₁.ξ₂ )
+</span><span>  α₀₁  ( ξ₀.ξ₁ - ξ₀.ξ₁ )
+</span><span>  α₀₂  ( ξ₀.ξ₂ - ξ₀.ξ₂ )
+</span><span>  α₀₃  ( ξ₀.ξ₃ - ξ₀.ξ₃ )
+</span><span>}
+</span><span>
+</span><span>[-+++]
+</span><span>v = {
+</span><span>  α₀   ( ξ₀ )
+</span><span>  α₁   ( ξ₁ )
+</span><span>  α₂   ( ξ₂ )
+</span><span>  α₃   ( ξ₃ )
+</span><span>}
+</span><span>
+</span><span>v² = {
+</span><span>  αₚ   ( - ξ₀^2 + ξ₁^2 + ξ₂^2 + ξ₃^2 )
+</span><span>  α₂₃  ( ξ₂.ξ₃ - ξ₂.ξ₃ )
+</span><span>  α₃₁  ( - ξ₁.ξ₃ + ξ₁.ξ₃ )
+</span><span>  α₁₂  ( ξ₁.ξ₂ - ξ₁.ξ₂ )
+</span><span>  α₀₁  ( ξ₀.ξ₁ - ξ₀.ξ₁ )
+</span><span>  α₀₂  ( ξ₀.ξ₂ - ξ₀.ξ₂ )
+</span><span>  α₀₃  ( ξ₀.ξ₃ - ξ₀.ξ₃ )
+</span><span>}
+</span><span>
+</span><span>
+</span><span>.: handedness_under_product :.
+</span><span>==============================
+</span><span>
+</span><span>    The 3D handedness of each of the 3Vectors when forming products
+</span><span>    between the elements of the 3Vector. This is computed using:
+</span><span>        x y = z    --&gt; Right Handed
+</span><span>        x y = -z   --&gt; Left Handed
+</span><span>
+</span><span>[+---]
+</span><span>B:  RH
+</span><span>T:  RH
+</span><span>A:  RH
+</span><span>E:  LH
+</span><span>
+</span><span>[-+++]
+</span><span>B:  LH
+</span><span>T:  RH
+</span><span>A:  RH
+</span><span>E:  RH
+</span><span>
+</span><span>
+</span><span>.: handedness_under_rotation :.
+</span><span>===============================
+</span><span>
+</span><span>    The 3D handedness of each of the 3Vectors when forming products
+</span><span>    between the elements of the 3Vector and a space-space bivector.
+</span><span>        α23 y = z     --&gt; Right Handed
+</span><span>        α23 y = -z    --&gt; Left Handed
+</span><span>
+</span><span>[+---]
+</span><span>B:  RH
+</span><span>T:  RH
+</span><span>A:  RH
+</span><span>E:  RH
+</span><span>
+</span><span>[-+++]
+</span><span>B:  LH
+</span><span>T:  LH
+</span><span>A:  LH
+</span><span>E:  LH
+</span><span>
+</span><span>
+</span><span>.: full_handedness :.
+</span><span>=====================
+</span><span>
+</span><span>    Look at the handedness of all 3Vector interactions.
+</span><span>        x y = z   --&gt; Right Handed (□)
+</span><span>        x y = -z  --&gt; Left Handed  (■)
+</span><span>
+</span><span>[+---]
+</span><span>   B T A E
+</span><span>B  □ □ □ □
+</span><span>T  □ □ □ □
+</span><span>A  □ ■ □ ■
+</span><span>E  □ ■ □ ■
+</span><span>
+</span><span>[-+++]
+</span><span>   B T A E
+</span><span>B  ■ ■ ■ ■
+</span><span>T  ■ □ ■ □
+</span><span>A  ■ □ □ ■
+</span><span>E  ■ ■ □ □
+</span><span>
+</span><span>
+</span><span>.: zet_sign_distribution :.
+</span><span>===========================
+</span><span>
+</span><span>    The full sign Cayley table above can be broken down into five groups that
+</span><span>    always have a consistent sign:
+</span><span>
+</span><span>      ∂e |■ □ □ □|  ∂Ξ |□ ■ ■ ■|   ∇ |□ □ □ □|  ∇• |□ □ □ □|  ∇x |□ □ □ □|
+</span><span>         |□ □ □ □|     |□ □ □ □|     |■ □ □ □|     |□ ■ □ □|     |□ □ ■ ■|
+</span><span>         |□ □ □ □|     |□ □ □ □|     |■ □ □ □|     |□ □ ■ □|     |□ ■ □ ■|
+</span><span>         |□ □ □ □|     |□ □ □ □|     |■ □ □ □|     |□ □ □ ■|     |□ ■ ■ □|
+</span><span>
+</span><span>    (Note that, in the case of the curl (∇x), □ represents a Right Handed
+</span><span>     set and ■ a Left Handed set.)
+</span><span>    In the following diagrams, the rows and columns are the 3Vector(+extra)
+</span><span>    sets: `B T A E`.
+</span><span>
+</span><span>
+</span><span>[+---]
+</span><span> ∂e |□ □ □ □|  ∂Ξ |□ □ □ □|   ∇ |□ □ ■ ■|  ∇• |■ ■ □ □|  ∇x |□ □ □ □|
+</span><span>    |□ □ □ □|     |□ □ □ □|     |□ □ ■ ■|     |■ ■ □ □|     |□ □ □ □|
+</span><span>    |□ ■ □ ■|     |■ □ ■ □|     |□ ■ ■ □|     |□ ■ ■ □|     |□ ■ □ ■|
+</span><span>    |□ ■ □ ■|     |■ □ ■ □|     |□ ■ ■ □|     |□ ■ ■ □|     |□ ■ □ ■|
+</span><span>
+</span><span>[-+++]
+</span><span> ∂e |□ □ □ □|  ∂Ξ |□ □ □ □|   ∇ |□ □ ■ ■|  ∇• |■ ■ □ □|  ∇x |■ ■ ■ ■|
+</span><span>    |□ ■ □ ■|     |□ ■ □ ■|     |□ ■ ■ □|     |■ □ □ ■|     |■ □ ■ □|
+</span><span>    |□ ■ ■ □|     |■ □ □ ■|     |□ ■ □ ■|     |□ ■ □ ■|     |■ □ □ ■|
+</span><span>    |□ □ ■ ■|     |■ ■ □ □|     |□ □ □ □|     |□ □ □ □|     |■ ■ □ □|
+</span><span>
+</span><span>
+</span><span>.: exyz_sign_distribution :.
+</span><span>============================
+</span><span>
+</span><span>    When the grouping / ordering of the components is changed to group
+</span><span>    by exyz first and then by 3Vector, the sign distribution may shed
+</span><span>    some light on the sign distribution of the algebra.
+</span><span>
+</span><span>    This time, the rows/columns are `e x y z` and the meaning of the diagrams
+</span><span>    is no longer the traditional vector calculus indicated by the notation.
+</span><span>    (Strictly, I should write another function that uses different notation but
+</span><span>     I&#39;m not sure what to use yet / if this is at all useful!)
+</span><span>
+</span><span>[+---]
+</span><span> ∂e |□ □ □ □|  ∂Ξ |□ □ □ □|   ∇ |□ □ □ □|  ∇• |□ □ □ □|  ∇x |■ □ □ □|
+</span><span>    |□ ■ □ ■|     |□ ■ □ ■|     |□ ■ □ ■|     |□ ■ □ ■|     |■ ■ ■ □|
+</span><span>    |□ ■ ■ □|     |□ ■ ■ □|     |□ ■ ■ □|     |□ ■ ■ □|     |■ □ ■ ■|
+</span><span>    |□ □ ■ ■|     |□ □ ■ ■|     |□ □ ■ ■|     |□ □ ■ ■|     |■ ■ □ ■|
+</span><span>
+</span><span>[-+++]
+</span><span> ∂e |□ □ □ □|  ∂Ξ |□ □ □ □|   ∇ |□ □ □ □|  ∇• |■ ■ ■ ■|  ∇x |□ ■ ■ ■|
+</span><span>    |□ ■ ■ □|     |□ ■ ■ □|     |□ ■ ■ □|     |■ □ □ ■|     |□ □ ■ □|
+</span><span>    |□ □ ■ ■|     |□ □ ■ ■|     |□ □ ■ ■|     |■ ■ □ □|     |□ □ □ ■|
+</span><span>    |□ ■ □ ■|     |□ ■ □ ■|     |□ ■ □ ■|     |■ □ ■ □|     |□ ■ □ □|
+</span><span>
+</span><span>
+</span><span>.: maxwell_is_maintained :.
+</span><span>===========================
+</span><span>
+</span><span>    Maxwell&#39;s Equations should have the correct or inverted signs. The sign
+</span><span>    of vector, trivector, pivot, hedgehog and quedgehog terms are unknown
+</span><span>    as of now.
+</span><span>
+</span><span>[+---]
+</span><span>Gives conventional Maxwell
+</span><span>{
+</span><span>  αₚ   ( ∂₀ξ₀ + ∂₁ξ₁ + ∂₂ξ₂ + ∂₃ξ₃ )
+</span><span>  α₂₃  ( ∂₀ξ₀₂₃ + ∂₁ξ₁₂₃ + ∂₃ξ₂ - ∂₂ξ₃ )
+</span><span>  α₃₁  ( ∂₀ξ₀₃₁ + ∂₂ξ₁₂₃ - ∂₃ξ₁ + ∂₁ξ₃ )
+</span><span>  α₁₂  ( ∂₀ξ₀₁₂ + ∂₃ξ₁₂₃ + ∂₂ξ₁ - ∂₁ξ₂ )
+</span><span>  α₀   ( ∂₀ξₚ - ∂₁ξ₀₁ - ∂₂ξ₀₂ - ∂₃ξ₀₃ )
+</span><span>  α₀₂₃ ( ∂₀ξ₂₃ - ∂₁ξ₀₁₂₃ - ∂₃ξ₀₂ + ∂₂ξ₀₃ )
+</span><span>  α₀₃₁ ( ∂₀ξ₃₁ - ∂₂ξ₀₁₂₃ + ∂₃ξ₀₁ - ∂₁ξ₀₃ )
+</span><span>  α₀₁₂ ( ∂₀ξ₁₂ - ∂₃ξ₀₁₂₃ - ∂₂ξ₀₁ + ∂₁ξ₀₂ )
+</span><span>  α₁₂₃ ( - ∂₁ξ₂₃ - ∂₂ξ₃₁ - ∂₃ξ₁₂ + ∂₀ξ₀₁₂₃ )
+</span><span>  α₁   ( - ∂₁ξₚ + ∂₃ξ₃₁ - ∂₂ξ₁₂ + ∂₀ξ₀₁ )
+</span><span>  α₂   ( - ∂₂ξₚ - ∂₃ξ₂₃ + ∂₁ξ₁₂ + ∂₀ξ₀₂ )
+</span><span>  α₃   ( - ∂₃ξₚ + ∂₂ξ₂₃ - ∂₁ξ₃₁ + ∂₀ξ₀₃ )
+</span><span>  α₀₁₂₃( ∂₁ξ₀₂₃ + ∂₂ξ₀₃₁ + ∂₃ξ₀₁₂ + ∂₀ξ₁₂₃ )
+</span><span>  α₀₁  ( ∂₁ξ₀ - ∂₃ξ₀₃₁ + ∂₂ξ₀₁₂ + ∂₀ξ₁ )
+</span><span>  α₀₂  ( ∂₂ξ₀ + ∂₃ξ₀₂₃ - ∂₁ξ₀₁₂ + ∂₀ξ₂ )
+</span><span>  α₀₃  ( ∂₃ξ₀ - ∂₂ξ₀₂₃ + ∂₁ξ₀₃₁ + ∂₀ξ₃ )
+</span><span>}
+</span><span>
+</span><span>[-+++]
+</span><span>Gives inverted Maxwell
+</span><span>{
+</span><span>  αₚ   ( ∂₀ξ₀ + ∂₁ξ₁ + ∂₂ξ₂ + ∂₃ξ₃ )
+</span><span>  α₂₃  ( ∂₀ξ₀₂₃ + ∂₁ξ₁₂₃ + ∂₃ξ₂ - ∂₂ξ₃ )
+</span><span>  α₃₁  ( ∂₀ξ₀₃₁ + ∂₂ξ₁₂₃ - ∂₃ξ₁ + ∂₁ξ₃ )
+</span><span>  α₁₂  ( ∂₀ξ₀₁₂ + ∂₃ξ₁₂₃ + ∂₂ξ₁ - ∂₁ξ₂ )
+</span><span>  α₀   ( - ∂₀ξₚ + ∂₁ξ₀₁ + ∂₂ξ₀₂ + ∂₃ξ₀₃ )
+</span><span>  α₀₂₃ ( - ∂₀ξ₂₃ + ∂₁ξ₀₁₂₃ + ∂₃ξ₀₂ - ∂₂ξ₀₃ )
+</span><span>  α₀₃₁ ( - ∂₀ξ₃₁ + ∂₂ξ₀₁₂₃ - ∂₃ξ₀₁ + ∂₁ξ₀₃ )
+</span><span>  α₀₁₂ ( - ∂₀ξ₁₂ + ∂₃ξ₀₁₂₃ + ∂₂ξ₀₁ - ∂₁ξ₀₂ )
+</span><span>  α₁₂₃ ( ∂₁ξ₂₃ + ∂₂ξ₃₁ + ∂₃ξ₁₂ - ∂₀ξ₀₁₂₃ )
+</span><span>  α₁   ( ∂₁ξₚ - ∂₃ξ₃₁ + ∂₂ξ₁₂ - ∂₀ξ₀₁ )
+</span><span>  α₂   ( ∂₂ξₚ + ∂₃ξ₂₃ - ∂₁ξ₁₂ - ∂₀ξ₀₂ )
+</span><span>  α₃   ( ∂₃ξₚ - ∂₂ξ₂₃ + ∂₁ξ₃₁ - ∂₀ξ₀₃ )
+</span><span>  α₀₁₂₃( ∂₁ξ₀₂₃ + ∂₂ξ₀₃₁ + ∂₃ξ₀₁₂ + ∂₀ξ₁₂₃ )
+</span><span>  α₀₁  ( ∂₁ξ₀ - ∂₃ξ₀₃₁ + ∂₂ξ₀₁₂ + ∂₀ξ₁ )
+</span><span>  α₀₂  ( ∂₂ξ₀ + ∂₃ξ₀₂₃ - ∂₁ξ₀₁₂ + ∂₀ξ₂ )
+</span><span>  α₀₃  ( ∂₃ξ₀ - ∂₂ξ₀₂₃ + ∂₁ξ₀₃₁ + ∂₀ξ₃ )
+</span><span>}
+</span><span>
+</span><span>
+</span><span>.: FF_dagger_force_equation :.
+</span><span>==============================
+</span><span>
+</span><span>    F F_dagger style products should exhibit cancelation and lead to force
+</span><span>    equations.
+</span><span>
+</span><span>[+---]
+</span><span>F = {
+</span><span>  α₂₃  ( ξ₂₃ )
+</span><span>  α₃₁  ( ξ₃₁ )
+</span><span>  α₁₂  ( ξ₁₂ )
+</span><span>  α₀₁  ( ξ₀₁ )
+</span><span>  α₀₂  ( ξ₀₂ )
+</span><span>  α₀₃  ( ξ₀₃ )
+</span><span>}
+</span><span>
+</span><span>F_dagger = {
+</span><span>  α₂₃  ( - ξ₂₃ )
+</span><span>  α₃₁  ( - ξ₃₁ )
+</span><span>  α₁₂  ( - ξ₁₂ )
+</span><span>  α₀₁  ( ξ₀₁ )
+</span><span>  α₀₂  ( ξ₀₂ )
+</span><span>  α₀₃  ( ξ₀₃ )
+</span><span>}
+</span><span>
+</span><span>F F_dagger = {
+</span><span>  αₚ   ( - ξ₂₃^2 - ξ₃₁^2 - ξ₁₂^2 + ξ₀₁^2 + ξ₀₂^2 + ξ₀₃^2 )
+</span><span>  α₂₃  ( - ξ₃₁.ξ₁₂ + ξ₃₁.ξ₁₂ + ξ₀₂.ξ₀₃ - ξ₀₂.ξ₀₃ )
+</span><span>  α₃₁  ( ξ₂₃.ξ₁₂ - ξ₂₃.ξ₁₂ - ξ₀₁.ξ₀₃ + ξ₀₁.ξ₀₃ )
+</span><span>  α₁₂  ( - ξ₂₃.ξ₃₁ + ξ₂₃.ξ₃₁ + ξ₀₁.ξ₀₂ - ξ₀₁.ξ₀₂ )
+</span><span>  α₀₁₂₃( - 2ξ₂₃.ξ₀₁ - 2ξ₃₁.ξ₀₂ - 2ξ₁₂.ξ₀₃ )
+</span><span>  α₀₁  ( ξ₃₁.ξ₀₃ - ξ₃₁.ξ₀₃ - ξ₁₂.ξ₀₂ + ξ₁₂.ξ₀₂ )
+</span><span>  α₀₂  ( - ξ₂₃.ξ₀₃ + ξ₂₃.ξ₀₃ + ξ₁₂.ξ₀₁ - ξ₁₂.ξ₀₁ )
+</span><span>  α₀₃  ( ξ₂₃.ξ₀₂ - ξ₂₃.ξ₀₂ - ξ₃₁.ξ₀₁ + ξ₃₁.ξ₀₁ )
+</span><span>}
+</span><span>
+</span><span>[-+++]
+</span><span>F = {
+</span><span>  α₂₃  ( ξ₂₃ )
+</span><span>  α₃₁  ( ξ₃₁ )
+</span><span>  α₁₂  ( ξ₁₂ )
+</span><span>  α₀₁  ( ξ₀₁ )
+</span><span>  α₀₂  ( ξ₀₂ )
+</span><span>  α₀₃  ( ξ₀₃ )
+</span><span>}
+</span><span>
+</span><span>F_dagger = {
+</span><span>  α₂₃  ( - ξ₂₃ )
+</span><span>  α₃₁  ( - ξ₃₁ )
+</span><span>  α₁₂  ( - ξ₁₂ )
+</span><span>  α₀₁  ( ξ₀₁ )
+</span><span>  α₀₂  ( ξ₀₂ )
+</span><span>  α₀₃  ( ξ₀₃ )
+</span><span>}
+</span><span>
+</span><span>F F_dagger = {
+</span><span>  αₚ   ( - ξ₂₃^2 - ξ₃₁^2 - ξ₁₂^2 + ξ₀₁^2 + ξ₀₂^2 + ξ₀₃^2 )
+</span><span>  α₂₃  ( ξ₃₁.ξ₁₂ - ξ₃₁.ξ₁₂ - ξ₀₂.ξ₀₃ + ξ₀₂.ξ₀₃ )
+</span><span>  α₃₁  ( - ξ₂₃.ξ₁₂ + ξ₂₃.ξ₁₂ + ξ₀₁.ξ₀₃ - ξ₀₁.ξ₀₃ )
+</span><span>  α₁₂  ( ξ₂₃.ξ₃₁ - ξ₂₃.ξ₃₁ - ξ₀₁.ξ₀₂ + ξ₀₁.ξ₀₂ )
+</span><span>  α₀₁₂₃( - 2ξ₂₃.ξ₀₁ - 2ξ₃₁.ξ₀₂ - 2ξ₁₂.ξ₀₃ )
+</span><span>  α₀₁  ( - ξ₃₁.ξ₀₃ + ξ₃₁.ξ₀₃ + ξ₁₂.ξ₀₂ - ξ₁₂.ξ₀₂ )
+</span><span>  α₀₂  ( ξ₂₃.ξ₀₃ - ξ₂₃.ξ₀₃ - ξ₁₂.ξ₀₁ + ξ₁₂.ξ₀₁ )
+</span><span>  α₀₃  ( - ξ₂₃.ξ₀₂ + ξ₂₃.ξ₀₂ + ξ₃₁.ξ₀₁ - ξ₃₁.ξ₀₁ )
+</span><span>}
+</span><span>
+</span><span>
+</span><span>.: GG_dagger_force_equation :.
+</span><span>==============================
+</span><span>
+</span><span>    G G_dagger style products should exhibit cancelation and lead to force
+</span><span>    equations.
+</span><span>
+</span><span>[+---]
+</span><span>G = {
+</span><span>  αₚ   ( ξₚ )
+</span><span>  α₂₃  ( ξ₂₃ )
+</span><span>  α₃₁  ( ξ₃₁ )
+</span><span>  α₁₂  ( ξ₁₂ )
+</span><span>  α₀   ( ξ₀ )
+</span><span>  α₀₂₃ ( ξ₀₂₃ )
+</span><span>  α₀₃₁ ( ξ₀₃₁ )
+</span><span>  α₀₁₂ ( ξ₀₁₂ )
+</span><span>  α₁₂₃ ( ξ₁₂₃ )
+</span><span>  α₁   ( ξ₁ )
+</span><span>  α₂   ( ξ₂ )
+</span><span>  α₃   ( ξ₃ )
+</span><span>  α₀₁₂₃( ξ₀₁₂₃ )
+</span><span>  α₀₁  ( ξ₀₁ )
+</span><span>  α₀₂  ( ξ₀₂ )
+</span><span>  α₀₃  ( ξ₀₃ )
+</span><span>}
+</span><span>
+</span><span>G_dagger = {
+</span><span>  αₚ   ( ξₚ )
+</span><span>  α₂₃  ( - ξ₂₃ )
+</span><span>  α₃₁  ( - ξ₃₁ )
+</span><span>  α₁₂  ( - ξ₁₂ )
+</span><span>  α₀   ( ξ₀ )
+</span><span>  α₀₂₃ ( - ξ₀₂₃ )
+</span><span>  α₀₃₁ ( - ξ₀₃₁ )
+</span><span>  α₀₁₂ ( - ξ₀₁₂ )
+</span><span>  α₁₂₃ ( ξ₁₂₃ )
+</span><span>  α₁   ( - ξ₁ )
+</span><span>  α₂   ( - ξ₂ )
+</span><span>  α₃   ( - ξ₃ )
+</span><span>  α₀₁₂₃( - ξ₀₁₂₃ )
+</span><span>  α₀₁  ( ξ₀₁ )
+</span><span>  α₀₂  ( ξ₀₂ )
+</span><span>  α₀₃  ( ξ₀₃ )
+</span><span>}
+</span><span>
+</span><span>G G_dagger = {
+</span><span>  αₚ   ( ξₚ^2 - ξ₂₃^2 - ξ₃₁^2 - ξ₁₂^2 + ξ₀^2 - ξ₀₂₃^2 - ξ₀₃₁^2 - ξ₀₁₂^2 + ξ₁₂₃^2 - ξ₁^2 - ξ₂^2 - ξ₃^2 - ξ₀₁₂₃^2 + ξ₀₁^2 + ξ₀₂^2 + ξ₀₃^2 )
+</span><span>  α₂₃  ( - 2ξₚ.ξ₂₃ - ξ₃₁.ξ₁₂ + ξ₃₁.ξ₁₂ - 2ξ₀.ξ₀₂₃ - ξ₀₃₁.ξ₀₁₂ + ξ₀₃₁.ξ₀₁₂ + 2ξ₁₂₃.ξ₁ - ξ₂.ξ₃ + ξ₂.ξ₃ - 2ξ₀₁₂₃.ξ₀₁ + ξ₀₂.ξ₀₃ - ξ₀₂.ξ₀₃ )
+</span><span>  α₃₁  ( - 2ξₚ.ξ₃₁ + ξ₂₃.ξ₁₂ - ξ₂₃.ξ₁₂ - 2ξ₀.ξ₀₃₁ + ξ₀₂₃.ξ₀₁₂ - ξ₀₂₃.ξ₀₁₂ + 2ξ₁₂₃.ξ₂ + ξ₁.ξ₃ - ξ₁.ξ₃ - 2ξ₀₁₂₃.ξ₀₂ - ξ₀₁.ξ₀₃ + ξ₀₁.ξ₀₃ )
+</span><span>  α₁₂  ( - 2ξₚ.ξ₁₂ - ξ₂₃.ξ₃₁ + ξ₂₃.ξ₃₁ - 2ξ₀.ξ₀₁₂ - ξ₀₂₃.ξ₀₃₁ + ξ₀₂₃.ξ₀₃₁ + 2ξ₁₂₃.ξ₃ - ξ₁.ξ₂ + ξ₁.ξ₂ - 2ξ₀₁₂₃.ξ₀₃ + ξ₀₁.ξ₀₂ - ξ₀₁.ξ₀₂ )
+</span><span>  α₀   ( 2ξₚ.ξ₀ - 2ξ₂₃.ξ₀₂₃ - 2ξ₃₁.ξ₀₃₁ - 2ξ₁₂.ξ₀₁₂ - ξ₁₂₃.ξ₀₁₂₃ + ξ₁₂₃.ξ₀₁₂₃ + ξ₁.ξ₀₁ - ξ₁.ξ₀₁ + ξ₂.ξ₀₂ - ξ₂.ξ₀₂ + ξ₃.ξ₀₃ - ξ₃.ξ₀₃ )
+</span><span>  α₀₂₃ ( - 2ξₚ.ξ₀₂₃ - 2ξ₂₃.ξ₀ - ξ₃₁.ξ₀₁₂ + ξ₃₁.ξ₀₁₂ + ξ₁₂.ξ₀₃₁ - ξ₁₂.ξ₀₃₁ - ξ₁₂₃.ξ₀₁ + ξ₁₂₃.ξ₀₁ - ξ₁.ξ₀₁₂₃ + ξ₁.ξ₀₁₂₃ + 2ξ₂.ξ₀₃ - 2ξ₃.ξ₀₂ )
+</span><span>  α₀₃₁ ( - 2ξₚ.ξ₀₃₁ + ξ₂₃.ξ₀₁₂ - ξ₂₃.ξ₀₁₂ - 2ξ₃₁.ξ₀ - ξ₁₂.ξ₀₂₃ + ξ₁₂.ξ₀₂₃ - ξ₁₂₃.ξ₀₂ + ξ₁₂₃.ξ₀₂ - 2ξ₁.ξ₀₃ - ξ₂.ξ₀₁₂₃ + ξ₂.ξ₀₁₂₃ + 2ξ₃.ξ₀₁ )
+</span><span>  α₀₁₂ ( - 2ξₚ.ξ₀₁₂ - ξ₂₃.ξ₀₃₁ + ξ₂₃.ξ₀₃₁ + ξ₃₁.ξ₀₂₃ - ξ₃₁.ξ₀₂₃ - 2ξ₁₂.ξ₀ - ξ₁₂₃.ξ₀₃ + ξ₁₂₃.ξ₀₃ + 2ξ₁.ξ₀₂ - 2ξ₂.ξ₀₁ - ξ₃.ξ₀₁₂₃ + ξ₃.ξ₀₁₂₃ )
+</span><span>  α₁₂₃ ( 2ξₚ.ξ₁₂₃ + 2ξ₂₃.ξ₁ + 2ξ₃₁.ξ₂ + 2ξ₁₂.ξ₃ + ξ₀.ξ₀₁₂₃ - ξ₀.ξ₀₁₂₃ + ξ₀₂₃.ξ₀₁ - ξ₀₂₃.ξ₀₁ + ξ₀₃₁.ξ₀₂ - ξ₀₃₁.ξ₀₂ + ξ₀₁₂.ξ₀₃ - ξ₀₁₂.ξ₀₃ )
+</span><span>  α₁   ( - 2ξₚ.ξ₁ + 2ξ₂₃.ξ₁₂₃ - ξ₃₁.ξ₃ + ξ₃₁.ξ₃ + ξ₁₂.ξ₂ - ξ₁₂.ξ₂ - ξ₀.ξ₀₁ + ξ₀.ξ₀₁ + ξ₀₂₃.ξ₀₁₂₃ - ξ₀₂₃.ξ₀₁₂₃ - 2ξ₀₃₁.ξ₀₃ + 2ξ₀₁₂.ξ₀₂ )
+</span><span>  α₂   ( - 2ξₚ.ξ₂ + ξ₂₃.ξ₃ - ξ₂₃.ξ₃ + 2ξ₃₁.ξ₁₂₃ - ξ₁₂.ξ₁ + ξ₁₂.ξ₁ - ξ₀.ξ₀₂ + ξ₀.ξ₀₂ + 2ξ₀₂₃.ξ₀₃ + ξ₀₃₁.ξ₀₁₂₃ - ξ₀₃₁.ξ₀₁₂₃ - 2ξ₀₁₂.ξ₀₁ )
+</span><span>  α₃   ( - 2ξₚ.ξ₃ - ξ₂₃.ξ₂ + ξ₂₃.ξ₂ + ξ₃₁.ξ₁ - ξ₃₁.ξ₁ + 2ξ₁₂.ξ₁₂₃ - ξ₀.ξ₀₃ + ξ₀.ξ₀₃ - 2ξ₀₂₃.ξ₀₂ + 2ξ₀₃₁.ξ₀₁ + ξ₀₁₂.ξ₀₁₂₃ - ξ₀₁₂.ξ₀₁₂₃ )
+</span><span>  α₀₁₂₃( - 2ξₚ.ξ₀₁₂₃ - 2ξ₂₃.ξ₀₁ - 2ξ₃₁.ξ₀₂ - 2ξ₁₂.ξ₀₃ - ξ₀.ξ₁₂₃ + ξ₀.ξ₁₂₃ - ξ₀₂₃.ξ₁ + ξ₀₂₃.ξ₁ - ξ₀₃₁.ξ₂ + ξ₀₃₁.ξ₂ - ξ₀₁₂.ξ₃ + ξ₀₁₂.ξ₃ )
+</span><span>  α₀₁  ( 2ξₚ.ξ₀₁ - 2ξ₂₃.ξ₀₁₂₃ + ξ₃₁.ξ₀₃ - ξ₃₁.ξ₀₃ - ξ₁₂.ξ₀₂ + ξ₁₂.ξ₀₂ + ξ₀.ξ₁ - ξ₀.ξ₁ - ξ₀₂₃.ξ₁₂₃ + ξ₀₂₃.ξ₁₂₃ + 2ξ₀₃₁.ξ₃ - 2ξ₀₁₂.ξ₂ )
+</span><span>  α₀₂  ( 2ξₚ.ξ₀₂ - ξ₂₃.ξ₀₃ + ξ₂₃.ξ₀₃ - 2ξ₃₁.ξ₀₁₂₃ + ξ₁₂.ξ₀₁ - ξ₁₂.ξ₀₁ + ξ₀.ξ₂ - ξ₀.ξ₂ - 2ξ₀₂₃.ξ₃ - ξ₀₃₁.ξ₁₂₃ + ξ₀₃₁.ξ₁₂₃ + 2ξ₀₁₂.ξ₁ )
+</span><span>  α₀₃  ( 2ξₚ.ξ₀₃ + ξ₂₃.ξ₀₂ - ξ₂₃.ξ₀₂ - ξ₃₁.ξ₀₁ + ξ₃₁.ξ₀₁ - 2ξ₁₂.ξ₀₁₂₃ + ξ₀.ξ₃ - ξ₀.ξ₃ + 2ξ₀₂₃.ξ₂ - 2ξ₀₃₁.ξ₁ - ξ₀₁₂.ξ₁₂₃ + ξ₀₁₂.ξ₁₂₃ )
+</span><span>}
+</span><span>
+</span><span>[-+++]
+</span><span>G = {
+</span><span>  αₚ   ( ξₚ )
+</span><span>  α₂₃  ( ξ₂₃ )
+</span><span>  α₃₁  ( ξ₃₁ )
+</span><span>  α₁₂  ( ξ₁₂ )
+</span><span>  α₀   ( ξ₀ )
+</span><span>  α₀₂₃ ( ξ₀₂₃ )
+</span><span>  α₀₃₁ ( ξ₀₃₁ )
+</span><span>  α₀₁₂ ( ξ₀₁₂ )
+</span><span>  α₁₂₃ ( ξ₁₂₃ )
+</span><span>  α₁   ( ξ₁ )
+</span><span>  α₂   ( ξ₂ )
+</span><span>  α₃   ( ξ₃ )
+</span><span>  α₀₁₂₃( ξ₀₁₂₃ )
+</span><span>  α₀₁  ( ξ₀₁ )
+</span><span>  α₀₂  ( ξ₀₂ )
+</span><span>  α₀₃  ( ξ₀₃ )
+</span><span>}
+</span><span>
+</span><span>G_dagger = {
+</span><span>  αₚ   ( ξₚ )
+</span><span>  α₂₃  ( - ξ₂₃ )
+</span><span>  α₃₁  ( - ξ₃₁ )
+</span><span>  α₁₂  ( - ξ₁₂ )
+</span><span>  α₀   ( - ξ₀ )
+</span><span>  α₀₂₃ ( ξ₀₂₃ )
+</span><span>  α₀₃₁ ( ξ₀₃₁ )
+</span><span>  α₀₁₂ ( ξ₀₁₂ )
+</span><span>  α₁₂₃ ( - ξ₁₂₃ )
+</span><span>  α₁   ( ξ₁ )
+</span><span>  α₂   ( ξ₂ )
+</span><span>  α₃   ( ξ₃ )
+</span><span>  α₀₁₂₃( - ξ₀₁₂₃ )
+</span><span>  α₀₁  ( ξ₀₁ )
+</span><span>  α₀₂  ( ξ₀₂ )
+</span><span>  α₀₃  ( ξ₀₃ )
+</span><span>}
+</span><span>
+</span><span>G G_dagger = {
+</span><span>  αₚ   ( ξₚ^2 - ξ₂₃^2 - ξ₃₁^2 - ξ₁₂^2 - ξ₀^2 + ξ₀₂₃^2 + ξ₀₃₁^2 + ξ₀₁₂^2 - ξ₁₂₃^2 + ξ₁^2 + ξ₂^2 + ξ₃^2 - ξ₀₁₂₃^2 + ξ₀₁^2 + ξ₀₂^2 + ξ₀₃^2 )
+</span><span>  α₂₃  ( - 2ξₚ.ξ₂₃ + ξ₃₁.ξ₁₂ - ξ₃₁.ξ₁₂ + 2ξ₀.ξ₀₂₃ - ξ₀₃₁.ξ₀₁₂ + ξ₀₃₁.ξ₀₁₂ - 2ξ₁₂₃.ξ₁ - ξ₂.ξ₃ + ξ₂.ξ₃ - 2ξ₀₁₂₃.ξ₀₁ - ξ₀₂.ξ₀₃ + ξ₀₂.ξ₀₃ )
+</span><span>  α₃₁  ( - 2ξₚ.ξ₃₁ - ξ₂₃.ξ₁₂ + ξ₂₃.ξ₁₂ + 2ξ₀.ξ₀₃₁ + ξ₀₂₃.ξ₀₁₂ - ξ₀₂₃.ξ₀₁₂ - 2ξ₁₂₃.ξ₂ + ξ₁.ξ₃ - ξ₁.ξ₃ - 2ξ₀₁₂₃.ξ₀₂ + ξ₀₁.ξ₀₃ - ξ₀₁.ξ₀₃ )
+</span><span>  α₁₂  ( - 2ξₚ.ξ₁₂ + ξ₂₃.ξ₃₁ - ξ₂₃.ξ₃₁ + 2ξ₀.ξ₀₁₂ - ξ₀₂₃.ξ₀₃₁ + ξ₀₂₃.ξ₀₃₁ - 2ξ₁₂₃.ξ₃ - ξ₁.ξ₂ + ξ₁.ξ₂ - 2ξ₀₁₂₃.ξ₀₃ - ξ₀₁.ξ₀₂ + ξ₀₁.ξ₀₂ )
+</span><span>  α₀   ( - 2ξₚ.ξ₀ + 2ξ₂₃.ξ₀₂₃ + 2ξ₃₁.ξ₀₃₁ + 2ξ₁₂.ξ₀₁₂ - ξ₁₂₃.ξ₀₁₂₃ + ξ₁₂₃.ξ₀₁₂₃ + ξ₁.ξ₀₁ - ξ₁.ξ₀₁ + ξ₂.ξ₀₂ - ξ₂.ξ₀₂ + ξ₃.ξ₀₃ - ξ₃.ξ₀₃ )
+</span><span>  α₀₂₃ ( 2ξₚ.ξ₀₂₃ + 2ξ₂₃.ξ₀ - ξ₃₁.ξ₀₁₂ + ξ₃₁.ξ₀₁₂ + ξ₁₂.ξ₀₃₁ - ξ₁₂.ξ₀₃₁ - ξ₁₂₃.ξ₀₁ + ξ₁₂₃.ξ₀₁ - ξ₁.ξ₀₁₂₃ + ξ₁.ξ₀₁₂₃ - 2ξ₂.ξ₀₃ + 2ξ₃.ξ₀₂ )
+</span><span>  α₀₃₁ ( 2ξₚ.ξ₀₃₁ + ξ₂₃.ξ₀₁₂ - ξ₂₃.ξ₀₁₂ + 2ξ₃₁.ξ₀ - ξ₁₂.ξ₀₂₃ + ξ₁₂.ξ₀₂₃ - ξ₁₂₃.ξ₀₂ + ξ₁₂₃.ξ₀₂ + 2ξ₁.ξ₀₃ - ξ₂.ξ₀₁₂₃ + ξ₂.ξ₀₁₂₃ - 2ξ₃.ξ₀₁ )
+</span><span>  α₀₁₂ ( 2ξₚ.ξ₀₁₂ - ξ₂₃.ξ₀₃₁ + ξ₂₃.ξ₀₃₁ + ξ₃₁.ξ₀₂₃ - ξ₃₁.ξ₀₂₃ + 2ξ₁₂.ξ₀ - ξ₁₂₃.ξ₀₃ + ξ₁₂₃.ξ₀₃ - 2ξ₁.ξ₀₂ + 2ξ₂.ξ₀₁ - ξ₃.ξ₀₁₂₃ + ξ₃.ξ₀₁₂₃ )
+</span><span>  α₁₂₃ ( - 2ξₚ.ξ₁₂₃ - 2ξ₂₃.ξ₁ - 2ξ₃₁.ξ₂ - 2ξ₁₂.ξ₃ + ξ₀.ξ₀₁₂₃ - ξ₀.ξ₀₁₂₃ + ξ₀₂₃.ξ₀₁ - ξ₀₂₃.ξ₀₁ + ξ₀₃₁.ξ₀₂ - ξ₀₃₁.ξ₀₂ + ξ₀₁₂.ξ₀₃ - ξ₀₁₂.ξ₀₃ )
+</span><span>  α₁   ( 2ξₚ.ξ₁ - 2ξ₂₃.ξ₁₂₃ - ξ₃₁.ξ₃ + ξ₃₁.ξ₃ + ξ₁₂.ξ₂ - ξ₁₂.ξ₂ - ξ₀.ξ₀₁ + ξ₀.ξ₀₁ + ξ₀₂₃.ξ₀₁₂₃ - ξ₀₂₃.ξ₀₁₂₃ + 2ξ₀₃₁.ξ₀₃ - 2ξ₀₁₂.ξ₀₂ )
+</span><span>  α₂   ( 2ξₚ.ξ₂ + ξ₂₃.ξ₃ - ξ₂₃.ξ₃ - 2ξ₃₁.ξ₁₂₃ - ξ₁₂.ξ₁ + ξ₁₂.ξ₁ - ξ₀.ξ₀₂ + ξ₀.ξ₀₂ - 2ξ₀₂₃.ξ₀₃ + ξ₀₃₁.ξ₀₁₂₃ - ξ₀₃₁.ξ₀₁₂₃ + 2ξ₀₁₂.ξ₀₁ )
+</span><span>  α₃   ( 2ξₚ.ξ₃ - ξ₂₃.ξ₂ + ξ₂₃.ξ₂ + ξ₃₁.ξ₁ - ξ₃₁.ξ₁ - 2ξ₁₂.ξ₁₂₃ - ξ₀.ξ₀₃ + ξ₀.ξ₀₃ + 2ξ₀₂₃.ξ₀₂ - 2ξ₀₃₁.ξ₀₁ + ξ₀₁₂.ξ₀₁₂₃ - ξ₀₁₂.ξ₀₁₂₃ )
+</span><span>  α₀₁₂₃( - 2ξₚ.ξ₀₁₂₃ - 2ξ₂₃.ξ₀₁ - 2ξ₃₁.ξ₀₂ - 2ξ₁₂.ξ₀₃ - ξ₀.ξ₁₂₃ + ξ₀.ξ₁₂₃ - ξ₀₂₃.ξ₁ + ξ₀₂₃.ξ₁ - ξ₀₃₁.ξ₂ + ξ₀₃₁.ξ₂ - ξ₀₁₂.ξ₃ + ξ₀₁₂.ξ₃ )
+</span><span>  α₀₁  ( 2ξₚ.ξ₀₁ - 2ξ₂₃.ξ₀₁₂₃ - ξ₃₁.ξ₀₃ + ξ₃₁.ξ₀₃ + ξ₁₂.ξ₀₂ - ξ₁₂.ξ₀₂ + ξ₀.ξ₁ - ξ₀.ξ₁ - ξ₀₂₃.ξ₁₂₃ + ξ₀₂₃.ξ₁₂₃ - 2ξ₀₃₁.ξ₃ + 2ξ₀₁₂.ξ₂ )
+</span><span>  α₀₂  ( 2ξₚ.ξ₀₂ + ξ₂₃.ξ₀₃ - ξ₂₃.ξ₀₃ - 2ξ₃₁.ξ₀₁₂₃ - ξ₁₂.ξ₀₁ + ξ₁₂.ξ₀₁ + ξ₀.ξ₂ - ξ₀.ξ₂ + 2ξ₀₂₃.ξ₃ - ξ₀₃₁.ξ₁₂₃ + ξ₀₃₁.ξ₁₂₃ - 2ξ₀₁₂.ξ₁ )
+</span><span>  α₀₃  ( 2ξₚ.ξ₀₃ - ξ₂₃.ξ₀₂ + ξ₂₃.ξ₀₂ + ξ₃₁.ξ₀₁ - ξ₃₁.ξ₀₁ - 2ξ₁₂.ξ₀₁₂₃ + ξ₀.ξ₃ - ξ₀.ξ₃ - 2ξ₀₂₃.ξ₂ + 2ξ₀₃₁.ξ₁ - ξ₀₁₂.ξ₁₂₃ + ξ₀₁₂.ξ₁₂₃ )
+</span><span>}
+</span><span>
+</span><span>
+</span><span>.: group_commutator_full :.
+</span><span>===========================
+</span><span>
+</span><span>    Compute the group commutator [a, b] = (a b a^-1 b^-1) for each combination
+</span><span>    of a and b in the algebra.
+</span><span>
+</span><span>    [a, b] =  αp  --&gt; □
+</span><span>    [a, b] = -αp  --&gt; ■
+</span><span>
+</span><span>[+---]
+</span><span>           B         T         A         E
+</span><span>      +---------+---------+---------+---------+
+</span><span>αₚ    | □ □ □ □ | □ □ □ □ | □ □ □ □ | □ □ □ □ |
+</span><span>α₂₃   | □ □ ■ ■ | □ □ ■ ■ | □ □ ■ ■ | □ □ ■ ■ |
+</span><span>α₃₁   | □ ■ □ ■ | □ ■ □ ■ | □ ■ □ ■ | □ ■ □ ■ |
+</span><span>α₁₂   | □ ■ ■ □ | □ ■ ■ □ | □ ■ ■ □ | □ ■ ■ □ |
+</span><span>      +---------+---------+---------+---------+
+</span><span>α₀    | □ □ □ □ | □ □ □ □ | ■ ■ ■ ■ | ■ ■ ■ ■ |
+</span><span>α₀₂₃  | □ □ ■ ■ | □ □ ■ ■ | ■ ■ □ □ | ■ ■ □ □ |
+</span><span>α₀₃₁  | □ ■ □ ■ | □ ■ □ ■ | ■ □ ■ □ | ■ □ ■ □ |
+</span><span>α₀₁₂  | □ ■ ■ □ | □ ■ ■ □ | ■ □ □ ■ | ■ □ □ ■ |
+</span><span>      +---------+---------+---------+---------+
+</span><span>α₁₂₃  | □ □ □ □ | ■ ■ ■ ■ | □ □ □ □ | ■ ■ ■ ■ |
+</span><span>α₁    | □ □ ■ ■ | ■ ■ □ □ | □ □ ■ ■ | ■ ■ □ □ |
+</span><span>α₂    | □ ■ □ ■ | ■ □ ■ □ | □ ■ □ ■ | ■ □ ■ □ |
+</span><span>α₃    | □ ■ ■ □ | ■ □ □ ■ | □ ■ ■ □ | ■ □ □ ■ |
+</span><span>      +---------+---------+---------+---------+
+</span><span>α₀₁₂₃ | □ □ □ □ | ■ ■ ■ ■ | ■ ■ ■ ■ | □ □ □ □ |
+</span><span>α₀₁   | □ □ ■ ■ | ■ ■ □ □ | ■ ■ □ □ | □ □ ■ ■ |
+</span><span>α₀₂   | □ ■ □ ■ | ■ □ ■ □ | ■ □ ■ □ | □ ■ □ ■ |
+</span><span>α₀₃   | □ ■ ■ □ | ■ □ □ ■ | ■ □ □ ■ | □ ■ ■ □ |
+</span><span>      +---------+---------+---------+---------+
+</span><span>
+</span><span>[-+++]
+</span><span>           B         T         A         E
+</span><span>      +---------+---------+---------+---------+
+</span><span>αₚ    | □ □ □ □ | □ □ □ □ | □ □ □ □ | □ □ □ □ |
+</span><span>α₂₃   | □ □ ■ ■ | □ □ ■ ■ | □ □ ■ ■ | □ □ ■ ■ |
+</span><span>α₃₁   | □ ■ □ ■ | □ ■ □ ■ | □ ■ □ ■ | □ ■ □ ■ |
+</span><span>α₁₂   | □ ■ ■ □ | □ ■ ■ □ | □ ■ ■ □ | □ ■ ■ □ |
+</span><span>      +---------+---------+---------+---------+
+</span><span>α₀    | □ □ □ □ | □ □ □ □ | ■ ■ ■ ■ | ■ ■ ■ ■ |
+</span><span>α₀₂₃  | □ □ ■ ■ | □ □ ■ ■ | ■ ■ □ □ | ■ ■ □ □ |
+</span><span>α₀₃₁  | □ ■ □ ■ | □ ■ □ ■ | ■ □ ■ □ | ■ □ ■ □ |
+</span><span>α₀₁₂  | □ ■ ■ □ | □ ■ ■ □ | ■ □ □ ■ | ■ □ □ ■ |
+</span><span>      +---------+---------+---------+---------+
+</span><span>α₁₂₃  | □ □ □ □ | ■ ■ ■ ■ | □ □ □ □ | ■ ■ ■ ■ |
+</span><span>α₁    | □ □ ■ ■ | ■ ■ □ □ | □ □ ■ ■ | ■ ■ □ □ |
+</span><span>α₂    | □ ■ □ ■ | ■ □ ■ □ | □ ■ □ ■ | ■ □ ■ □ |
+</span><span>α₃    | □ ■ ■ □ | ■ □ □ ■ | □ ■ ■ □ | ■ □ □ ■ |
+</span><span>      +---------+---------+---------+---------+
+</span><span>α₀₁₂₃ | □ □ □ □ | ■ ■ ■ ■ | ■ ■ ■ ■ | □ □ □ □ |
+</span><span>α₀₁   | □ □ ■ ■ | ■ ■ □ □ | ■ ■ □ □ | □ □ ■ ■ |
+</span><span>α₀₂   | □ ■ □ ■ | ■ □ ■ □ | ■ □ ■ □ | □ ■ □ ■ |
+</span><span>α₀₃   | □ ■ ■ □ | ■ □ □ ■ | ■ □ □ ■ | □ ■ ■ □ |
+</span><span>      +---------+---------+---------+---------+
+</span><span>
+</span><span>
+</span><span>.: group_commutator_distribution :.
+</span><span>===================================
+</span><span>
+</span><span>    This is the same idea as above, combined with the sign distribution format
+</span><span>    from before that looks at vector calculus groupings.
+</span><span>
+</span><span>    [a, b] =  αp  --&gt; □
+</span><span>    [a, b] = -αp  --&gt; ■
+</span><span>
+</span><span>[+---]
+</span><span> ∂e |□ □ □ □|  ∂Ξ |□ □ □ □|   ∇ |□ □ □ □|  ∇• |□ □ □ □|  ∇x |■ ■ ■ ■|
+</span><span>    |□ □ ■ ■|     |□ □ ■ ■|     |□ □ ■ ■|     |□ □ ■ ■|     |■ ■ □ □|
+</span><span>    |□ ■ □ ■|     |□ ■ □ ■|     |□ ■ □ ■|     |□ ■ □ ■|     |■ □ ■ □|
+</span><span>    |□ ■ ■ □|     |□ ■ ■ □|     |□ ■ ■ □|     |□ ■ ■ □|     |■ □ □ ■|
+</span><span>
+</span><span>[-+++]
+</span><span> ∂e |□ □ □ □|  ∂Ξ |□ □ □ □|   ∇ |□ □ □ □|  ∇• |□ □ □ □|  ∇x |■ ■ ■ ■|
+</span><span>    |□ □ ■ ■|     |□ □ ■ ■|     |□ □ ■ ■|     |□ □ ■ ■|     |■ ■ □ □|
+</span><span>    |□ ■ □ ■|     |□ ■ □ ■|     |□ ■ □ ■|     |□ ■ □ ■|     |■ □ ■ □|
+</span><span>    |□ ■ ■ □|     |□ ■ ■ □|     |□ ■ ■ □|     |□ ■ ■ □|     |■ □ □ ■|
+</span><span>
+</span><span>
+</span><span>.: FF_dagger_signs :.
+</span><span>=====================
+</span><span>
+</span><span>    Sign distributions for FF! force equations
+</span><span>
+</span><span>[+---]
+</span><span>αₚ    □ □ □ ■ ■ ■
+</span><span>α₂₃   □ ■ ■ □
+</span><span>α₃₁   ■ □ □ ■
+</span><span>α₁₂   □ ■ ■ □
+</span><span>α₀₁₂₃ □ □ □ □ □ □
+</span><span>α₀₁   ■ □ □ ■
+</span><span>α₀₂   □ ■ ■ □
+</span><span>α₀₃   ■ □ □ ■
+</span><span>
+</span><span>[-+++]
+</span><span>αₚ    □ □ □ ■ ■ ■
+</span><span>α₂₃   ■ □ □ ■
+</span><span>α₃₁   □ ■ ■ □
+</span><span>α₁₂   ■ □ □ ■
+</span><span>α₀₁₂₃ □ □ □ □ □ □
+</span><span>α₀₁   □ ■ ■ □
+</span><span>α₀₂   ■ □ □ ■
+</span><span>α₀₃   □ ■ ■ □
+</span><span>
+</span><span>
+</span><span>.: split_sign :.
+</span><span>================
+</span><span>
+</span><span>    There are (at least) two sources of sign under the full product: ordering of
+</span><span>    terms so that they can be contracted and the effect of the metric on contraction.
+</span><span>    The sign due to ordering is independent of the metric but _not_ of the defined
+</span><span>    positive orientations of each element.
+</span><span>
+</span><span>    In the output below:
+</span><span>        cancellation negative = &#39;◢ &#39;
+</span><span>        ordering negative     = &#39;◤ &#39;
+</span><span>        both negative         = &#39;■ &#39;
+</span><span>        both positive         = &#39;□ &#39;
+</span><span>
+</span><span>[+---]
+</span><span>
+</span><span>αₚ      □ □ □ □  □ □ □ □  □ □ □ □  □ □ □ □
+</span><span>α₂₃     □ ◢ ■ ◤  □ ◢ ■ ◤  ◢ □ ■ ◤  ◢ □ ■ ◤
+</span><span>α₃₁     □ ◤ ◢ ■  □ ◤ ◢ ■  ◢ ◤ □ ■  ◢ ◤ □ ■
+</span><span>α₁₂     □ ■ ◤ ◢  □ ■ ◤ ◢  ◢ ■ ◤ □  ◢ ■ ◤ □
+</span><span>
+</span><span>α₀      □ □ □ □  □ □ □ □  □ □ □ □  □ □ □ □
+</span><span>α₀₂₃    □ ◢ ■ ◤  □ ◢ ■ ◤  ◢ □ ■ ◤  ◢ □ ■ ◤
+</span><span>α₀₃₁    □ ◤ ◢ ■  □ ◤ ◢ ■  ◢ ◤ □ ■  ◢ ◤ □ ■
+</span><span>α₀₁₂    □ ■ ◤ ◢  □ ■ ◤ ◢  ◢ ■ ◤ □  ◢ ■ ◤ □
+</span><span>
+</span><span>α₁₂₃    □ ◢ ◢ ◢  ◢ □ □ □  ■ ◤ ◤ ◤  ◤ ■ ■ ■
+</span><span>α₁      □ □ ■ ◤  ◢ ◢ ◤ ■  ◤ ◤ □ ◢  ■ ■ ◢ □
+</span><span>α₂      □ ◤ □ ■  ◢ ■ ◢ ◤  ◤ ◢ ◤ □  ■ □ ■ ◢
+</span><span>α₃      □ ■ ◤ □  ◢ ◤ ■ ◢  ◤ □ ◢ ◤  ■ ◢ □ ■
+</span><span>
+</span><span>α₀₁₂₃   □ ◢ ◢ ◢  ◢ □ □ □  ■ ◤ ◤ ◤  ◤ ■ ■ ■
+</span><span>α₀₁     □ □ ■ ◤  ◢ ◢ ◤ ■  ◤ ◤ □ ◢  ■ ■ ◢ □
+</span><span>α₀₂     □ ◤ □ ■  ◢ ■ ◢ ◤  ◤ ◢ ◤ □  ■ □ ■ ◢
+</span><span>α₀₃     □ ■ ◤ □  ◢ ◤ ■ ◢  ◤ □ ◢ ◤  ■ ◢ □ ■
+</span><span>
+</span><span>[-+++]
+</span><span>
+</span><span>αₚ      □ □ □ □  □ □ □ □  □ □ □ □  □ □ □ □
+</span><span>α₂₃     □ ◢ ◢ □  □ ◢ ◢ □  ◢ □ ◢ □  ◢ □ ◢ □
+</span><span>α₃₁     □ □ ◢ ◢  □ □ ◢ ◢  ◢ □ □ ◢  ◢ □ □ ◢
+</span><span>α₁₂     □ ◢ □ ◢  □ ◢ □ ◢  ◢ ◢ □ □  ◢ ◢ □ □
+</span><span>
+</span><span>α₀      □ □ □ □  ◤ ◤ ◤ ◤  □ □ □ □  ◤ ◤ ◤ ◤
+</span><span>α₀₂₃    □ ◢ ◢ □  ◤ ■ ■ ◤  ◢ □ ◢ □  ■ ◤ ■ ◤
+</span><span>α₀₃₁    □ □ ◢ ◢  ◤ ◤ ■ ■  ◢ □ □ ◢  ■ ◤ ◤ ■
+</span><span>α₀₁₂    □ ◢ □ ◢  ◤ ■ ◤ ■  ◢ ◢ □ □  ■ ■ ◤ ◤
+</span><span>
+</span><span>α₁₂₃    □ ◢ ◢ ◢  ◢ □ □ □  ◢ □ □ □  □ ◢ ◢ ◢
+</span><span>α₁      □ □ ◢ □  ◢ ◢ □ ◢  □ □ □ ◢  ◢ ◢ ◢ □
+</span><span>α₂      □ □ □ ◢  ◢ ◢ ◢ □  □ ◢ □ □  ◢ □ ◢ ◢
+</span><span>α₃      □ ◢ □ □  ◢ □ ◢ ◢  □ □ ◢ □  ◢ ◢ □ ◢
+</span><span>
+</span><span>α₀₁₂₃   □ ◢ ◢ ◢  ■ ◤ ◤ ◤  ◢ □ □ □  ◤ ■ ■ ■
+</span><span>α₀₁     □ □ ◢ □  ■ ■ ◤ ■  □ □ □ ◢  ■ ■ ■ ◤
+</span><span>α₀₂     □ □ □ ◢  ■ ■ ■ ◤  □ ◢ □ □  ■ ◤ ■ ■
+</span><span>α₀₃     □ ◢ □ □  ■ ◤ ■ ■  □ □ ◢ □  ■ ■ ◤ ■
+</span><span>
+</span></code></pre>
+
+  </article>
+
+    </main>
+
+    <script type="text/javascript" src="https://sminez.github.io/themes.js"></script>
+
+    <script>
+      function burger() {
+        var x = document.getElementById("bger");
+        if (x.style.display === "block") {
+          x.style.display = "none";
+        } else {
+          x.style.display = "block";
+        }
+      }
+      </script>
+  </body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> sminez.github.io | Zet Properties </title>
+    <link rel="stylesheet" href="https://sminez.github.io/main.css">
+  </head>
+
+  <body>
+    <nav>
+      <div id="subnav">
+        <form class="theme-selector">
+          <button type="button" id="theme-light-button" class="theme-button" onclick="enableTheme('light', true)">&#9706;</button>
+          <button type="button" id="theme-dark-button"  class="theme-button enabled" onclick="enableTheme('dark', true)">&#9705;</button>
+        </form>
+      </div>
+
+    
+  <ul id="breadcrumbs">
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;">
+          sminez.github.io
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;absolute_relativity&#x2F;">
+          Absolute Relativity
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+  </ul>
+  <h1>Zet Properties</h1><em></em>
+
+    </nav>
+
+    <main>
+    
+  <div id="taxonomies">
+    
+  </div>
+
+  
+  
+    
+    
+      
+      
+    
+      
+      
+    
+  
+
+  
+
+  <article>
+    <h2 id="checking-sign-distributions-of-zets-under-product">Checking sign distributions of Zets under product</h2>
+<p>The following program makes use of the arthroprod library to observe their
+common properties under the full product.</p>
+<h3 id="program">Program</h3>
+<pre data-lang="rust" style="background-color:#282828;color:#fdf4c1aa;" class="language-rust "><code class="language-rust" data-lang="rust"><span>#[</span><span style="color:#fdf4c1;">macro_use</span><span>]
+</span><span style="color:#fa5c4b;">extern crate</span><span> arthroprod;
+</span><span>
+</span><span style="color:#fa5c4b;">use </span><span>arthroprod::algebra::{full, MultiVector, </span><span style="color:#fdf4c1;">AR</span><span>};
+</span><span style="color:#fa5c4b;">use </span><span>arthroprod::prelude::</span><span style="color:#fe8019;">*</span><span>;
+</span><span>
+</span><span style="color:#fabd2f;">macro_rules! </span><span style="color:#8ec07c;">for_all_zets </span><span>{
+</span><span>    { zets: </span><span style="color:#fdf4c1;">$zets</span><span>:expr; $(</span><span style="color:#fdf4c1;">$description</span><span>:</span><span style="color:#fa5c4b;">expr</span><span> =&gt; </span><span style="color:#fdf4c1;">$func</span><span>:</span><span style="color:#fa5c4b;">ident</span><span>;)+ } </span><span style="color:#fe8019;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#fe8019;">$</span><span>(</span><span style="color:#fabd2f;">println!</span><span>(</span><span style="color:#b8bb26;">&quot;</span><span style="color:#fdf4c1;">{}</span><span style="color:#b8bb26;">&quot;</span><span>, </span><span style="color:#fdf4c1;">$description</span><span>);
+</span><span>          </span><span style="color:#fa5c4b;">for </span><span>(zet, mvec) </span><span style="color:#fe8019;">in </span><span style="color:#fdf4c1;">$zets</span><span>.</span><span style="color:#fabd2f;">iter</span><span>() {
+</span><span>              </span><span style="color:#fabd2f;">println!</span><span>(</span><span style="color:#b8bb26;">&quot;  </span><span style="color:#fdf4c1;">{}</span><span style="color:#b8bb26;">: </span><span style="color:#fdf4c1;">{}</span><span style="color:#b8bb26;">&quot;</span><span>, zet, </span><span style="color:#fdf4c1;">$func</span><span>(mvec));
+</span><span>          }
+</span><span>          </span><span style="color:#fabd2f;">println!</span><span>(</span><span style="color:#b8bb26;">&quot;&quot;</span><span>);)</span><span style="color:#fe8019;">+
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="color:#fa5c4b;">fn </span><span style="color:#8ec07c;">sign_checked</span><span>(</span><span style="color:#fdf4c1;">m</span><span>: </span><span style="color:#fe8019;">&amp;</span><span>MultiVector) -&gt; String {
+</span><span>    m.</span><span style="color:#fabd2f;">as_terms</span><span>()
+</span><span>        .</span><span style="color:#fabd2f;">iter</span><span>()
+</span><span>        .</span><span style="color:#fabd2f;">map</span><span>(|</span><span style="color:#fdf4c1;">t</span><span>| t.</span><span style="color:#fabd2f;">sign</span><span>().</span><span style="color:#fabd2f;">to_string</span><span>())
+</span><span>        .collect::&lt;</span><span style="color:#fabd2f;">Vec</span><span>&lt;</span><span style="color:#fabd2f;">String</span><span>&gt;&gt;()
+</span><span>        .</span><span style="color:#fabd2f;">join</span><span>(</span><span style="color:#b8bb26;">&quot;&quot;</span><span>)
+</span><span>}
+</span><span>
+</span><span style="color:#fa5c4b;">fn </span><span style="color:#8ec07c;">main</span><span>() {
+</span><span>    </span><span style="color:#fa5c4b;">let</span><span> a0 </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">alpha!</span><span>(</span><span style="color:#d3869b;">0</span><span>);
+</span><span>    </span><span style="color:#fa5c4b;">let </span><span style="color:#8ec07c;">hermitian </span><span style="color:#fe8019;">= </span><span>|</span><span style="color:#fdf4c1;">m</span><span>: </span><span style="color:#fe8019;">&amp;</span><span>MultiVector| </span><span style="color:#fabd2f;">sign_checked</span><span>(</span><span style="color:#fe8019;">&amp;</span><span>m.</span><span style="color:#fabd2f;">hermitian</span><span>());
+</span><span>    </span><span style="color:#fa5c4b;">let </span><span style="color:#8ec07c;">dual </span><span style="color:#fe8019;">= </span><span>|</span><span style="color:#fdf4c1;">m</span><span>: </span><span style="color:#fe8019;">&amp;</span><span>MultiVector| </span><span style="color:#fabd2f;">sign_checked</span><span>(</span><span style="color:#fe8019;">&amp;</span><span>m.</span><span style="color:#fabd2f;">dual</span><span>());
+</span><span>    </span><span style="color:#fa5c4b;">let </span><span style="color:#8ec07c;">reversed </span><span style="color:#fe8019;">= </span><span>|</span><span style="color:#fdf4c1;">m</span><span>: </span><span style="color:#fe8019;">&amp;</span><span>MultiVector| </span><span style="color:#fabd2f;">sign_checked</span><span>(</span><span style="color:#fe8019;">&amp;</span><span>m.</span><span style="color:#fabd2f;">reversed</span><span>());
+</span><span>    </span><span style="color:#fa5c4b;">let </span><span style="color:#8ec07c;">herm_dual </span><span style="color:#fe8019;">= </span><span>|</span><span style="color:#fdf4c1;">m</span><span>: </span><span style="color:#fe8019;">&amp;</span><span>MultiVector| (m.</span><span style="color:#fabd2f;">hermitian</span><span>() </span><span style="color:#fe8019;">==</span><span> m.</span><span style="color:#fabd2f;">reversed</span><span>()).</span><span style="color:#fabd2f;">to_string</span><span>();
+</span><span>    </span><span style="color:#fa5c4b;">let </span><span style="color:#8ec07c;">parity </span><span style="color:#fe8019;">= </span><span>|</span><span style="color:#fdf4c1;">m</span><span>: </span><span style="color:#fe8019;">&amp;</span><span>MultiVector| </span><span style="color:#fabd2f;">sign_checked</span><span>(</span><span style="color:#fe8019;">&amp;</span><span>full::&lt;</span><span style="color:#fe8019;">_</span><span>, MultiVector, </span><span style="color:#fe8019;">_</span><span>&gt;(</span><span style="color:#fe8019;">&amp;</span><span>a0, </span><span style="color:#fe8019;">&amp;</span><span style="color:#fabd2f;">full</span><span>(m, </span><span style="color:#fe8019;">&amp;</span><span>a0)));
+</span><span>
+</span><span>    </span><span style="color:#fabd2f;">for_all_zets! </span><span>{
+</span><span>        zets: </span><span style="color:#fabd2f;">vec!</span><span>[
+</span><span>            (</span><span style="color:#b8bb26;">&quot;ZB&quot;</span><span>, Zet_B()),
+</span><span>            (</span><span style="color:#b8bb26;">&quot;ZT&quot;</span><span>, Zet_T()),
+</span><span>            (</span><span style="color:#b8bb26;">&quot;ZA&quot;</span><span>, Zet_A()),
+</span><span>            (</span><span style="color:#b8bb26;">&quot;ZE&quot;</span><span>, Zet_E()),
+</span><span>        ];
+</span><span>
+</span><span>        </span><span style="color:#b8bb26;">&quot;Hermitian conjugate&quot; </span><span style="color:#fe8019;">=&gt;</span><span> hermitian;
+</span><span>        </span><span style="color:#b8bb26;">&quot;Dual multivector&quot; </span><span style="color:#fe8019;">=&gt;</span><span> dual;
+</span><span>        </span><span style="color:#b8bb26;">&quot;Reversed indices&quot; </span><span style="color:#fe8019;">=&gt;</span><span> reversed;
+</span><span>        </span><span style="color:#b8bb26;">&quot;Hermitian == reversed&quot; </span><span style="color:#fe8019;">=&gt;</span><span> herm_dual;
+</span><span>        </span><span style="color:#b8bb26;">&quot;Parity: a0_Z_a0&quot; </span><span style="color:#fe8019;">=&gt;</span><span> parity;
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<h3 id="output">Output</h3>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cargo run --bin</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">zet-properties
+</span><span>
+</span><span style="color:#fdf4c1;">Hermitian conjugate
+</span><span>  </span><span style="color:#fdf4c1;">ZB: +---
+</span><span>  </span><span style="color:#fdf4c1;">ZT: +---
+</span><span>  </span><span style="color:#fdf4c1;">ZA: +---
+</span><span>  </span><span style="color:#fdf4c1;">ZE: -+++
+</span><span>
+</span><span style="color:#fdf4c1;">Dual multivector
+</span><span>  </span><span style="color:#fdf4c1;">ZB: -+++
+</span><span>  </span><span style="color:#fdf4c1;">ZT: +---
+</span><span>  </span><span style="color:#fdf4c1;">ZA: -+++
+</span><span>  </span><span style="color:#fdf4c1;">ZE: +---
+</span><span>
+</span><span style="color:#fdf4c1;">Reversed indices
+</span><span>  </span><span style="color:#fdf4c1;">ZB: ----
+</span><span>  </span><span style="color:#fdf4c1;">ZT: +---
+</span><span>  </span><span style="color:#fdf4c1;">ZA: -+++
+</span><span>  </span><span style="color:#fdf4c1;">ZE: +---
+</span><span>
+</span><span style="color:#fdf4c1;">Hermitian == reversed
+</span><span>  </span><span style="color:#fdf4c1;">ZB: false
+</span><span>  </span><span style="color:#fdf4c1;">ZT: true
+</span><span>  </span><span style="color:#fdf4c1;">ZA: false
+</span><span>  </span><span style="color:#fdf4c1;">ZE: false
+</span><span>
+</span><span style="color:#fdf4c1;">Parity: a0_Z_a0
+</span><span>  </span><span style="color:#fdf4c1;">ZB: ++++
+</span><span>  </span><span style="color:#fdf4c1;">ZT: ++++
+</span><span>  </span><span style="color:#fdf4c1;">ZA: ----
+</span><span>  </span><span style="color:#fdf4c1;">ZE: ----
+</span></code></pre>
+
+  </article>
+
+    </main>
+
+    <script type="text/javascript" src="https://sminez.github.io/themes.js"></script>
+
+    <script>
+      function burger() {
+        var x = document.getElementById("bger");
+        if (x.style.display === "block") {
+          x.style.display = "none";
+        } else {
+          x.style.display = "block";
+        }
+      }
+      </script>
+  </body>
+</html>

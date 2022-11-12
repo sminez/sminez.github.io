@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> sminez.github.io | Getting Started </title>
+    <link rel="stylesheet" href="https://sminez.github.io/main.css">
+  </head>
+
+  <body>
+    <nav>
+      <div id="subnav">
+        <form class="theme-selector">
+          <button type="button" id="theme-light-button" class="theme-button" onclick="enableTheme('light', true)">&#9706;</button>
+          <button type="button" id="theme-dark-button"  class="theme-button enabled" onclick="enableTheme('dark', true)">&#9705;</button>
+        </form>
+      </div>
+
+    
+  <ul id="breadcrumbs">
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;">
+          sminez.github.io
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;projects&#x2F;">
+          Software Projects
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;projects&#x2F;penrose&#x2F;">
+          Penrose
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+  </ul>
+  <h1>Getting Started</h1><em></em>
+
+    </nav>
+
+    <main>
+    
+  <div id="taxonomies">
+    
+  </div>
+
+  
+  
+
+  
+
+  <article>
+    
+<image width="50px" src="https://raw.githubusercontent.com/sminez/penrose/develop/icon.svg" align="left"></image></p>
+<h1 id="getting-started">Getting started</h1>
+<p>So you'd like to manage your windows, maybe even tile them?</p>
+<p>Well aren't you in luck!</p>
+<p>The following is a quick guide for how to get your system set up for building a penrose based
+window manager and getting it running. By the end of this guide you will have a <em>very</em> minimal
+window manager that you can use as a starting point.</p>
+<p>If you've ever tried out <a href="https://xmonad.org/">xmonad</a> before then the overall design and feel of how penrose works
+should feel (somewhat) familiar. The key thing is this: penrose is a library for writing a window
+manager. It's not a pre-built window manager that you then configure via a config file. In practical
+terms what that means is that it's time to get our hands dirty with writing some code!</p>
+<h2 id="step-0-getting-set-up-with-rust">Step 0: Getting set up with Rust</h2>
+<p>If you have Rust on your system already, congrats! You can skip this section.</p>
+<p>For everyone else, head on over to <a href="https://www.rust-lang.org/">rust-lang.org</a> and click on the big &quot;Get Started button&quot;
+which will advise you to curl a setup script straight into <strong>sh</strong>. If you'd prefer to see what
+you are about to run, the following should do the trick:</p>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl --proto </span><span style="color:#b8bb26;">&#39;=https&#39;</span><span style="color:#fdf4c1;"> --tlsv1.2 -sSf https://sh.rustup.rs </span><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1;"> rustup.sh
+</span><span>
+</span><span style="font-style:italic;color:#928374;"># Open and peruse in your editor of choice
+</span><span style="color:#fdf4c1;">$ $EDITOR rustup.sh
+</span><span>
+</span><span style="font-style:italic;color:#928374;"># Then, to carry out the actual install
+</span><span style="color:#fdf4c1;">$ chmod +x rustup.sh
+</span><span style="color:#fdf4c1;">$ ./rustup.sh
+</span></code></pre>
+<p>Now simply sit back and wait for while Rust is installed on your system.</p>
+<h2 id="initialising-your-window-manager-crate">Initialising your window manager crate</h2>
+<p>&quot;Crates&quot; are Rust's term for what you might be more used to calling a package or project.
+Either way, for your window manager you are going to want to make a new <em>binary</em> crate like so:</p>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cargo new --bin my_penrose_config
+</span><span style="color:#fdf4c1;">$ cd my_penrose_config
+</span><span style="color:#fdf4c1;">$ exa -T  </span><span style="font-style:italic;color:#928374;"># or just plain old &#39;ls&#39; if you prefer
+</span><span style="color:#fabd2f;">.
+</span><span style="color:#fdf4c1;">├── Cargo.toml
+</span><span style="color:#fdf4c1;">└── src
+</span><span>   </span><span style="color:#fdf4c1;">└── main.rs
+</span></code></pre>
+<p>If you open up <code>main.rs</code> you should see a simple hello world program:</p>
+<pre data-lang="rust" style="background-color:#282828;color:#fdf4c1aa;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#fa5c4b;">fn </span><span style="color:#8ec07c;">main</span><span>() {
+</span><span>    </span><span style="color:#fabd2f;">println!</span><span>(</span><span style="color:#b8bb26;">&quot;Hello, world!&quot;</span><span>);
+</span><span>}
+</span></code></pre>
+<p>We can run this using <code>cargo run</code> to check everything is good to go:</p>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cargo run
+</span><span>   </span><span style="color:#fdf4c1;">Compiling example v0.1.0 (/home/roger/my_penrose_config</span><span>)
+</span><span>    </span><span style="color:#fdf4c1;">Finished dev </span><span style="color:#fa5c4b;">[</span><span style="color:#fdf4c1;">unoptimized + debuginfo</span><span style="color:#fa5c4b;">]</span><span style="color:#fdf4c1;"> target(s</span><span>) </span><span style="color:#fdf4c1;">in 0.43s
+</span><span>     </span><span style="color:#fdf4c1;">Running `target/debug/example`
+</span><span style="color:#fdf4c1;">Hello, world!
+</span></code></pre>
+<p>Nice! Time to write a window manager.</p>
+<h2 id="writing-your-main-rs">Writing your main.rs</h2>
+<p>You should now have a new git repo with the content shown above. At the moment,
+your <strong>main.rs</strong> is just a simple Hello World program (we'll be fixing that soon)
+but first we need to add some dependencies. Most importantly, we need to add
+penrose itself but we're also going to add another crate as well to make our lives
+a little easier: <a href="https://crates.io/crates/tracing-subscriber">tracing-subscriber</a> can be used to collect and process the logs
+that penrose generates as it runs. It's by no means <em>required</em> to collect the logs
+but it definitely helps track down issues with your window manager if you can see
+what's going on inside as it runs!</p>
+<p>Thankfully, adding new dependencies is also something cargo can handle for us! It
+even handles enabling optional features for us (which is handy, because we need to
+do just that with <code>tracing-subscriber</code>):</p>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cargo add tracing-subscriber --features env-filter
+</span></code></pre>
+<blockquote>
+<p><strong>NOTE</strong>: For now, you will need to add penrose as a git dependency. Once <code>v0.3.0</code> is stable
+you will be able to add it in the same way as shown above for tracing-subscriber.</p>
+</blockquote>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cargo add penrose --git https://github.com/sminez/penrose
+</span></code></pre>
+<p>With that done, we're going to copy the <a href="https://github.com/sminez/penrose/blob/develop/examples/minimal/main.rs">minimal example</a> from the penrose repository in
+GitHub as our window manager. Either copy and paste the contents of the example into your
+<code>main.rs</code> or (my prefered choice) use wget to pull it directly from GitHub:</p>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cd src
+</span><span style="color:#fdf4c1;">$ rm main.rs
+</span><span style="color:#fdf4c1;">$ wget https://raw.githubusercontent.com/sminez/penrose/develop/examples/minimal/main.rs
+</span></code></pre>
+<p>For reference, your <code>main.rs</code> should now look like this:</p>
+<pre data-lang="rust" style="background-color:#282828;color:#fdf4c1aa;" class="language-rust "><code class="language-rust" data-lang="rust"><span>{{ </span><span style="color:#fe8019;">#</span><span>include </span><span style="color:#fe8019;">../../</span><span>examples</span><span style="color:#fe8019;">/</span><span>minimal</span><span style="color:#fe8019;">/</span><span>main.rs }}
+</span></code></pre>
+<h3 id="checking-we-re-good-to-go">Checking we're good to go</h3>
+<p>Hopefully you've spotted that the end of the example includes a test. Now, it's entirely up
+to you whether or not you keep (and run) the test but it's highly recommended that you do.
+It's actually recommended that you write <em>more</em> tests for your window manager as you extend
+the features you want and write your own custom code!</p>
+<p>Penrose itself has a pretty comprehensive test suite of the main logic and provides a variety
+of ways for you to check and confirm that things are behaving in the way that you expect.
+To run our test (and any others that you have added yourself) we simply need to run <code>cargo test</code>:</p>
+<blockquote>
+<p><strong>NOTE</strong>: This test (and the example itself) require you to have the <a href="https://wiki.archlinux.org/title/Xmodmap">xmodmap</a> utility
+installed on your system in order to parse our keybindings.</p>
+<p>Make sure you have it installed before going further!</p>
+</blockquote>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cargo test
+</span><span>    </span><span style="color:#fdf4c1;">Finished test </span><span style="color:#fa5c4b;">[</span><span style="color:#fdf4c1;">unoptimized + debuginfo</span><span style="color:#fa5c4b;">]</span><span style="color:#fdf4c1;"> target(s</span><span>) </span><span style="color:#fdf4c1;">in 0.03s
+</span><span>     </span><span style="color:#fdf4c1;">Running unittests src/main.rs (target/debug/deps/example-1562870d47d380ed</span><span>)
+</span><span>
+</span><span style="color:#fdf4c1;">running 1 test
+</span><span style="color:#fdf4c1;">test tests::bindings_parse_correctly_with_xmodmap ... ok
+</span><span>
+</span><span style="color:#fdf4c1;">test result: ok. 1 passed</span><span style="color:#fe8019;">; </span><span style="color:#fdf4c1;">0 failed</span><span style="color:#fe8019;">; </span><span style="color:#fdf4c1;">0 ignored</span><span style="color:#fe8019;">; </span><span style="color:#fdf4c1;">0 measured</span><span style="color:#fe8019;">; </span><span style="color:#fdf4c1;">0 filtered out</span><span style="color:#fe8019;">; </span><span style="color:#fdf4c1;">finished in 0.01s
+</span></code></pre>
+<p>You'll see a lot more output the first time you run the test as things are compiled, but so long
+as you see the test passing we should be good to take things for a spin!</p>
+<h2 id="making-use-of-our-new-window-manager">Making use of our new window manager</h2>
+<p>So far we've been building things in <code>debug</code> mode, which is exactly what we want when we're testing
+things out and running any test suites we have. For actually making use of our new window manager
+though, we want to switch to <code>release</code> mode:</p>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cargo build --release
+</span></code></pre>
+<p>You'll see a lot of output the first time round as the dependencies of Penrose itself are compiled,
+but after that your re-compile should be pretty quick following any changes that you make. Once the
+binary is compiled you should see it as a new executable in the <code>target/release</code> directory.</p>
+<p>The simplest way of running your new window manager is to login via a TTY and place the following
+in your <code>~/.xinitrc</code>:</p>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fabd2f;">exec</span><span style="color:#fdf4c1;"> /home/roger/my_penrose_config/target/release/my_penrose_config </span><span style="color:#fe8019;">&amp;&gt; </span><span style="color:#fdf4c1;">~/.penrose.log
+</span></code></pre>
+<p>Then, you can simply type <code>startx</code> after logging in and your window manager will start up, with the
+log output available in my your home directory as <code>.penrose.log</code>!</p>
+<p>If logging in and starting your graphical session from a TTY is &quot;too hipster&quot; for you (which, lets be
+honest, it is), you might want to look at installing and running a <a href="https://wiki.archlinux.org/title/Display_manager#Run_~/.xinitrc_as_a_session">display manager</a> and using
+something like <a href="https://wiki.archlinux.org/title/Display_manager#Run_~/.xinitrc_as_a_session">xinit-session</a> to make this a little nicer. Alternatively, dropping something like
+the following into <code>/usr/share/xsessions</code> should also do the trick. The <a href="https://wiki.archlinux.org/title/Display_manager#Session_configuration">arch wiki</a> is a fantastic
+place to read up on how to do these sorts of things whether you use Arch Linux or not.</p>
+<pre data-lang="desktop" style="background-color:#282828;color:#fdf4c1aa;" class="language-desktop "><code class="language-desktop" data-lang="desktop"><span>[Desktop Entry]
+</span><span>Version=1.0
+</span><span>Name=Penrose Session
+</span><span>Comment=Use this session to run penrose as your desktop environment
+</span><span>Exec=/home/roger/my_penrose_config/target/release/my_penrose_config &amp;&gt; ~/.penrose.log
+</span><span>Icon=
+</span><span>Type=Application
+</span><span>DesktopNames=Penrose
+</span></code></pre>
+<h2 id="profit">Profit</h2>
+<p>And that's it!</p>
+<p>You are now the proud owner of a shiny new window manager. From this point on you can start tinkering
+to your heart's content and setting things up exactly how you want. Speaking from personal experience,
+I would advise that you commit your changes to your window manager <em>regularly</em> and that you make sure
+you know how to revert to your last good state in case you manage to introduce any particularly nasty
+bugs into your setup. If that happens, simply rebuild your previous good state and get to work on
+fixing your bug.</p>
+<p>The <a href="https://github.com/sminez/penrose/blob/develop/scripts/xephyr.sh">xephyr.sh</a> script in the GitHub repository can be used to run a given example in an embedded
+X session if you want a little bit of safety while you sanity check changes that you are making.
+Details of how it works are in a comment at the top of the script and <code>examples/local_test</code> is git
+ignored for you to be able to have a place to try things out.</p>
+<p>The rest of this book goes on to cover some of the inner workings of the main library, how to write
+and work with extensions and generally have fun tinkering with your window manager.</p>
+<p>Happy window managing!
+
+  </article>
+
+    </main>
+
+    <script type="text/javascript" src="https://sminez.github.io/themes.js"></script>
+
+    <script>
+      function burger() {
+        var x = document.getElementById("bger");
+        if (x.style.display === "block") {
+          x.style.display = "none";
+        } else {
+          x.style.display = "block";
+        }
+      }
+      </script>
+  </body>
+</html>

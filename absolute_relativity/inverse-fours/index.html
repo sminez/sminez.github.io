@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> sminez.github.io | Inverse Fours </title>
+    <link rel="stylesheet" href="https://sminez.github.io/main.css">
+  </head>
+
+  <body>
+    <nav>
+      <div id="subnav">
+        <form class="theme-selector">
+          <button type="button" id="theme-light-button" class="theme-button" onclick="enableTheme('light', true)">&#9706;</button>
+          <button type="button" id="theme-dark-button"  class="theme-button enabled" onclick="enableTheme('dark', true)">&#9705;</button>
+        </form>
+      </div>
+
+    
+  <ul id="breadcrumbs">
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;">
+          sminez.github.io
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+      
+      <li>
+        <a href="https:&#x2F;&#x2F;sminez.github.io&#x2F;absolute_relativity&#x2F;">
+          Absolute Relativity
+        </a>
+        &nbsp;&#8594;&nbsp;
+      </li>
+    
+  </ul>
+  <h1>Inverse Fours</h1><em></em>
+
+    </nav>
+
+    <main>
+    
+  <div id="taxonomies">
+    
+  </div>
+
+  
+  
+    
+    
+      
+      
+    
+      
+      
+    
+  
+
+  
+
+  <article>
+    <h2 id="finding-inverses-for-4-element-multi-vectors">Finding inverses for 4 element multi-vectors</h2>
+<p>The following program makes use of the arthroprod library to find inverse
+multi-vectors for Zet based, 4-element multi-vectors.</p>
+<h3 id="program">Program</h3>
+<pre data-lang="rust" style="background-color:#282828;color:#fdf4c1aa;" class="language-rust "><code class="language-rust" data-lang="rust"><span>#[</span><span style="color:#fdf4c1;">macro_use</span><span>]
+</span><span style="color:#fa5c4b;">extern crate</span><span> arthroprod;
+</span><span>
+</span><span style="color:#fa5c4b;">use </span><span>std::collections::HashSet;
+</span><span>
+</span><span style="color:#fa5c4b;">use </span><span>arthroprod::algebra::{full, Form, MultiVector, </span><span style="color:#fdf4c1;">AR</span><span>};
+</span><span style="color:#fa5c4b;">use </span><span>arthroprod::prelude::</span><span style="color:#fe8019;">*</span><span>;
+</span><span>
+</span><span style="font-style:italic;color:#928374;">/// Helper for forming products and simplifying the resulting terms
+</span><span style="color:#fa5c4b;">fn </span><span style="color:#8ec07c;">simplified_product</span><span>(</span><span style="color:#fdf4c1;">m</span><span>: </span><span style="color:#fe8019;">&amp;</span><span>MultiVector, </span><span style="color:#fdf4c1;">f</span><span>: impl Fn(&amp;</span><span style="color:#fdf4c1;">MultiVector</span><span>) -&gt; MultiVector) -&gt; MultiVector {
+</span><span>    </span><span style="color:#fa5c4b;">let mut</span><span> res: MultiVector </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">full</span><span>(</span><span style="color:#fe8019;">&amp;</span><span>m.</span><span style="color:#fabd2f;">clone</span><span>(), </span><span style="color:#fe8019;">&amp;</span><span style="color:#fabd2f;">f</span><span>(</span><span style="color:#fe8019;">&amp;</span><span>m.</span><span style="color:#fabd2f;">clone</span><span>()));
+</span><span>    res.</span><span style="color:#fabd2f;">simplify</span><span>();
+</span><span>    res
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#928374;">/// display the alpha values contained within a multivector
+</span><span style="color:#fa5c4b;">fn </span><span style="color:#8ec07c;">simple_form_rep</span><span>(</span><span style="color:#fdf4c1;">m</span><span>: </span><span style="color:#fe8019;">&amp;</span><span>MultiVector) -&gt; String {
+</span><span>    </span><span style="color:#fa5c4b;">let</span><span> forms: HashSet&lt;Form&gt; </span><span style="color:#fe8019;">=</span><span> m.</span><span style="color:#fabd2f;">as_terms</span><span>().</span><span style="color:#fabd2f;">iter</span><span>().</span><span style="color:#fabd2f;">map</span><span>(|</span><span style="color:#fdf4c1;">a</span><span>| a.</span><span style="color:#fabd2f;">form</span><span>()).</span><span style="color:#fabd2f;">collect</span><span>();
+</span><span>    </span><span style="color:#fa5c4b;">let mut</span><span> fs: </span><span style="color:#fabd2f;">Vec</span><span>&lt;</span><span style="color:#fe8019;">&amp;</span><span>Form&gt; </span><span style="color:#fe8019;">=</span><span> forms.</span><span style="color:#fabd2f;">iter</span><span>().</span><span style="color:#fabd2f;">collect</span><span>();
+</span><span>    fs.</span><span style="color:#fabd2f;">sort</span><span>();
+</span><span>    fs.</span><span style="color:#fabd2f;">iter</span><span>()
+</span><span>        .</span><span style="color:#fabd2f;">map</span><span>(|</span><span style="color:#fdf4c1;">f</span><span>| </span><span style="color:#fabd2f;">format!</span><span>(</span><span style="color:#b8bb26;">&quot;a</span><span style="color:#fdf4c1;">{}</span><span style="color:#b8bb26;">&quot;</span><span>, f))
+</span><span>        .collect::&lt;</span><span style="color:#fabd2f;">Vec</span><span>&lt;</span><span style="color:#fabd2f;">String</span><span>&gt;&gt;()
+</span><span>        .</span><span style="color:#fabd2f;">join</span><span>(</span><span style="color:#b8bb26;">&quot; &quot;</span><span>)
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#928374;">/// Print a MultiVector if it is a pure scalar, otherwise list the forms it is composed of
+</span><span style="color:#fa5c4b;">fn </span><span style="color:#8ec07c;">print_if_scalar</span><span>(</span><span style="color:#fdf4c1;">name</span><span>: </span><span style="color:#fe8019;">&amp;</span><span style="color:#fa5c4b;">str</span><span>, </span><span style="color:#fdf4c1;">m</span><span>: MultiVector) {
+</span><span>    </span><span style="color:#fa5c4b;">if</span><span> m.</span><span style="color:#fabd2f;">is_scalar</span><span>() {
+</span><span>        </span><span style="color:#fabd2f;">println!</span><span>(</span><span style="color:#b8bb26;">&quot;</span><span style="color:#fdf4c1;">{}</span><span style="color:#b8bb26;">: </span><span style="color:#fdf4c1;">{}</span><span style="color:#b8bb26;">&quot;</span><span>, name, m)
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="color:#fa5c4b;">fn </span><span style="color:#8ec07c;">main</span><span>() {
+</span><span>    </span><span style="font-style:italic;color:#928374;">// MultiVector product functions
+</span><span>    </span><span style="color:#fa5c4b;">let </span><span style="color:#8ec07c;">squared </span><span style="color:#fe8019;">= </span><span>|</span><span style="color:#fdf4c1;">m</span><span>: </span><span style="color:#fe8019;">&amp;</span><span>MultiVector| </span><span style="color:#fabd2f;">simplified_product</span><span>(m, |</span><span style="color:#fdf4c1;">n</span><span>| n.</span><span style="color:#fabd2f;">clone</span><span>());
+</span><span>    </span><span style="color:#fa5c4b;">let </span><span style="color:#8ec07c;">phi </span><span style="color:#fe8019;">= </span><span>|</span><span style="color:#fdf4c1;">m</span><span>: </span><span style="color:#fe8019;">&amp;</span><span>MultiVector| </span><span style="color:#fabd2f;">simplified_product</span><span>(m, |</span><span style="color:#fdf4c1;">n</span><span>| n.</span><span style="color:#fabd2f;">hermitian</span><span>());
+</span><span>    </span><span style="color:#fa5c4b;">let </span><span style="color:#8ec07c;">ddaggered </span><span style="color:#fe8019;">= </span><span>|</span><span style="color:#fdf4c1;">m</span><span>: </span><span style="color:#fe8019;">&amp;</span><span>MultiVector| </span><span style="color:#fabd2f;">simplified_product</span><span>(m, |</span><span style="color:#fdf4c1;">n</span><span>| n.</span><span style="color:#fabd2f;">double_dagger</span><span>());
+</span><span>    </span><span style="color:#fa5c4b;">let </span><span style="color:#8ec07c;">vdm_scalar </span><span style="color:#fe8019;">= </span><span>|</span><span style="color:#fdf4c1;">m</span><span>: </span><span style="color:#fe8019;">&amp;</span><span>MultiVector| </span><span style="color:#fabd2f;">simplified_product</span><span>(</span><span style="color:#fe8019;">&amp;</span><span style="color:#fabd2f;">phi</span><span>(</span><span style="color:#fe8019;">&amp;</span><span>m), |</span><span style="color:#fdf4c1;">n</span><span>| n.</span><span style="color:#fabd2f;">diamond</span><span>());
+</span><span>
+</span><span>    </span><span style="color:#fa5c4b;">let</span><span> time_like </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">vec!</span><span>[</span><span style="color:#fabd2f;">term!</span><span>(), </span><span style="color:#fabd2f;">term!</span><span>(</span><span style="color:#d3869b;">0</span><span>), </span><span style="color:#fabd2f;">term!</span><span>(</span><span style="color:#d3869b;">1 2 3</span><span>), </span><span style="color:#fabd2f;">term!</span><span>(</span><span style="color:#d3869b;">0 1 2 3</span><span>)];
+</span><span>    </span><span style="color:#fa5c4b;">let</span><span> space_like </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">vec!</span><span>[B(), T(), A(), E()];
+</span><span>
+</span><span>    </span><span style="color:#fa5c4b;">for</span><span> t </span><span style="color:#fe8019;">in</span><span> time_like.</span><span style="color:#fabd2f;">iter</span><span>() {
+</span><span>        </span><span style="color:#fa5c4b;">for</span><span> s </span><span style="color:#fe8019;">in</span><span> space_like.</span><span style="color:#fabd2f;">iter</span><span>() {
+</span><span>            </span><span style="color:#fa5c4b;">let</span><span> mvec </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">mvec!</span><span>[s, t];
+</span><span>
+</span><span>            </span><span style="color:#fabd2f;">println!</span><span>(</span><span style="color:#b8bb26;">&quot;MultiVector = {{ </span><span style="color:#fdf4c1;">{} </span><span style="color:#b8bb26;">}}&quot;</span><span>, </span><span style="color:#fabd2f;">simple_form_rep</span><span>(</span><span style="color:#fe8019;">&amp;</span><span>mvec));
+</span><span>            </span><span style="color:#fabd2f;">print_if_scalar</span><span>(</span><span style="color:#b8bb26;">&quot;squared&quot;</span><span>, </span><span style="color:#fabd2f;">squared</span><span>(</span><span style="color:#fe8019;">&amp;</span><span>mvec));
+</span><span>            </span><span style="color:#fabd2f;">print_if_scalar</span><span>(</span><span style="color:#b8bb26;">&quot;phi&quot;</span><span>, </span><span style="color:#fabd2f;">phi</span><span>(</span><span style="color:#fe8019;">&amp;</span><span>mvec));
+</span><span>            </span><span style="color:#fabd2f;">print_if_scalar</span><span>(</span><span style="color:#b8bb26;">&quot;double_dagger&quot;</span><span>, </span><span style="color:#fabd2f;">ddaggered</span><span>(</span><span style="color:#fe8019;">&amp;</span><span>mvec));
+</span><span>            </span><span style="color:#fabd2f;">print_if_scalar</span><span>(</span><span style="color:#b8bb26;">&quot;VdM_scalar&quot;</span><span>, </span><span style="color:#fabd2f;">vdm_scalar</span><span>(</span><span style="color:#fe8019;">&amp;</span><span>mvec));
+</span><span>            </span><span style="color:#fabd2f;">println!</span><span>(</span><span style="color:#b8bb26;">&quot;\n&quot;</span><span>);
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<h3 id="output">Output</h3>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cargo run --bin</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">inverse-fours
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { ap a23 a31 a12 }
+</span><span style="color:#fdf4c1;">phi: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξp^2, +ξ23^2, +ξ31^2, +ξ12^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">double_dagger: {
+</span><span style="color:#fdf4c1;">  ap    ( -ξp^2, -ξ23^2, -ξ31^2, -ξ12^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξp^4, +ξp^2.ξ23^2, +ξp^2.ξ31^2, +ξp^2.ξ12^2, +ξ23^4, +ξ23^2.ξ31^2
+</span><span style="color:#fdf4c1;">           +ξ23^2.ξ12^2, +ξ31^4, +ξ31^2.ξ12^2, +ξ12^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { ap a023 a031 a012 }
+</span><span style="color:#fdf4c1;">phi: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξp^2, +ξ023^2, +ξ031^2, +ξ012^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξp^4, +ξp^2.ξ023^2, +ξp^2.ξ031^2, +ξp^2.ξ012^2, +ξ023^4, +ξ023^2.ξ031^2
+</span><span style="color:#fdf4c1;">           +ξ023^2.ξ012^2, +ξ031^4, +ξ031^2.ξ012^2, +ξ012^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { ap a1 a2 a3 }
+</span><span style="color:#fdf4c1;">phi: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξp^2, +ξ1^2, +ξ2^2, +ξ3^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξp^4, +ξp^2.ξ1^2, +ξp^2.ξ2^2, +ξp^2.ξ3^2, +ξ1^4, +ξ1^2.ξ2^2
+</span><span style="color:#fdf4c1;">           +ξ1^2.ξ3^2, +ξ2^4, +ξ2^2.ξ3^2, +ξ3^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { ap a01 a02 a03 }
+</span><span style="color:#fdf4c1;">double_dagger: {
+</span><span style="color:#fdf4c1;">  ap    ( -ξp^2, +ξ01^2, +ξ02^2, +ξ03^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξp^4, -ξp^2.ξ01^2, -ξp^2.ξ02^2, -ξp^2.ξ03^2, +ξ01^4, +ξ01^2.ξ02^2
+</span><span style="color:#fdf4c1;">           +ξ01^2.ξ03^2, +ξ02^4, +ξ02^2.ξ03^2, +ξ03^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { a23 a31 a12 a0 }
+</span><span style="color:#fdf4c1;">phi: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ23^2, +ξ31^2, +ξ12^2, +ξ0^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">double_dagger: {
+</span><span style="color:#fdf4c1;">  ap    ( -ξ23^2, -ξ31^2, -ξ12^2, -ξ0^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξ23^4, +ξ23^2.ξ31^2, +ξ23^2.ξ12^2, +ξ23^2.ξ0^2, +ξ31^4, +ξ31^2.ξ12^2
+</span><span style="color:#fdf4c1;">           +ξ31^2.ξ0^2, +ξ12^4, +ξ12^2.ξ0^2, +ξ0^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { a0 a023 a031 a012 }
+</span><span style="color:#fdf4c1;">phi: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ0^2, +ξ023^2, +ξ031^2, +ξ012^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξ0^4, +ξ0^2.ξ023^2, +ξ0^2.ξ031^2, +ξ0^2.ξ012^2, +ξ023^4, +ξ023^2.ξ031^2
+</span><span style="color:#fdf4c1;">           +ξ023^2.ξ012^2, +ξ031^4, +ξ031^2.ξ012^2, +ξ012^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { a0 a1 a2 a3 }
+</span><span style="color:#fdf4c1;">squared: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ0^2, -ξ1^2, -ξ2^2, -ξ3^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">double_dagger: {
+</span><span style="color:#fdf4c1;">  ap    ( -ξ0^2, +ξ1^2, +ξ2^2, +ξ3^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξ0^4, -ξ0^2.ξ1^2, -ξ0^2.ξ2^2, -ξ0^2.ξ3^2, +ξ1^4, +ξ1^2.ξ2^2
+</span><span style="color:#fdf4c1;">           +ξ1^2.ξ3^2, +ξ2^4, +ξ2^2.ξ3^2, +ξ3^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { a0 a01 a02 a03 }
+</span><span style="color:#fdf4c1;">squared: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ0^2, +ξ01^2, +ξ02^2, +ξ03^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">phi: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ0^2, +ξ01^2, +ξ02^2, +ξ03^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξ0^4, +ξ0^2.ξ01^2, +ξ0^2.ξ02^2, +ξ0^2.ξ03^2, +ξ01^4, +ξ01^2.ξ02^2
+</span><span style="color:#fdf4c1;">           +ξ01^2.ξ03^2, +ξ02^4, +ξ02^2.ξ03^2, +ξ03^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { a23 a31 a12 a123 }
+</span><span style="color:#fdf4c1;">phi: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ23^2, +ξ31^2, +ξ12^2, +ξ123^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">double_dagger: {
+</span><span style="color:#fdf4c1;">  ap    ( -ξ23^2, -ξ31^2, -ξ12^2, -ξ123^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξ23^4, +ξ23^2.ξ31^2, +ξ23^2.ξ12^2, +ξ23^2.ξ123^2, +ξ31^4, +ξ31^2.ξ12^2
+</span><span style="color:#fdf4c1;">           +ξ31^2.ξ123^2, +ξ12^4, +ξ12^2.ξ123^2, +ξ123^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { a023 a031 a012 a123 }
+</span><span style="color:#fdf4c1;">squared: {
+</span><span style="color:#fdf4c1;">  ap    ( -ξ023^2, -ξ031^2, -ξ012^2, +ξ123^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">double_dagger: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ023^2, +ξ031^2, +ξ012^2, -ξ123^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξ023^4, +ξ023^2.ξ031^2, +ξ023^2.ξ012^2, -ξ023^2.ξ123^2, +ξ031^4, +ξ031^2.ξ012^2
+</span><span style="color:#fdf4c1;">           -ξ031^2.ξ123^2, +ξ012^4, -ξ012^2.ξ123^2, +ξ123^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { a123 a1 a2 a3 }
+</span><span style="color:#fdf4c1;">phi: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ123^2, +ξ1^2, +ξ2^2, +ξ3^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξ123^4, +ξ123^2.ξ1^2, +ξ123^2.ξ2^2, +ξ123^2.ξ3^2, +ξ1^4, +ξ1^2.ξ2^2
+</span><span style="color:#fdf4c1;">           +ξ1^2.ξ3^2, +ξ2^4, +ξ2^2.ξ3^2, +ξ3^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { a123 a01 a02 a03 }
+</span><span style="color:#fdf4c1;">squared: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ123^2, +ξ01^2, +ξ02^2, +ξ03^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">phi: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ123^2, +ξ01^2, +ξ02^2, +ξ03^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξ123^4, +ξ123^2.ξ01^2, +ξ123^2.ξ02^2, +ξ123^2.ξ03^2, +ξ01^4, +ξ01^2.ξ02^2
+</span><span style="color:#fdf4c1;">           +ξ01^2.ξ03^2, +ξ02^4, +ξ02^2.ξ03^2, +ξ03^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { a23 a31 a12 a0123 }
+</span><span style="color:#fdf4c1;">double_dagger: {
+</span><span style="color:#fdf4c1;">  ap    ( -ξ23^2, -ξ31^2, -ξ12^2, +ξ0123^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξ23^4, +ξ23^2.ξ31^2, +ξ23^2.ξ12^2, -ξ23^2.ξ0123^2, +ξ31^4, +ξ31^2.ξ12^2
+</span><span style="color:#fdf4c1;">           -ξ31^2.ξ0123^2, +ξ12^4, -ξ12^2.ξ0123^2, +ξ0123^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { a023 a031 a012 a0123 }
+</span><span style="color:#fdf4c1;">squared: {
+</span><span style="color:#fdf4c1;">  ap    ( -ξ023^2, -ξ031^2, -ξ012^2, -ξ0123^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">phi: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ023^2, +ξ031^2, +ξ012^2, +ξ0123^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">double_dagger: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ023^2, +ξ031^2, +ξ012^2, +ξ0123^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξ023^4, +ξ023^2.ξ031^2, +ξ023^2.ξ012^2, +ξ023^2.ξ0123^2, +ξ031^4, +ξ031^2.ξ012^2
+</span><span style="color:#fdf4c1;">           +ξ031^2.ξ0123^2, +ξ012^4, +ξ012^2.ξ0123^2, +ξ0123^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { a1 a2 a3 a0123 }
+</span><span style="color:#fdf4c1;">squared: {
+</span><span style="color:#fdf4c1;">  ap    ( -ξ1^2, -ξ2^2, -ξ3^2, -ξ0123^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">phi: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ1^2, +ξ2^2, +ξ3^2, +ξ0123^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">double_dagger: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ1^2, +ξ2^2, +ξ3^2, +ξ0123^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξ1^4, +ξ1^2.ξ2^2, +ξ1^2.ξ3^2, +ξ1^2.ξ0123^2, +ξ2^4, +ξ2^2.ξ3^2
+</span><span style="color:#fdf4c1;">           +ξ2^2.ξ0123^2, +ξ3^4, +ξ3^2.ξ0123^2, +ξ0123^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span>
+</span><span style="color:#fdf4c1;">MultiVector = { a0123 a01 a02 a03 }
+</span><span style="color:#fdf4c1;">phi: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ0123^2, +ξ01^2, +ξ02^2, +ξ03^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">double_dagger: {
+</span><span style="color:#fdf4c1;">  ap    ( +ξ0123^2, +ξ01^2, +ξ02^2, +ξ03^2 )
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">VdM_scalar: {
+</span><span style="color:#fdf4c1;">  ap    (
+</span><span style="color:#fdf4c1;">           +ξ0123^4, +ξ0123^2.ξ01^2, +ξ0123^2.ξ02^2, +ξ0123^2.ξ03^2, +ξ01^4, +ξ01^2.ξ02^2
+</span><span style="color:#fdf4c1;">           +ξ01^2.ξ03^2, +ξ02^4, +ξ02^2.ξ03^2, +ξ03^4
+</span><span style="color:#fdf4c1;">  )
+</span><span style="color:#fdf4c1;">}
+</span></code></pre>
+
+  </article>
+
+    </main>
+
+    <script type="text/javascript" src="https://sminez.github.io/themes.js"></script>
+
+    <script>
+      function burger() {
+        var x = document.getElementById("bger");
+        if (x.style.display === "block") {
+          x.style.display = "none";
+        } else {
+          x.style.display = "block";
+        }
+      }
+      </script>
+  </body>
+</html>
