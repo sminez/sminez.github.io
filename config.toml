@@ -1,18 +1,33 @@
-title = "sminez.github.io"
-description = "Thoughts and ideas: some better than others"
+# The URL the site will be built for
 base_url = "https://sminez.github.io"
-
+title = "sminez.github.io"
+theme = "terminimal"
 compile_sass = true
 build_search_index = true
+generate_feed = true
+feed_filename = "rss.xml"
 taxonomies = [
-    {name = "tags", rss = true},
+    { name = "tags" },
 ]
 
+
 [markdown]
+highlight_theme = "ayu-mirage"
 highlight_code = true
-highlight_theme = "gruvbox-dark"
-smart_punctuation = false
 render_emoji = true
 
+
 [extra]
-toc_at_n_headings = 8
+logo_text = "sminez.github.io"
+author = "Innes Anderson-Morrison (sminez)"
+accent_color = "orange"
+menu_items = [
+    { name = "about", url = "$BASE_URL/about" },
+    { name = "blog", url = "$BASE_URL" },
+    { name = "archive", url = "$BASE_URL/archive" },
+    { name = "tags", url = "$BASE_URL/tags" },
+    { name = "projects", url = "$BASE_URL/projects" },
+    { name = "github", url = "https://github.com/sminez", newtab = true },
+    { name = "photography", url = "https://innesandersonmor.myportfolio.com/work", newtab = true },
+    { name = "youtube", url = "https://www.youtube.com/channel/UC04N-5DxEWH4ioK0bvZmF_Q", newtab = true },
+]
