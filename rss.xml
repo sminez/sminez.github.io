@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>sminez.github.io</title>
+      <link>https://sminez.github.io</link>
+      <description></description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://sminez.github.io/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Tue, 30 Apr 2024 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Where did Penrose come from?</title>
+          <pubDate>Tue, 30 Apr 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://sminez.github.io/where-did-penrose-come-from/</link>
+          <guid>https://sminez.github.io/where-did-penrose-come-from/</guid>
+          <description xml:base="https://sminez.github.io/where-did-penrose-come-from/">&lt;p&gt;In 2020 during lockdown at the height of the COVID-19 pandemic I (like so many others)
+found myself with a lot of time on my hands. A lot of people decided to take up a new
+hobby, maybe do some work on their house or perhaps get a dog.&lt;&#x2F;p&gt;
+&lt;p&gt;Me?&lt;&#x2F;p&gt;
+&lt;p&gt;I decided to write an X11 tiling window manager.&lt;&#x2F;p&gt;
+</description>
+      </item>
+      <item>
+          <title>About Me</title>
+          <pubDate>Mon, 29 Apr 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://sminez.github.io/about/</link>
+          <guid>https://sminez.github.io/about/</guid>
+          <description xml:base="https://sminez.github.io/about/">&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;sminez.github.io&#x2F;about&#x2F;me.jpg&quot; alt=&quot;me&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Hi, I&#x27;m Innes! I&#x27;m a software engineer, photographer and general all around nerd. I have a habit of
+telling people that I enjoy having hard problems to solve and then wondering why a lot of my time is
+taken up solving hard problems.&lt;&#x2F;p&gt;
+&lt;p&gt;For my day job I&#x27;ve worked for and with a variety of interesting people writing software and helping to
+improve the way that people go about their day to day (details can be found on &lt;a href=&quot;https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;innes-anderson-morrison-4a67b1b9&#x2F;&quot;&gt;LinkedIn&lt;&#x2F;a&gt; if that&#x27;s
+your sort of thing but I&#x27;m not very active there).&lt;&#x2F;p&gt;
+&lt;p&gt;When I&#x27;m on my own time I have a very low tolerance for being bored so you&#x27;ll often find me working on
+my own &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;sminez&quot;&gt;open source projects&lt;&#x2F;a&gt;, taking &lt;a href=&quot;https:&#x2F;&#x2F;innesandersonmor.myportfolio.com&#x2F;work&quot;&gt;photographs&lt;&#x2F;a&gt; and helping physicists with hypercomplex
+algebra and their associated &lt;a href=&quot;https:&#x2F;&#x2F;quicycle.com&#x2F;&quot;&gt;research&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;br&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;🔑 keybase:          &lt;a href=&quot;https:&#x2F;&#x2F;keybase.io&#x2F;idam&quot;&gt;idam&lt;&#x2F;a&gt; (&lt;a href=&quot;https:&#x2F;&#x2F;sminez.github.io&#x2F;keybase.txt&quot;&gt;verification for this site&lt;&#x2F;a&gt;)&lt;br&gt;
+🐘 mastodon:    &lt;a rel=&quot;me&quot; href=&quot;https:&#x2F;&#x2F;hachyderm.io&#x2F;@sminez&quot;&gt;@sminez@hachyderm.io&lt;&#x2F;a&gt;&lt;br&gt;
+📫 email:        &lt;a href=&quot;mailto:innes.andersonmorrison@gmail.com&quot;&gt;innes.andersonmorrison&lt;&#x2F;a&gt;&lt;br&gt;
+📷 instagram:     &lt;a href=&quot;https:&#x2F;&#x2F;www.instagram.com&#x2F;innes_photo&#x2F;&quot;&gt;innes_photo&lt;&#x2F;a&gt;&lt;br&gt;
+📹 youtube: &lt;a href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;channel&#x2F;UC04N-5DxEWH4ioK0bvZmF_Q&quot;&gt;sminez&lt;&#x2F;a&gt;&lt;br&gt;
+💻 github:      &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;sminez&#x2F;&quot;&gt;sminez&lt;&#x2F;a&gt;&lt;br&gt;&lt;&#x2F;p&gt;
+&lt;!-- soundcloud: [Sminez](https:&#x2F;&#x2F;soundcloud.com&#x2F;innes-anderson-morrison)&lt;br&gt; --&gt;
+&lt;hr &#x2F;&gt;
+</description>
+      </item>
+    </channel>
+</rss>
