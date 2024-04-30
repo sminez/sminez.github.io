@@ -6,8 +6,8 @@ tags = [ "penrose", "programming", "rust" ]
 +++
 
 In 2020 during lockdown at the height of the COVID-19 pandemic I (like so many others)
-found myself with a lot of time on my hands. Now a lot of people decided to take up a
-new hobby, maybe do some work on their house or perhaps get a dog.
+found myself with a lot of time on my hands. A lot of people decided to take up a new
+hobby, maybe do some work on their house or perhaps get a dog.
 
 Me?
 
@@ -54,7 +54,8 @@ names as search terms through the X11 docs to see how everything worked.
 
 After a surprisingly short amount of time I had something that worked! For a given definition
 of worked. It certainly wasn't stable yet and it was far from feature complete but it was a
-starting point that I understood and somewhere I could build from.
+starting point that I understood and somewhere I could build from. A couple of weeks later
+and I had something that was good _enough_ to start using in anger.
 
 <br>
 
@@ -100,8 +101,8 @@ originally tripped me up with the old C-style API.
 > videos on YouTube.
 
 Something as simple as getting a reference to the currently focused client window previously involved
-tracking checking top-level state on the window manager itself before falling back to indexing in to
-the list of known workspaces and checking the active workspace for a focused client.
+checking top-level state on the window manager itself before falling back to indexing in to the list
+of known workspaces and checking the active workspace for a focused client.
 
 But that only got you an _ID_. An ID that you then needed to look up in a top-level map to hopefully
 pull out the actual client state (assuming that all the book keeping of indices and map contents
@@ -121,7 +122,7 @@ fn focused_client(&self) -> Option<&Client> {
 }
 ```
 
-With zippers? Direct property access all the way down other than mapping over an `Option` to pop
+With zippers? Direct property access all the way down. At the end we map over an `Option` to pop
 off the focused client as there is no such thing as an empty stack: the stack itself is optional
 instead.
 
