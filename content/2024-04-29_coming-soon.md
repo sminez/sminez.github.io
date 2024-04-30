@@ -1,5 +1,6 @@
 +++
 title = "Coming Soon..."
+draft = true
 
 [taxonomies]
 tags = [ "announcement" ]

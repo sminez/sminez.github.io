@@ -1,9 +1,14 @@
 +++
-title = "sminez.github.io"
+title = "Blog"
+description = "sminez's blog"
 date = 2024-04-29
 
-paginate_by = 2
+insert_anchor_links = "heading"
+paginate_reversed = false
+paginate_by = 6
 sort_by = "date"
+
+generate_feed = true
 +++
 
 <!--
