@@ -2,6 +2,7 @@
 title = "About Me"
 path = "about"
 date = 2024-04-29
+generate_feeds = false
 +++
 
 ![me](me.jpg)
