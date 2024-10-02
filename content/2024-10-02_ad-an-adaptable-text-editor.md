@@ -25,9 +25,9 @@ To be fair, a large part of _why_ my project in particular has ended up being a 
 of work is thanks to some arguably questionable design limitations I placed on the
 initial project. Most importantly, I decided that I was going to limit myself to the
 bare minimum of dependencies. By which I mean `libc` and not much else (I caved and
-ended up pulling). Beyond that I also had a somewhat unconventional feature set in
-mind; one composed of my favourite pieces of functionality found in various text
-editors I've played around with during my career.
+ended up pulling in bitflags). Beyond that I also had a somewhat unconventional
+feature set in mind; one composed of my favourite pieces of functionality found in
+various text editors I've played around with during my career.
 
 Some of the feature set are probably quite obvious. When it comes to picking sides
 in the great holy war of Vim vs Emacs, I'm on the side of team modal editing (despite
@@ -59,7 +59,7 @@ for the Plan 9 operating system. If you've never watched this screencast before 
 highly recommend that you take a look at it now. It's a little over 20 minutes long
 and its a delightfully minimalist tour of a fascinating piece of software.
 
-Near the start of the screen cast, Russ refers to acme as "an IDE done right", redefining
+Near the start of the screencast, Russ refers to acme as "an IDE done right", redefining
 IDE as an "integratING development environment" rather than "integratED". The key
 distinction being an inversion of how you think about the relationship between the
 IDE and the rest of the system:
