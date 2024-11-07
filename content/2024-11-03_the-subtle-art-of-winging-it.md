@@ -104,7 +104,7 @@ interesting.
 ## Picking a project
 
 There really is no substitute for tackling a _real_ problem that you want to solve, and I
-do mean a problem that _you_ want to solve. The key part here is to throw yourselve into
+do mean a problem that _you_ want to solve. The key part here is to throw yourself into
 something that you personally find interesting. You're about to actively bite off way more
 than you can chew so whatever you decide to work on it needs to be something you care about
 enough to get you through the "oh my god what am I doing?" phase.
