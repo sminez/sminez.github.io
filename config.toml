@@ -1,6 +1,6 @@
 # The URL the site will be built for
-base_url = "https://sminez.github.io"
-title = "sminez.github.io"
+base_url = "https://www.sminez.dev"
+title = "sminez.dev"
 theme = "terminimal"
 compile_sass = true
 build_search_index = true
@@ -17,7 +17,7 @@ render_emoji = true
 
 
 [extra]
-logo_text = "sminez.github.io"
+logo_text = "sminez.dev"
 author = "Innes Anderson-Morrison (sminez)"
 accent_color = "orange"
 menu_items = [
