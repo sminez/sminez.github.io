@@ -179,7 +179,7 @@ protocol's 27 message types... there has to be a better way to do this.
 # Sans I/O: Oh, c'est le but
 
 Surprise! The answer is to do the sans I/O thing: who could have guessed. The problem we've
-made for ourselves is that we've burried the I/O operations we need to perform inside of our
+made for ourselves is that we've buried the I/O operations we need to perform inside of our
 nice I/O-free protocol code. If we can somehow lift the that _out_ then we'd be able to reuse
 the same protocol code for both the blocking API and the non-blocking one.
 
@@ -461,7 +461,7 @@ So how do we do _that_?
 
 When I first started learning Python one of my heros was (and still is) [Dave Beazley][15]. (If you've
 never watched Dave's presentations before then stop reading now and go and take a look. You won't be
-dissapointed.) Dave has a wonderful way of looking at an existing tool, in his case frequently the
+disappointed.) Dave has a wonderful way of looking at an existing tool, in his case frequently the
 Python interpreter, and working out what sorts of unexpected things you can do with it. Famously he
 has played around a lot with Python's generator functions and in particular he's given a number of
 talks on what you can do with the [send][16] method that allows you to write coroutines.
@@ -534,7 +534,7 @@ replicate them in Rust:
   3. Outside of the Generator this communication is split into two parts: receiving the value (from `next`)
      and sending the result back into the Generator (with `send`). In order to maintain the type safety we
      want around these values we're going to need to define both sides of this interface.
-  4. When the Generator is finished it can return a value (by raising a `StopIteration` execption in Python
+  4. When the Generator is finished it can return a value (by raising a `StopIteration` exception in Python
      but we'll gloss over that :grimacing:). For the Rust side of things we need to pay attention to the
      fact that the type of this return value is something else that we need to define as part of the contract
      between the state machine and whatever is running it.
