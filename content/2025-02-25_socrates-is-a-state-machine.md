@@ -45,7 +45,7 @@ so lets take a look at some code and commit some crimes in the name of learning.
 ## Parsing 9p messages
 
 For the rest of this blog post we're going to be using [9p][6] as our protocol of choice for our
-examples, specifically we're going to be looking at the implementation of the [ninep][7] cratte
+examples, specifically we're going to be looking at the implementation of the [ninep][7] crate
 that I maintain for providing the virtual filesystem interface to `ad`. Thankfully, the protocol
 itself is pretty minimal and the details of the structure of each message type and how to handle
 it are all covered in [the plan 9 man page][8] for the protocol.
