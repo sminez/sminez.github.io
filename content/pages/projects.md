@@ -17,6 +17,10 @@ path = "projects"
   - I prefer to have as little magic and framework between my tests and the logic under test.
 - [sandpiles][3]: Simple fractal generation using the [Abelian sandpile model][4].
   - Inspired by [this Numberphile video][5]: you've got to love a good fractal.
+- [raymart][10]: a simple ray tracer that supports loading .obj files
+  - Started off just with following the wonderful [ray tracing in one weekend][11] before
+    growing additional features. Taking things further is going to involve learning how to
+    write shaders.
 
 
 <br>
@@ -51,3 +55,5 @@ a pin in it I've settled for the following two categories:
   [7]: https://innesandersonmor.myportfolio.com/portfolio-not-people
   [8]: https://www.youtube.com/playlist?list=PLy2HjaQiG8lOxCKzuWKfmmXov4iEVOGOF
   [9]: https://github.com/sminez/penrose-from-scratch
+  [10]: https://github.com/sminez/raymart
+  [11]: https://raytracing.github.io/books/RayTracingInOneWeekend.html
