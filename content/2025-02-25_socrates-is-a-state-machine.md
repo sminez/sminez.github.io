@@ -489,15 +489,19 @@ def request_doubling(nums):
     return "done"
 
 
-print("starting generator")
+print("initializing generator")
 gen = request_doubling([1, 2, 3])
+print(gen)
 
+# when a generator first starts all we can do is call next()
+n = next(gen)
+
+# after that each send() is replying to the previous one and
+# receiving the next value out of the generator
 while True:
-    print("calling 'next'")
     try:
-        n = next(gen)
-        print("sending result")
-        gen.send(2 * n)
+        print("sending result & requesting next value")
+        n = gen.send(2 * n)
     except StopIteration as res:
         print(f"generator finished with result={res.value}")
         break
@@ -505,17 +509,16 @@ while True:
 
 Running this gives us the following output:
 ```
-$ python3 example.py
-starting generator
-calling 'next'
+initializing generator
+<generator object request_doubling at 0x72848c539210>
   requesting that 1 gets doubled...
-sending result
+sending result & requesting next value
   2 x 1 = 2
   requesting that 2 gets doubled...
-calling 'next'
-  2 x 2 = None
+sending result & requesting next value
+  2 x 2 = 4
   requesting that 3 gets doubled...
-sending result
+sending result & requesting next value
   2 x 3 = 6
 generator finished with result=done
 ```
@@ -531,9 +534,10 @@ replicate them in Rust:
   2. The `doubled = yield n` line is both sending and receiving a value by communicating with whatever is
      driving the Generator. In Python everything is dynamically typed but we're going to need to find a way
      of specifying the type of the values being sent and received.
-  3. Outside of the Generator this communication is split into two parts: receiving the value (from `next`)
-     and sending the result back into the Generator (with `send`). In order to maintain the type safety we
-     want around these values we're going to need to define both sides of this interface.
+  3. Outside of the Generator we need to kick things off by first calling `next` as we're not allowed to send
+     a value into a generator that's just started. After that, each call to `send` lining up with subsequent
+     `yields` from within the generator. This "priming the pump" step is a little annoying so we'll see if we
+     can avoid it in what we put together for our API.
   4. When the Generator is finished it can return a value (by raising a `StopIteration` exception in Python
      but we'll gloss over that :grimacing:). For the Rust side of things we need to pay attention to the
      fact that the type of this return value is something else that we need to define as part of the contract
