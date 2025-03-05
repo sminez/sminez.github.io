@@ -876,7 +876,7 @@ provided by the `Runner` that is going to be executing the state machine. The pu
 be able to call run we need to provide a `Handle`, the second of our two helper structs.
 
 > If you're wondering about the Unpin and 'static bounds on all the types, they're there to make
-> things place nice with tokio.
+> things play nice with tokio.
 
 So, what's a Handle? There's not much to it:
 ```rust
