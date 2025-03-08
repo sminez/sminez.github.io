@@ -6,6 +6,7 @@ compile_sass = true
 build_search_index = true
 generate_feeds = true
 feed_filenames = ["rss.xml"]
+author = "Innes Anderson-Morrison"
 taxonomies = [
     { name = "tags" },
 ]
@@ -30,4 +31,5 @@ menu_items = [
     { name = "github", url = "https://github.com/sminez", newtab = true },
     { name = "photography", url = "https://innesandersonmor.myportfolio.com/work", newtab = true },
     { name = "youtube", url = "https://www.youtube.com/channel/UC04N-5DxEWH4ioK0bvZmF_Q", newtab = true },
+    { name = "rss", url = "$BASE_URL/rss.xml" },
 ]
