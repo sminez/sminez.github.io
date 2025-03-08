@@ -4,7 +4,8 @@ title = "sminez.dev"
 theme = "terminimal"
 compile_sass = true
 build_search_index = true
-generate_feeds = false
+generate_feeds = true
+feed_filenames = ["rss.xml"]
 taxonomies = [
     { name = "tags" },
 ]

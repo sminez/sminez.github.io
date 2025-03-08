@@ -7,7 +7,7 @@ paginate_reversed = false
 paginate_by = 6
 sort_by = "date"
 
-generate_feeds = false
+generate_feeds = true
 +++
 
 <!--
