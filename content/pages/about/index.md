@@ -5,7 +5,7 @@ date = 2024-04-29
 generate_feeds = false
 +++
 
-![me](me.jpg)
+![me](me.png)
 
 Hi, I'm Innes! I'm a software engineer, photographer and general all around nerd. I have a habit of
 telling people that I enjoy having hard problems to solve and then wondering why a lot of my time is
