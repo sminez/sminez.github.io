@@ -11,7 +11,7 @@ configured and moved on from a long list of editors and IDEs so it was only real
 matter of time before I found myself wondering how hard it would be to write my own
 from scratch one rainy afternoon.
 
-Spoliers: turns out it's actually a fair amount of work. Who knew.
+Spoilers: turns out it's actually a fair amount of work. Who knew.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/jb2pAi5hLUg?si=BCPn_LhqCvdtP-9m"
  title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write;
@@ -97,7 +97,7 @@ While I absolutely love acme's approach to extending the functionality of the ed
 and the expressive power if provides to text via [the plumber](http://doc.cat-v.org/plan_9/4th_edition/papers/plumb),
 I'm simply to fond of modal editing and being able to write my own keyboard shortcuts.
 The actual "editor" part of acme is (unsurprisingly for plan 9) also incredibly minimal
-and what I _really_ want is something with a little bit more flexability.
+and what I _really_ want is something with a little bit more flexibility.
 
 The trick of course is to add something to this fantastic, minimalist editor without
 completely wrecking what makes it so fun and powerful in the first place. Not a simple

@@ -459,7 +459,7 @@ Really what we want is to have our cake and eat it. :cake:
 
 So how do we do _that_?
 
-When I first started learning Python one of my heros was (and still is) [Dave Beazley][15]. (If you've
+When I first started learning Python one of my heroes was (and still is) [Dave Beazley][15]. (If you've
 never watched Dave's presentations before then stop reading now and go and take a look. You won't be
 disappointed.) Dave has a wonderful way of looking at an existing tool, in his case frequently the
 Python interpreter, and working out what sorts of unexpected things you can do with it. Famously he

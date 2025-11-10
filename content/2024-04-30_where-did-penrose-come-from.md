@@ -176,7 +176,7 @@ wish worked another way.
 At the very least, it hopefully serves as a decent example of how a tiling window manager works
 and how to structure, test and maintain a non-trivial Rust project.
 
-If you are intested in learning more then I have a [YouTube playlist][6] covering how to write
+If you are interested in learning more then I have a [YouTube playlist][6] covering how to write
 your own window manager using penrose and some [guides and documentation][7] on how everything
 works written using the fantastic [mdBook][8].
 

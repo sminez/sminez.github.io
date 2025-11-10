@@ -90,7 +90,7 @@ In art this is often practiced using a sketchbook and picking something you can 
 front of you. Your first attempts will be pretty bad, but over time you'll start to develop
 better control of getting the lines and forms you have in your head down onto the paper. As
 your technical skills improve you'll start to study and practice geometry, understanding how
-light behaves, different techinques for achieving the look and feel you are after, and so on.
+light behaves, different techniques for achieving the look and feel you are after, and so on.
 
 In programming we can do the same thing. Every year a whole bunch of us take on the
 [advent of code](https://adventofcode.com/) or maybe you want to work your way through the
@@ -109,14 +109,14 @@ something that you personally find interesting. You're about to actively bite of
 than you can chew so whatever you decide to work on it needs to be something you care about
 enough to get you through the "oh my god what am I doing?" phase.
 
-For me, I have a problem that I tend to be nerd sniped easily (relevent [xkcd](https://xkcd.com/356/))
+For me, I have a problem that I tend to be nerd sniped easily (relevant [xkcd](https://xkcd.com/356/))
 and as a result I tend to spend my free time coding up weird and (sometimes) wonderful
 hobby projects:
 
 - [LISP interpreter](https://github.com/sminez/gigl)([s](https://github.com/sminez/ripl))
 - [AWK in Python](https://github.com/sminez/datools/blob/master/bin/pyk)
 - [Adding destructuring pattern matching to Python 3.6](https://github.com/sminez/concepts/blob/master/docs/pattern_match_README.md)
-- [16D hyper-complex algebra Caluclator](https://github.com/quicycle/mart/tree/main/arpy)([s](https://github.com/sminez/ar.jl))
+- [16D hyper-complex algebra Calculator](https://github.com/quicycle/mart/tree/main/arpy)([s](https://github.com/sminez/ar.jl))
 - A graphQL server library
 - [Fractal generation](https://github.com/sminez/sandpiles)
 - [An AUR package manager written in Zsh](https://gist.github.com/sminez/d6ba0f88dd1e5ec7bcbd901ae9203e52)
@@ -205,7 +205,7 @@ that was essentially just a `while true` loop around some curls and echos. Thing
 are now a lot more complicated (and robust) but this was enough to start working out
 what the request flows looked like and begin to manually test the system.
 
-#### 2. Focus on interating quickly
+#### 2. Focus on iterating quickly
 You don't want to live with your starting point code for longer than you have to,
 so that means you'll want to be set up for quickly making changes. My personal
 favourite way to do this is to start writing a simple Makefile that wraps all of the
@@ -223,7 +223,7 @@ down rabbit holes trying to decide what you're going to use.
 #### 3. Fail fast and loud
 You don't want to fully ignore error cases and failure modes but its going to be a
 while before you're in a position to handle things correctly. Instead, a good way
-to start is to explictly crash or exit the program the moment something unexpected
+to start is to explicitly crash or exit the program the moment something unexpected
 happens. When you do this you'll want to dump any and all relevant state you have
 in order to make debugging what just happened easier. One benefit of this approach
 is that when you do come to handling errors properly, you've already identified
