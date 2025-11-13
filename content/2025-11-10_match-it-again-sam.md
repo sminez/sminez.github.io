@@ -31,11 +31,11 @@ text being searched.
 
 This composition idea allow for writing chains of smaller, easier to reason about expressions
 that drill down into the text being searched. The primary goal being to allow you break up the
-text into meaningful chunks that care about, rather than always being forced into looping over
-lines.
+text into meaningful chunks that you care about, rather than always being forced into looping
+over lines.
 
 It's always easier to understand what is going on with a concrete example. Lets take this easy
-to start: take a look at the following text and determine the names of each of the programmers
+to start: have a look at the following text and determine the names of each of the programmers
 and what their language of choice is.
 ```
     name: Alice
@@ -127,7 +127,7 @@ state of the editor itself that we wont cover here.)
 
 As we saw in the example above, the syntax used for this takes inspiration from classic regular
 expressions in being really quite terse. Operators and actions share a common syntax of a single
-character to identify the action followed by an argument included in forward slashes.
+character to identify the action followed by an argument enclosed in forward slashes.
 
 Writing a structural regular expression then involves writing a pipeline of operators ending in
 an action that is applied to any matches that are found. To kick things off, the selected text
