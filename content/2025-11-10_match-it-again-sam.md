@@ -1,6 +1,5 @@
 +++
 title = "Match it again Sam"
-draft = true
 
 [taxonomies]
 tags = [ "programming", "rust" ]
@@ -234,7 +233,7 @@ got one final piece of syntax to introduce that can help us out there as well.
 
 <br>
 
-### Are you trying to extract submatches in parallel from me Mrs Robinson?
+### Mrs Robinson, are you trying to extract submatches in parallel from me?
 
 The final trick we have up our sleeve is to enclose multiple pipelines in curly braces. Doing
 so marks these separate pipelines as being run in parallel with one another over each match
@@ -302,87 +301,229 @@ ending up with everything turning into "Emacs" because the replacements were run
 # Toto, I don't think we're in Bell Labs anymore
 
 Everything we've seen so far can be found as part of the original `Sam` engine and its
-derivatives, and this is perfectly fine for implementing and embedded editing language for a
+derivatives, and this is perfectly fine for implementing an embedded editing language for a
 text editor. But, we're missing a trick in being able to provide a _general purpose_ engine
 that could be adapted for a variety of use cases.
 
 To do _that_ we need to break things apart slightly.
 
-Enter [structex][6], a Rust crate I've been working on recently after overhauling the engine
-inside of [ad][5]. The idea behind the crate is quite simple: provide a reusable core for
-executing the "find matches" part of structural regular expressions while exposing an API
-to users of the crate to define and handle their own actions.
+Rather than interleaving the operators and actions into a single system, we can instead write
+a generic engine that handles the "intentify interesting structure" side of the problem (the
+operators) which then feeds that structure into the handling logic of your choice (actions
+that are tailored to the problem you're trying to solve). In effect, what we end up doing is
+tagging subsections of the text being searched for later processing.
 
-Let's take a look at how we could write a CLI tool that was able to run the grep-like
-printing expression we started with:
+Enter [structex][6]: a Rust crate I've been working on recently after overhauling the engine
+inside of [ad][5] that is my attempt to write the engine I've just outlined. In addition to
+the core functionality of the engine it provides a variety of pieces quality of life
+functionality in order to make writing custom engines a little simpler, such as a simple
+templating engine, a builder struct for configuring the behaviour of the expression compiler
+and a set of traits to allow you to provide your own underlying regular expression engine if
+needed.
 
+Let's take a look at how we can use `structex` to write a minimal CLI tool that is capable
+of running the grep-like pretty-printing expression we started with. If you have a local Rust
+toolchain installed you can try running this by setting up a new project and adding the `regex`
+and `structex` crates.
 ```rust
-use regex::Regex;
-use std::{collections::BTreeMap, env, fs};
+use std::collections::HashMap;
 use structex::{Structex, template::Template};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = env::args().skip(1);
-    let expression = args.next().unwrap();
-    let file_path = args.next().unwrap();
+    // (1)
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    let se: Structex<regex::Regex> = Structex::new(&args[0])?;
+    let haystack = std::fs::read_to_string(&args[1])?;
 
-    let se: Structex<Regex> = Structex::new(&expression)?;
-
-    let mut templates = BTreeMap::new();
+    // (2)
+    let mut templates = HashMap::new();
     for action in se.actions() {
-        if let Some(arg) = action.arg() {
-            templates.insert(action.id(), Template::parse(arg)?);
-        }
+        let arg = action.arg().unwrap();
+        templates.insert(action.id(), Template::parse(arg)?);
     }
 
-    let haystack = fs::read_to_string(file_path)?;
-
+    // (3)
     for caps in se.iter_tagged_captures(haystack.as_str()) {
-        let action = caps.action.as_ref().unwrap();
-        let id = action.id();
-        println!("{}", templates.get(&id).unwrap().render(&caps)?);
+        let id = caps.id().unwrap();
+        println!("{}", templates[&id].render(&caps)?);
     }
 
     Ok(())
 }
 ```
 
+So what's going on here?
+  1. We read in our arguments from the command line and use the first to compile a new
+     [Structex][7] using the regex crate as the backing engine. The second argument
+     we simply read in as the haystack we're going to search.
+  2. We ask our newly compiled Structex for the actions that it found in the compiled
+     expression and we parse the argument to each action as a [Template][8] we can use
+     later to pretty print the match.
+  3. We call [iter_tagged_captures][9] to find each match inside of the haystack.
+     Every time a match is found it is returned to us with its associated action,
+     allowing us to look up the template and pretty print the result.
+
+To run this, we'll need to slightly tweak the expression we used before: the `@` meta-character
+we were using is a feature of `ad`'s engine and not supported by the regex crate. Luckily,
+we can swap it out for `(?:.|\n)` and achieve the same effect.[^non-capturing] (Albeit with a
+much uglier syntax!)
+```
+$ cargo run --  '
+y/\n\n/ {
+  g/programmer/
+  x/name: (.*)(?:.|\n)*lang.*: (.*)/
+  p/{1} prefers {2}/;
+
+  g/linguist/
+  x/name: (.*)(?:.|\n)*lang.*: (.*)/
+  p/{1} has no time for this nonsense, they are busy discussing {2}/;
+}' haystack.txt
+
+Alice prefers Rust
+Bob prefers Go
+Claire has no time for this nonsense, they are busy discussing French
+```
+
+Nice!
+
+But what if we want to run the second example? The one where we swapped "Emacs" and "Vim"?
+There the semantics of what we want to do are a little different. Its more like sed where
+we default to echoing out unmatched text and _modify_ the text of matches inside of that
+output stream.
+
+In that case we'll want something more like this:
+```rust
+use std::collections::HashMap;
+use structex::{Structex, template::Template};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    let se: Structex<regex::Regex> = Structex::new(&args[0])?;
+    let haystack = std::fs::read_to_string(&args[1])?;
+
+    // (1)
+    let mut templates = HashMap::new();
+    for action in se.actions() {
+        if let Some(arg) = action.arg() {
+            templates.insert(action.id(), Template::parse(arg)?);
+        }
+    }
+
+    // (2)
+    let mut pos = 0;
+
+    for caps in se.iter_tagged_captures(haystack.as_str()) {
+        let action = caps.action.as_ref().unwrap();
+        let id = action.id();
+
+        // (3)
+        if caps.from() > pos {
+            print!("{}", &haystack[pos..caps.from()]);
+        }
+
+        // (4)
+        match action.tag() {
+            'd' => (), // just consume the matched text
+            'c' => print!("{}", templates[&id].render(&caps)?),
+            'i' => print!("{}{}", templates[&id].render(&caps)?, caps.as_slice()),
+            'a' => print!("{}{}", caps.as_slice(), templates[&id].render(&caps)?),
+            tag => panic!("unknown action {tag}"),
+        }
+
+        // (5)
+        pos = caps.to();
+    }
+
+    // (6)
+    if pos < haystack.len() {
+        print!("{}", &haystack[pos..]);
+    }
+
+    Ok(())
+}
+```
+
+A little more going on this time:
+  1. We handle our command line arguments the same way, but now when we parse our templates
+     we need to skip actions that don't have a template (like our `d` delete action).
+  2. In order to handle printing out unmatched text, we'll need to track where we are in
+     the input before we start iterating over matches.
+  3. Each time we find a match we check to see if its after our current position, if it is
+     then we simply print out the unedited input up until the match.
+  4. Next, we check the "tag" of the action associated with the match to determine how it
+     should be handled. We still render the templates as before but how the resulting text
+     makes its way into the output depends on the tag.
+  5. After processing each match, we update where we are in the input before handling the
+     next one.
+  6. Once all of the matches have been found, we check one last time to see if we need to
+     print any remaining input (otherwise we'd cut things short at the end of the final
+     match!)
+
+Phew! OK, lets test it out:
+```
+$ cargo run -- '{
+  x/Emacs/ c/Vim/;
+  x/Vim/ c/Emacs/;
+}' haystack2.txt
+
+You'll make a lot of people angry if you say that Emacs is better than Vim.
+(Really, we all know that Vim is the best).
+```
+
+So far so good. We also added support for other actions so lets test them out as well:
+```
+$ cargo run -- '{
+  n/a lot of / d;        # delete the first occurrence of "a lot of "
+  x/Emacs/ i/Gnu /;      # Insert "Gnu " before each occurrence of "Emacs"
+  x/Vim/ a/ (or Vi)/;    # Append " (or Vi)" after each occurrence of "Vim"
+}' haystack2.txt
+
+You'll make people angry if you say that Vim (or Vi) is better than Gnu Emacs.
+(Really, we all know that Gnu Emacs is the best).
+```
+
+It works!
+
+The `n` operator here is something we haven't seen before: it's an addition I've made to
+the semantics of Sam's engine that "narrows" to the first match of the given regular
+expression rather than looping over all matches. In effect it's similar to the classic
+sed `s/regex/replacement/` but it allows for providing further operators or the action
+of your choice in place of the fixed replacement text.
+
+
 <br>
 
+# Wrapping up[^no-misquote]
 
-## Divide and conquer
+Now, there is obviously a lot of unwrapping going on in these examples and, if you experiment
+a little yourself, you'll quickly find that you can get some unexpected behaviour and
+crashes. To handle things more robustly we'd want to control what sorts of expressions were
+permitted and we'd need to be a little more careful about how we work with the actions
+associated with each match.
 
-- Splitting the problem into "find matches, take actions"
-- On brand for a structural system, then further split this into "find matches, assign tags,
-  handle tags"
-- A lot of the tricky parts of the Sam system come from everything being treated as "apply
-  actions at the correct points in the input"
-- Instead changing this into more of a traditional (all be it, programmable) parser lets you
-  instead turn this into something that feels a lot less like a scriptable editing language
-  and more like a way of turning arbitrary text into executable actions.
+In the structex repo I've included some more realistic versions of these two programs in
+the form of the [sgrep][10] and [ssed][11] examples. They also make use of a copy of `ad`'s
+regex engine in order to support matching against streams, allowing you to run them over
+standard in as well as against named files. If you like the ideas presented in this blog
+post I'd encourage you to take a look and have a go at adding your own actions to see what
+sorts of tools you can come up with!
 
+To finish off I'll take one last page out of Rob Pike's book and call out some of the open
+problems and areas where it might be possible to take this idea in the future. Firstly, there
+are certainly multiple opportunities for improving the performance of this thing: the current
+design is based on flexibility and proving out this idea of splitting apart the matching engine
+and the application of actions to matches. I think that it _should_ be possible to compile
+expressions down to an automata for direct, efficient execution but at that point you'd no
+longer be able to bring your own regex engine. Is that worth it? I'm not sure. But it would
+be fun to try out at some point. It would also be fun to take a stab at implementing a
+structex based awk (as proposed by Pike in his paper) but I'll be honest, getting a full
+language implemented is something I'm not sure I have time to tackle at the moment!
 
-## Bring your own engine
+So there we have it. A strange new tool to add to your toolbox, or, avoid like the plague
+if what you've seen here isn't to your taste. But I assume that if you've made it this far
+you've at least got a passing interest in taking this thing for a spin.
 
-- At this stage, really what we're talking about is the structural semantics _around_ the
-  regex matching itself.
-- With that in mind, you can write a generic system that instead replaces the regex operators
-  with something of the programmer's choosing so long as it satisfies the interface of supporting
-  extracting matching sub-regions and filtering based on an expression.
-- Actions change from being engine built-ins to free-form "tag + argument" meta-data that gets
-  assigned to matches before they are yielded.
-- Why bring your own engine?
-  - Showcase the ad engine working on streams and discontiguous inputs (at the cost of performance)
-
-
-# Next steps
-
-- Probably _could_ do this as a finite automata (of a kind)
-- Would need to sort out being able to emit matches while also maintaining internal state
-  - Implementing this way produces a more flexible system though
-- Rethinking awk would be fun but turns into a full language which is a bit much for a spare time
-  project over a couple of weeks.
-
+Until next time, happy hacking!
 
 <br>
 
@@ -397,9 +538,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 [4]: https://github.com/martanne/vis
 [5]: https://github.com/sminez/ad
 [6]: https://github.com/sminez/structex
-
-[7]: https://github.com/sminez/structex/tree/main/examples/sgrep
-[8]: https://github.com/sminez/structex/tree/main/examples/ssed
+[7]: https://docs.rs/structex/latest/structex/struct.Structex.html
+[8]: https://docs.rs/structex/latest/structex/template/struct.Template.html
+[9]: https://docs.rs/structex/latest/structex/struct.Structex.html#method.iter_tagged_captures
+[10]: https://github.com/sminez/structex/tree/main/examples/sgrep
+[11]: https://github.com/sminez/structex/tree/main/examples/ssed
 
 [^true-any]: The `@` character in the expression used to the name and language fields might
 look a little odd at first glance. This is an additional meta-character in the engine used
@@ -415,3 +558,9 @@ At least `v` can be remembered as an "inVerted match" I suppose.
 a minimal built in system specific to the engine we're presenting in this blog post. But
 really, swapping in the templating engine of your choice is a simple change to make if you
 find yourself needing more expressive power.
+
+[^non-capturing]: The `?:` prefix here inside of the parentheses is to mark the group as
+non-capturing. Without this, this will become our second capture group and our `{2}` template
+variable will print the wrong thing!
+
+[^no-misquote]: I couldn't think of a quote to butcher for this one. I'm sorry for failing you.
