@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>sminez.dev</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://www.sminez.dev/style.css">
+    <link rel="stylesheet" href="https://www.sminez.dev/color/orange.css">
+
+        <link rel="stylesheet" href="https://www.sminez.dev/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://www.sminez.dev/font-hack-subset.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="sminez.dev">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.sminez.dev/socrates-is-a-state-machine/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="sminez.dev">
+    <meta property="twitter:domain" content="www.sminez.dev">
+    <meta property="twitter:url" content="https://www.sminez.dev/socrates-is-a-state-machine/">
+
+                <link rel="alternate" type="application/rss+xml" title="sminez.dev RSS Feed" href="https://www.sminez.dev/rss.xml" />
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://www.sminez.dev" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            sminez.dev
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://www.sminez.dev/about">about</a></li>
+            
+                <li class="active"><a href="https://www.sminez.dev">blog</a></li>
+            
+                <li><a href="https://www.sminez.dev/archive">archive</a></li>
+            
+                <li><a href="https://www.sminez.dev/tags">tags</a></li>
+            
+                <li><a href="https://www.sminez.dev/projects">projects</a></li>
+            
+                <li><a href="https://github.com/sminez" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://innesandersonmor.myportfolio.com/work" target="_blank" rel="noopener noreferrer">photography</a></li>
+            
+                <li><a href="https://www.youtube.com/channel/UC04N-5DxEWH4ioK0bvZmF_Q" target="_blank" rel="noopener noreferrer">youtube</a></li>
+            
+                <li><a href="https://www.sminez.dev/rss.xml">rss</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://www.sminez.dev/socrates-is-a-state-machine/">Socrates is a state machine</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-02-25
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://www.sminez.dev/tags/programming/">#programming</a>&nbsp;
+                <a class="post-tag" href="https://www.sminez.dev/tags/rust/">#rust</a></span>
+    
+
+        <div class="post-content">
+            <blockquote>
+<p><em>"All men are mortal, Socrates is a man, therefore Socrates is mortal."</em></p>
+<p><em>Or, "Writing sans I/O APIs by abusing Rust's language features"</em></p>
+</blockquote>
+<p>If you've ever looked into how Rust <a href="https://doc.rust-lang.org/std/future/trait.Future.html">Futures</a> work you've probably read at some point
+that <code>async/await</code> syntax <a href="https://eventhelix.com/rust/rust-to-assembly-async-await/">de-sugars into a state machine</a>. If you like to poke at
+things to see what happens then you might also have wondered if this fact can be <del>ab</del>used
+to instead write other sorts of state machines like, oh I don't know, the state machines you
+might need for implementing a <a href="https://sans-io.readthedocs.io/">sans I/O</a> network protocol API.</p>
+<p><em>Does this work?</em> → Yes.</p>
+<p><em>Does this constitute "crimes"?</em> → Also yes.</p>
+<p><em>Am I a little bit too happy with how this turned out?</em> → Maybe...</p>
+<span id="continue-reading"></span><br>
+<h1 id="sans-i-o-a-quoi-bon"><a class="zola-anchor" href="#sans-i-o-a-quoi-bon" aria-label="Anchor link for: sans-i-o-a-quoi-bon">Sans I/O: À quoi bon?</a></h1>
+<p>Recently, Fasterthanlime released <a href="https://fasterthanli.me/articles/the-case-for-sans-io">an article</a> (and <a href="https://www.youtube.com/watch?v=RYHYiXMJdZI">video</a>) advocating for the sans I/O
+API design pattern. From what I can <a href="https://sans-io.readthedocs.io/">find</a> <a href="https://www.youtube.com/watch?v=7cC3_jGwl_U">online</a>, this originated in the Python ecosystem
+as a way to write protocol libraries that were usable with as many I/O implementations as possible
+by removing all of the actual I/O from the core protocol layer (hence the name). Now, there is an
+immediate and obvious downside with a network protocol that doesn't perform I/O, namely that it
+doesn't perform I/O, so clearly this isn't the whole picture. What you're actually doing when you
+follow this design pattern is turning your API inside out so that all of the I/O happens outside
+of the logic that is handling the data. On its own that isn't a particularly helpful explanation
+so lets take a look at some code and commit some crimes in the name of learning.</p>
+<blockquote>
+<p>⚠️ If you'd like to gloss over the justification and instead skip directly to the criminal activity
+click <a href="https://www.sminez.dev/socrates-is-a-state-machine/#committing-crimes">here</a> ⚠️</p>
+</blockquote>
+<br>
+<h2 id="parsing-9p-messages"><a class="zola-anchor" href="#parsing-9p-messages" aria-label="Anchor link for: parsing-9p-messages">Parsing 9p messages</a></h2>
+<p>For the rest of this blog post we're going to be using <a href="http://9p.cat-v.org/documentation/">9p</a> as our protocol of choice for our
+examples, specifically we're going to be looking at the implementation of the <a href="https://crates.io/crates/ninep">ninep</a> crate
+that I maintain for providing the virtual filesystem interface to <code>ad</code>. Thankfully, the protocol
+itself is pretty minimal and the details of the structure of each message type and how to handle
+it are all covered in <a href="http://man.cat-v.org/plan_9/5/">the plan 9 man page</a> for the protocol.</p>
+<p>For our purposes we're just going to focus on how to <em>read</em> values as that's where things are
+more interesting (when we're writing we know what all the data looks like). An initial naive
+approach to writing a trait for parsing 9p values might look like this:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">use </span><span>std</span><span style="color:#f29e74;">::</span><span>io</span><span style="color:#f29e74;">::</span><span>{</span><span style="font-style:italic;color:#5ccfe6;">self</span><span style="color:#ccc9c2cc;">,</span><span> Read}</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;">/// Parse a 9p value out of something that implements std::io::Read
+</span><span style="color:#ffa759;">trait </span><span style="color:#73d0ff;">NinepAvecIO </span><span>{
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">read_from</span><span>&lt;R</span><span style="color:#ccc9c2cc;">:</span><span> Read&gt;(</span><span style="color:#ffcc66;">r</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> R) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;</span><span style="color:#ffa759;">Self</span><span>&gt;</span><span style="color:#ccc9c2cc;">;
+</span><span>}
+</span></code></pre>
+<p>One of the most common pieces of data we need to know how to parse as part of the protocol is a
+two byte length header, so lets implement our new trait for <code>u16</code>:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">impl </span><span>NinepAvecIO </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">u16 </span><span>{
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">read_from</span><span>&lt;R</span><span style="color:#ccc9c2cc;">:</span><span> Read&gt;(</span><span style="color:#ffcc66;">r</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> R) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt; {
+</span><span>        </span><span style="color:#ffa759;">let mut</span><span> buf </span><span style="color:#f29e74;">= </span><span>[</span><span style="color:#ffcc66;">0</span><span style="color:#ffa759;">u8</span><span style="color:#ccc9c2cc;">; </span><span>size_of</span><span style="color:#f29e74;">::</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt;()]</span><span style="color:#ccc9c2cc;">;
+</span><span>        r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">read_exact</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> buf)</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>        </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(</span><span style="color:#ffa759;">u16</span><span style="color:#f29e74;">::</span><span>from_le_bytes(buf))
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>Nice! But that's a bit boring, lets try something a little more interesting: strings. In 9p,
+data items of larger or variable lengths are represented by one of these two-byte header fields
+specifying a count (n) followed by n bytes of data. Strings are represented this way with the
+data stored as utf-8 encoded text without a C-style trailing null byte. Armed with that knowledge
+we should be able to implement our trait for <code>String</code>:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">impl </span><span>NinepAvecIO </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">String </span><span>{
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">read_from</span><span>&lt;R</span><span style="color:#ccc9c2cc;">:</span><span> Read&gt;(</span><span style="color:#ffcc66;">r</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> R) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt; {
+</span><span>        </span><span style="color:#ffa759;">let</span><span> len </span><span style="color:#f29e74;">= </span><span style="color:#ffa759;">u16</span><span style="color:#f29e74;">::</span><span>read_from(r)</span><span style="color:#f29e74;">? as </span><span style="color:#ffa759;">usize</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#ffa759;">let mut</span><span> s </span><span style="color:#f29e74;">= </span><span style="font-style:italic;color:#5ccfe6;">String</span><span style="color:#f29e74;">::</span><span>with_capacity(len)</span><span style="color:#ccc9c2cc;">;
+</span><span>        r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">take</span><span>(len </span><span style="color:#f29e74;">as </span><span style="color:#ffa759;">u64</span><span>)</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">read_to_string</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> s)</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#ffa759;">let</span><span> actual </span><span style="color:#f29e74;">=</span><span> s</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">len</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>        </span><span style="color:#ffa759;">if</span><span> actual </span><span style="color:#f29e74;">&lt;</span><span> len {
+</span><span>            </span><span style="color:#ffa759;">return </span><span style="font-style:italic;color:#5ccfe6;">Err</span><span>(io</span><span style="color:#f29e74;">::</span><span>Error</span><span style="color:#f29e74;">::</span><span>new(
+</span><span>                io</span><span style="color:#f29e74;">::</span><span>ErrorKind</span><span style="color:#f29e74;">::</span><span>UnexpectedEof</span><span style="color:#ccc9c2cc;">,
+</span><span>                </span><span style="color:#f28779;">format!</span><span>(</span><span style="color:#bae67e;">&quot;unexpected EOF: wanted </span><span style="color:#ffcc66;">{len}</span><span style="color:#bae67e;"> bytes, got </span><span style="color:#ffcc66;">{actual}</span><span style="color:#bae67e;">&quot;</span><span>)</span><span style="color:#ccc9c2cc;">,
+</span><span>            ))</span><span style="color:#ccc9c2cc;">;
+</span><span>        }
+</span><span>
+</span><span>        </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(s)
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>Ok, a little more going on this time: we need to first read the header to know how many bytes
+of string data are following and then we can attempt to read and parse that many bytes as a
+valid utf-8 string. If for some reason we end up with a valid string but its not the correct
+length we need to return an error as this violates the protocol, otherwise we've successfully
+deserialized our string!</p>
+<p>The full protocol consists of 13 <a href="https://docs.rs/ninep/0.3.0/ninep/protocol/enum.Tdata.html">T-messages</a> and their paired <a href="https://docs.rs/ninep/0.3.0/ninep/protocol/enum.Rdata.html">R-messages</a> (plus an
+additional error variant on the R-message side) but implementing our <code>read_from</code> method for all
+of these is <a href="https://github.com/sminez/ad/blob/4f9fc13c517fd715c8c053f20879635cf50c0936/crates/ninep/src/protocol.rs">a little much</a> for a blog post so instead lets throw a spanner into the works.</p>
+<br>
+<h1 id="toki-oh-no"><a class="zola-anchor" href="#toki-oh-no" aria-label="Anchor link for: toki-oh-no">Toki-oh-no</a></h1>
+<p>Our <code>NinepAvecIO</code> trait is exactly what we want for parsing 9p data from something that implements
+<a href="https://doc.rust-lang.org/std/io/trait.Read.html">Read</a> like, say, a <a href="https://doc.rust-lang.org/std/os/unix/net/struct.UnixStream.html">UnixStream</a> but what if we need to work with async code? The standard
+library Read trait is a synchronous blocking API so calling our new <code>read_from</code> method inside of async
+code is going to cause <a href="https://rust-lang.github.io/async-book/part-guide/more-async-await.html?#blocking-io">problems</a>.</p>
+<p>Really our naming has been sloppy: our trait should be called something like <code>NinepAvecBlockingIO</code>
+rather than just <code>NinepAvecIO</code>.</p>
+<p>That's not <em>too</em> bad though, right? We can define an asynchronous version of our trait as well for
+when we need non-blocking I/O:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">use </span><span>std</span><span style="color:#f29e74;">::</span><span>io</span><span style="color:#ccc9c2cc;">;
+</span><span style="color:#ffa759;">use </span><span>tokio</span><span style="color:#f29e74;">::</span><span>io</span><span style="color:#f29e74;">::</span><span>AsyncRead</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;">/// Parse a 9p value out of something that implements tokio::io::AsyncRead
+</span><span style="color:#ffa759;">trait </span><span style="color:#73d0ff;">NinepAvecNonBlockingIO </span><span>{
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">async_read_from</span><span>&lt;R</span><span style="color:#ccc9c2cc;">:</span><span> AsyncRead&gt;(
+</span><span>        </span><span style="color:#ffcc66;">r</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> R
+</span><span>    ) </span><span style="color:#ccc9c2cc;">-&gt;</span><span> impl Future&lt;Output=io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;</span><span style="color:#ffa759;">Self</span><span>&gt;&gt; </span><span style="color:#f29e74;">+ </span><span style="font-style:italic;color:#5ccfe6;">Send</span><span style="color:#ccc9c2cc;">;
+</span><span>}
+</span></code></pre>
+<p>And then we just need to implement <em>that</em> as well each time we implement the blocking API:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">impl </span><span>NinepAvecNonBlockingIO </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">u16 </span><span>{
+</span><span>    async </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">async_read_from</span><span>&lt;R</span><span style="color:#ccc9c2cc;">:</span><span> AsyncRead&gt;(</span><span style="color:#ffcc66;">r</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> R) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt; {
+</span><span>        </span><span style="color:#ffa759;">let mut</span><span> buf </span><span style="color:#f29e74;">= </span><span>[</span><span style="color:#ffcc66;">0</span><span style="color:#ffa759;">u8</span><span style="color:#ccc9c2cc;">; </span><span>size_of</span><span style="color:#f29e74;">::</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt;()]</span><span style="color:#ccc9c2cc;">;
+</span><span>        r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">read_exact</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> buf)</span><span style="color:#f29e74;">.</span><span>await</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>        </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(</span><span style="color:#ffa759;">u16</span><span style="color:#f29e74;">::</span><span>from_le_bytes(buf))
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">impl </span><span>NinepAvecNonBlockingIO </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">String </span><span>{
+</span><span>    async </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">async_read_from</span><span>&lt;R</span><span style="color:#ccc9c2cc;">:</span><span> AsyncRead&gt;(</span><span style="color:#ffcc66;">r</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> R) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt; {
+</span><span>        </span><span style="color:#ffa759;">let</span><span> len </span><span style="color:#f29e74;">= </span><span style="color:#ffa759;">u16</span><span style="color:#f29e74;">::</span><span>async_read_from(r)</span><span style="color:#f29e74;">.</span><span>await</span><span style="color:#f29e74;">? as </span><span style="color:#ffa759;">usize</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#ffa759;">let mut</span><span> s </span><span style="color:#f29e74;">= </span><span style="font-style:italic;color:#5ccfe6;">String</span><span style="color:#f29e74;">::</span><span>with_capacity(len)</span><span style="color:#ccc9c2cc;">;
+</span><span>        r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">take</span><span>(len </span><span style="color:#f29e74;">as </span><span style="color:#ffa759;">u64</span><span>)</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">read_to_string</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> s)</span><span style="color:#f29e74;">.</span><span>await</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#ffa759;">let</span><span> actual </span><span style="color:#f29e74;">=</span><span> s</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">len</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>        </span><span style="color:#ffa759;">if</span><span> actual </span><span style="color:#f29e74;">&lt;</span><span> len {
+</span><span>            </span><span style="color:#ffa759;">return </span><span style="font-style:italic;color:#5ccfe6;">Err</span><span>(io</span><span style="color:#f29e74;">::</span><span>Error</span><span style="color:#f29e74;">::</span><span>new(
+</span><span>                io</span><span style="color:#f29e74;">::</span><span>ErrorKind</span><span style="color:#f29e74;">::</span><span>UnexpectedEof</span><span style="color:#ccc9c2cc;">,
+</span><span>                </span><span style="color:#f28779;">format!</span><span>(</span><span style="color:#bae67e;">&quot;unexpected EOF: wanted </span><span style="color:#ffcc66;">{len}</span><span style="color:#bae67e;"> bytes, got </span><span style="color:#ffcc66;">{actual}</span><span style="color:#bae67e;">&quot;</span><span>)</span><span style="color:#ccc9c2cc;">,
+</span><span>            ))</span><span style="color:#ccc9c2cc;">;
+</span><span>        }
+</span><span>
+</span><span>        </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(s)
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>Ok, this is getting a little repetitive at this point and we've not even started on the
+protocol's 27 message types... there has to be a better way to do this.</p>
+<br>
+<h1 id="sans-i-o-oh-c-est-le-but"><a class="zola-anchor" href="#sans-i-o-oh-c-est-le-but" aria-label="Anchor link for: sans-i-o-oh-c-est-le-but">Sans I/O: Oh, c'est le but</a></h1>
+<p>Surprise! The answer is to do the sans I/O thing: who could have guessed. The problem we've
+made for ourselves is that we've buried the I/O operations we need to perform inside of our
+nice I/O-free protocol code. If we can somehow lift the that <em>out</em> then we'd be able to reuse
+the same protocol code for both the blocking API and the non-blocking one.</p>
+<p>A first pass at this might look something like this:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">trait </span><span style="color:#73d0ff;">NinepSansIO </span><span>{
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">bytes_needed</span><span>() </span><span style="color:#ccc9c2cc;">-&gt; </span><span style="color:#ffa759;">usize</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">accept_bytes</span><span>(</span><span style="color:#ffcc66;">bytes</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span>[</span><span style="color:#ffa759;">u8</span><span>]) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;</span><span style="color:#ffa759;">Self</span><span>&gt;</span><span style="color:#ccc9c2cc;">;
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">read_from</span><span>&lt;T, R&gt;(</span><span style="color:#ffcc66;">r</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> R) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;T&gt;
+</span><span style="color:#ffa759;">where</span><span style="color:#ccc9c2cc;">:
+</span><span>    T</span><span style="color:#ccc9c2cc;">:</span><span> NinepSansIO,
+</span><span>    R</span><span style="color:#ccc9c2cc;">:</span><span> Read,
+</span><span>{
+</span><span>    </span><span style="color:#ffa759;">let</span><span> n </span><span style="color:#f29e74;">= </span><span>T</span><span style="color:#f29e74;">::</span><span>bytes_needed()</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let mut</span><span> buf </span><span style="color:#f29e74;">= </span><span>[</span><span style="color:#ffcc66;">0</span><span style="color:#ffa759;">u8</span><span style="color:#ccc9c2cc;">;</span><span> n]</span><span style="color:#ccc9c2cc;">;
+</span><span>    r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">read_exact</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> buf)</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    T</span><span style="color:#f29e74;">::</span><span>accept_bytes(</span><span style="color:#f29e74;">&amp;</span><span>buf)
+</span><span>}
+</span><span>
+</span><span>async </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">async_read_from</span><span>&lt;T, R&gt;(</span><span style="color:#ffcc66;">r</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> R) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;T&gt;
+</span><span style="color:#ffa759;">where</span><span style="color:#ccc9c2cc;">:
+</span><span>    T</span><span style="color:#ccc9c2cc;">:</span><span> NinepSansIO,
+</span><span>    R</span><span style="color:#ccc9c2cc;">:</span><span> AsyncRead,
+</span><span>{
+</span><span>    </span><span style="color:#ffa759;">let</span><span> n </span><span style="color:#f29e74;">= </span><span>T</span><span style="color:#f29e74;">::</span><span>bytes_needed()</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let mut</span><span> buf </span><span style="color:#f29e74;">= </span><span>[</span><span style="color:#ffcc66;">0</span><span style="color:#ffa759;">u8</span><span style="color:#ccc9c2cc;">;</span><span> n]</span><span style="color:#ccc9c2cc;">;
+</span><span>    r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">read_exact</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> buf)</span><span style="color:#f29e74;">.</span><span>await</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    T</span><span style="color:#f29e74;">::</span><span>accept_bytes(</span><span style="color:#f29e74;">&amp;</span><span>buf)
+</span><span>}
+</span><span>
+</span></code></pre>
+<p>We've gone from one method to two, splitting our <code>read_from</code> method into letting whatever is
+going to perform the I/O know how many bytes we need and the logic for actually parsing the
+bytes themselves once they're ready. We still need to write dedicated code for the synchronous
+and asynchronous cases but this time we just need to write a single wrapper function for each
+that drives the sans I/O trait from the outside, meaning our actual protocol logic is free to
+be reused for both implementations. Let's try it out! 🚀</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">impl </span><span>NinepSansIO </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">u16 </span><span>{
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">bytes_needed</span><span>() </span><span style="color:#ccc9c2cc;">-&gt; </span><span style="color:#ffa759;">usize </span><span>{
+</span><span>        size_of</span><span style="color:#f29e74;">::</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt;()
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">accept_bytes</span><span>(</span><span style="color:#ffcc66;">bytes</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span>[</span><span style="color:#ffa759;">u8</span><span>]) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt; {
+</span><span>        </span><span style="font-style:italic;color:#5c6773;">// from_le_bytes needs a [u8; 2] rather than a &amp;[u8]
+</span><span>        </span><span style="color:#ffa759;">let</span><span> data </span><span style="color:#f29e74;">=</span><span> bytes[</span><span style="color:#ffcc66;">0</span><span style="color:#f29e74;">..</span><span>size_of</span><span style="color:#f29e74;">::</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt;()]</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">try_into</span><span>()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>        </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(</span><span style="color:#ffa759;">u16</span><span style="color:#f29e74;">::</span><span>from_le_bytes(data))
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>A little more verbose but that's the price we're paying for not having to perform any I/O
+inside of the protocol code. Now for String:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">impl </span><span>NinepSansIO </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">String </span><span>{
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">bytes_needed</span><span>() </span><span style="color:#ccc9c2cc;">-&gt; </span><span style="color:#ffa759;">usize </span><span>{
+</span><span>        size_of</span><span style="color:#f29e74;">::</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt;()
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">accept_bytes</span><span>(</span><span style="color:#ffcc66;">bytes</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span>[</span><span style="color:#ffa759;">u8</span><span>]) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;</span><span style="font-style:italic;color:#5ccfe6;">String</span><span>&gt; {
+</span><span>        </span><span style="color:#ffa759;">let</span><span> len </span><span style="color:#f29e74;">= </span><span style="color:#ffa759;">u16</span><span style="color:#f29e74;">::</span><span>accept_bytes(bytes)</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#ffa759;">let mut</span><span> s </span><span style="color:#f29e74;">= </span><span style="font-style:italic;color:#5ccfe6;">String</span><span style="color:#f29e74;">::</span><span>with_capacity(len)</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>        </span><span style="color:#f28779;">panic!</span><span>(</span><span style="color:#bae67e;">&quot;oh no...&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>Ah...how do we do the second read once we know the length? The way we have things now we
+can lift out a single I/O operation out to the wrapper function but we've not got any way
+of handling an arbitrary number of I/O operations. What we need is a way to track where
+we are in the deserialization process so we know what we've got left to do. In the case
+of parsing a string we know that we need to first request the two-byte header and then
+we need to request that many bytes for the string itself, but we've not got anywhere to
+store the number of bytes we need for the second read.</p>
+<p>If you haven't figured it out by now, its time to write some state machines. 🤖</p>
+<blockquote>
+<p>Side note: if you feel like we could just pass back either the number of bytes we need
+or our final result each time there is a call to <code>accept_bytes</code> then we <em>could</em> make
+that work in this instance but we're just creating more problems for ourselves once
+we start to parse more complicated types where we need to build up state in between
+reads.</p>
+</blockquote>
+<h2 id="state-machines-to-the-rescue"><a class="zola-anchor" href="#state-machines-to-the-rescue" aria-label="Anchor link for: state-machines-to-the-rescue">State machines to the rescue!</a></h2>
+<p>Instead of implementing our trait on the type we're trying to deserialize directly, lets
+instead split things into a pair of traits: one for the type itself and one for a state
+machine that can track where we are in our deserialization process. While we're working
+out the details of the new traits we'll stick to just writing the blocking I/O loop to
+keep things simpler:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">trait </span><span style="color:#73d0ff;">NinepSansIO </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">S</span><span style="color:#ccc9c2cc;">: </span><span>StateMachine&lt;T=</span><span style="color:#ffa759;">Self</span><span>&gt;</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">state_machine</span><span>() </span><span style="color:#ccc9c2cc;">-&gt; </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>S</span><span style="color:#ccc9c2cc;">;
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">trait </span><span style="color:#73d0ff;">StateMachine </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">T</span><span style="color:#ccc9c2cc;">: </span><span>NinepSansIO&lt;S=</span><span style="color:#ffa759;">Self</span><span>&gt;</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">bytes_needed</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffcc66;">self</span><span>) </span><span style="color:#ccc9c2cc;">-&gt; </span><span style="color:#ffa759;">usize</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">accept_bytes</span><span>(</span><span style="color:#ffcc66;">self</span><span>, </span><span style="color:#ffcc66;">bytes</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span>[</span><span style="color:#ffa759;">u8</span><span>]) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;State&lt;T&gt;&gt;</span><span style="color:#ccc9c2cc;">;
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">enum </span><span style="color:#73d0ff;">State</span><span>&lt;T&gt;
+</span><span>where
+</span><span>    T: NinepSansIO,
+</span><span>{
+</span><span>    Pending(T</span><span style="color:#f29e74;">::</span><span>S)</span><span style="color:#ccc9c2cc;">,
+</span><span>    Done(T)</span><span style="color:#ccc9c2cc;">,
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">read_from</span><span>&lt;T</span><span style="color:#ccc9c2cc;">:</span><span> NinepSansIO, R</span><span style="color:#ccc9c2cc;">:</span><span> Read&gt;(</span><span style="color:#ffcc66;">r</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> R) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;T&gt; {
+</span><span>    </span><span style="color:#ffa759;">let mut</span><span> sm </span><span style="color:#f29e74;">= </span><span>T</span><span style="color:#f29e74;">::</span><span>state_machine()</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">loop </span><span>{
+</span><span>        </span><span style="color:#ffa759;">let</span><span> n </span><span style="color:#f29e74;">=</span><span> sm</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">bytes_needed</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#ffa759;">let mut</span><span> buf </span><span style="color:#f29e74;">= </span><span>[</span><span style="color:#ffcc66;">0</span><span style="color:#ffa759;">u8</span><span style="color:#ccc9c2cc;">;</span><span> n]</span><span style="color:#ccc9c2cc;">;
+</span><span>        r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">read_exact</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> buf)</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>        </span><span style="color:#ffa759;">match</span><span> sm</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">accept_bytes</span><span>(</span><span style="color:#f29e74;">&amp;</span><span>buf)</span><span style="color:#f29e74;">? </span><span>{
+</span><span>            State</span><span style="color:#f29e74;">::</span><span>Pending(s) </span><span style="color:#f29e74;">=&gt;</span><span> sm </span><span style="color:#f29e74;">=</span><span> s</span><span style="color:#ccc9c2cc;">,
+</span><span>            State</span><span style="color:#f29e74;">::</span><span>Done(t) </span><span style="color:#f29e74;">=&gt; </span><span style="color:#ffa759;">return </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(t)</span><span style="color:#ccc9c2cc;">,
+</span><span>        }
+</span><span>
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>Now all an implementation of <code>NinepSansIO</code> needs to do is be able to provide a state
+machine and the heavy lifting is going to be done in the <code>StateMachine</code> trait. Lets
+skip the <code>u16</code> case for just now (it's not too dissimilar the naive sans I/O implementation
+above) and instead take a look just at string again:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">impl </span><span>NinepSansIO </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">String </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">S</span><span style="color:#ccc9c2cc;">:</span><span> StringReader</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">state_machine</span><span>() </span><span style="color:#ccc9c2cc;">-&gt;</span><span> StringReader {
+</span><span>        StringReader</span><span style="color:#f29e74;">::</span><span>Start
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">enum </span><span style="color:#73d0ff;">StringReader </span><span>{
+</span><span>    Start</span><span style="color:#ccc9c2cc;">,
+</span><span>    WithLen(</span><span style="color:#ffa759;">usize</span><span>)</span><span style="color:#ccc9c2cc;">,
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">impl </span><span>StateMachine </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">StringReader </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">T </span><span style="color:#f29e74;">= </span><span style="font-style:italic;color:#5ccfe6;">String</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">bytes_needed</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffcc66;">self</span><span>) </span><span style="color:#ccc9c2cc;">-&gt; </span><span style="color:#ffa759;">usize </span><span>{
+</span><span>        </span><span style="color:#ffa759;">match </span><span style="font-style:italic;color:#5ccfe6;">self </span><span>{
+</span><span>            </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Start </span><span style="color:#f29e74;">=&gt; </span><span>size_of</span><span style="color:#f29e74;">::</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt;()</span><span style="color:#ccc9c2cc;">,
+</span><span>            </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>WithLen(len) </span><span style="color:#f29e74;">=&gt; *</span><span>len</span><span style="color:#ccc9c2cc;">,
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">accept_bytes</span><span>(</span><span style="color:#ffcc66;">self</span><span>, </span><span style="color:#ffa759;">mut </span><span style="color:#ffcc66;">bytes</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span>[</span><span style="color:#ffa759;">u8</span><span>]) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;State&lt;</span><span style="font-style:italic;color:#5ccfe6;">String</span><span>&gt;&gt; {
+</span><span>        </span><span style="color:#ffa759;">match </span><span style="font-style:italic;color:#5ccfe6;">self </span><span>{
+</span><span>            </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Start </span><span style="color:#f29e74;">=&gt; </span><span>{
+</span><span>                </span><span style="color:#ffa759;">let</span><span> len </span><span style="color:#f29e74;">= </span><span style="color:#ffa759;">match </span><span style="color:#ffcc66;">0</span><span style="color:#ffa759;">u16</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">accept_bytes</span><span>(bytes)</span><span style="color:#f29e74;">? </span><span>{
+</span><span>                    State</span><span style="color:#f29e74;">::</span><span>Done(t) </span><span style="color:#f29e74;">=&gt; </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(t)</span><span style="color:#ccc9c2cc;">,
+</span><span>                    State</span><span style="color:#f29e74;">::</span><span>Pending(</span><span style="color:#f29e74;">_</span><span>) </span><span style="color:#f29e74;">=&gt; </span><span style="color:#f28779;">unreachable!</span><span>()</span><span style="color:#ccc9c2cc;">, </span><span style="font-style:italic;color:#5c6773;">// we know this takes a single read
+</span><span>                }</span><span style="color:#ccc9c2cc;">;
+</span><span>                
+</span><span>                </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(State</span><span style="color:#f29e74;">::</span><span>Pending(</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>WithLen(len)))
+</span><span>            }
+</span><span>
+</span><span>            </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>WithLen(len) </span><span style="color:#f29e74;">=&gt; </span><span>{
+</span><span>                </span><span style="color:#ffa759;">let mut</span><span> s </span><span style="color:#f29e74;">= </span><span style="font-style:italic;color:#5ccfe6;">String</span><span style="color:#f29e74;">::</span><span>with_capacity(len)</span><span style="color:#ccc9c2cc;">;
+</span><span>                bytes</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">read_to_string</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> s)</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>                </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(State</span><span style="color:#f29e74;">::</span><span>Done(s))
+</span><span>            }
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>😩</p>
+<p>So...it works. And it lets us abstract away the I/O like we wanted. But it does not spark joy.</p>
+<p>For one thing, our nested calls to <code>accept_bytes</code> are now returning a <code>State&lt;T&gt;</code> so we need to match
+on that ourselves and handle the case where that state might still be pending (when we know it isn't).
+But more importantly the code is becoming more and more verbose and harder to follow, and this is the
+simplest case other than an integer! A lot of the message types have 3 or 4 fields that need to be
+deserialized, each of which needs to run its own state machine so things are quickly getting out of hand.
+As an example, here's what parsing a <code>create</code> T-message ends up looking like:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">struct </span><span style="color:#73d0ff;">Create </span><span>{
+</span><span>    fid</span><span style="color:#ccc9c2cc;">: </span><span style="color:#ffa759;">u32</span><span>,
+</span><span>    name</span><span style="color:#ccc9c2cc;">:</span><span> String,
+</span><span>    perm</span><span style="color:#ccc9c2cc;">: </span><span style="color:#ffa759;">u32</span><span>,
+</span><span>    mode</span><span style="color:#ccc9c2cc;">: </span><span style="color:#ffa759;">u8</span><span>,
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">impl </span><span>NinepSansIO </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">Create </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">S </span><span style="color:#f29e74;">=</span><span> CreateReader</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">state_machine</span><span>() </span><span style="color:#ccc9c2cc;">-&gt;</span><span> CreateReader {
+</span><span>        CreateReader</span><span style="color:#f29e74;">::</span><span>Fid(</span><span style="color:#ffa759;">u32</span><span style="color:#f29e74;">::</span><span>state_machine())
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">pub enum </span><span style="color:#73d0ff;">CreateReader </span><span>{
+</span><span>    Fid(</span><span style="color:#ffa759;">u32</span><span style="color:#f29e74;">::</span><span>S)</span><span style="color:#ccc9c2cc;">,
+</span><span>    Name(</span><span style="color:#ffa759;">u32</span><span style="color:#ccc9c2cc;">, </span><span style="font-style:italic;color:#5ccfe6;">String</span><span style="color:#f29e74;">::</span><span>S)</span><span style="color:#ccc9c2cc;">,
+</span><span>    Perm(</span><span style="color:#ffa759;">u32</span><span style="color:#ccc9c2cc;">, </span><span style="font-style:italic;color:#5ccfe6;">String</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffa759;">u32</span><span style="color:#f29e74;">::</span><span>S)</span><span style="color:#ccc9c2cc;">,
+</span><span>    Mode(</span><span style="color:#ffa759;">u32</span><span style="color:#ccc9c2cc;">, </span><span style="font-style:italic;color:#5ccfe6;">String</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffa759;">u32</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffa759;">u8</span><span style="color:#f29e74;">::</span><span>S)</span><span style="color:#ccc9c2cc;">,
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">impl </span><span>StateMachine </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">CreateReader </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">T </span><span style="color:#f29e74;">=</span><span> Create</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">bytes_needed</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffcc66;">self</span><span>) </span><span style="color:#ccc9c2cc;">-&gt; </span><span style="color:#ffa759;">usize </span><span>{
+</span><span>        </span><span style="color:#ffa759;">match </span><span style="font-style:italic;color:#5ccfe6;">self </span><span>{
+</span><span>            </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Fid(r) </span><span style="color:#f29e74;">=&gt;</span><span> r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">bytes_needed</span><span>()</span><span style="color:#ccc9c2cc;">,
+</span><span>            </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Name(</span><span style="color:#f29e74;">_</span><span style="color:#ccc9c2cc;">,</span><span> r) </span><span style="color:#f29e74;">=&gt;</span><span> r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">bytes_needed</span><span>()</span><span style="color:#ccc9c2cc;">,
+</span><span>            </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Perm(</span><span style="color:#f29e74;">_</span><span style="color:#ccc9c2cc;">, </span><span style="color:#f29e74;">_</span><span style="color:#ccc9c2cc;">,</span><span> r) </span><span style="color:#f29e74;">=&gt;</span><span> r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">bytes_needed</span><span>()</span><span style="color:#ccc9c2cc;">,
+</span><span>            </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Mode(</span><span style="color:#f29e74;">_</span><span style="color:#ccc9c2cc;">, </span><span style="color:#f29e74;">_</span><span style="color:#ccc9c2cc;">, </span><span style="color:#f29e74;">_</span><span style="color:#ccc9c2cc;">,</span><span> r) </span><span style="color:#f29e74;">=&gt;</span><span> r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">bytes_needed</span><span>()</span><span style="color:#ccc9c2cc;">,
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">accept_bytes</span><span>(</span><span style="color:#ffcc66;">self</span><span>, </span><span style="color:#ffcc66;">bytes</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span>[</span><span style="color:#ffa759;">u8</span><span>]) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;State&lt;Create&gt;&gt; {
+</span><span>        </span><span style="color:#ffa759;">match </span><span style="font-style:italic;color:#5ccfe6;">self </span><span>{
+</span><span>            </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Fid(r) </span><span style="color:#f29e74;">=&gt; </span><span style="color:#ffa759;">match</span><span> r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">accept_bytes</span><span>(bytes)</span><span style="color:#f29e74;">? </span><span>{
+</span><span>                State</span><span style="color:#f29e74;">::</span><span>Pending(r) </span><span style="color:#f29e74;">=&gt; </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(State</span><span style="color:#f29e74;">::</span><span>Pending(</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Fid(r)))</span><span style="color:#ccc9c2cc;">,
+</span><span>                State</span><span style="color:#f29e74;">::</span><span>Done(fid) </span><span style="color:#f29e74;">=&gt; </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(State</span><span style="color:#f29e74;">::</span><span>Pending(</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Name(fid</span><span style="color:#ccc9c2cc;">, </span><span style="font-style:italic;color:#5ccfe6;">String</span><span style="color:#f29e74;">::</span><span>reader())))</span><span style="color:#ccc9c2cc;">,
+</span><span>            }</span><span style="color:#ccc9c2cc;">,
+</span><span>            </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Name(fid</span><span style="color:#ccc9c2cc;">,</span><span> r) </span><span style="color:#f29e74;">=&gt; </span><span style="color:#ffa759;">match</span><span> r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">accept_bytes</span><span>(bytes)</span><span style="color:#f29e74;">? </span><span>{
+</span><span>                State</span><span style="color:#f29e74;">::</span><span>Pending(r) </span><span style="color:#f29e74;">=&gt; </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(State</span><span style="color:#f29e74;">::</span><span>Pending(</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Name(fid</span><span style="color:#ccc9c2cc;">,</span><span> r)))</span><span style="color:#ccc9c2cc;">,
+</span><span>                State</span><span style="color:#f29e74;">::</span><span>Done(name) </span><span style="color:#f29e74;">=&gt; </span><span>{
+</span><span>                    </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(State</span><span style="color:#f29e74;">::</span><span>Pending(</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Perm(fid</span><span style="color:#ccc9c2cc;">,</span><span> name</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffa759;">u32</span><span style="color:#f29e74;">::</span><span>reader())))
+</span><span>                }
+</span><span>            }</span><span style="color:#ccc9c2cc;">,
+</span><span>            </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Perm(fid</span><span style="color:#ccc9c2cc;">,</span><span> name</span><span style="color:#ccc9c2cc;">,</span><span> r) </span><span style="color:#f29e74;">=&gt; </span><span style="color:#ffa759;">match</span><span> r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">accept_bytes</span><span>(bytes)</span><span style="color:#f29e74;">? </span><span>{
+</span><span>                State</span><span style="color:#f29e74;">::</span><span>Pending(r) </span><span style="color:#f29e74;">=&gt; </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(State</span><span style="color:#f29e74;">::</span><span>Pending(</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Perm(fid</span><span style="color:#ccc9c2cc;">,</span><span> name</span><span style="color:#ccc9c2cc;">,</span><span> r)))</span><span style="color:#ccc9c2cc;">,
+</span><span>                State</span><span style="color:#f29e74;">::</span><span>Done(perm) </span><span style="color:#f29e74;">=&gt; </span><span>{
+</span><span>                    </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(State</span><span style="color:#f29e74;">::</span><span>Pending(</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Mode(fid</span><span style="color:#ccc9c2cc;">,</span><span> name</span><span style="color:#ccc9c2cc;">,</span><span> perm</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffa759;">u8</span><span style="color:#f29e74;">::</span><span>reader())))
+</span><span>                }
+</span><span>            }</span><span style="color:#ccc9c2cc;">,
+</span><span>            </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Mode(fid</span><span style="color:#ccc9c2cc;">,</span><span> name</span><span style="color:#ccc9c2cc;">,</span><span> perm</span><span style="color:#ccc9c2cc;">,</span><span> r) </span><span style="color:#f29e74;">=&gt; </span><span style="color:#ffa759;">match</span><span> r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">accept_bytes</span><span>(bytes)</span><span style="color:#f29e74;">? </span><span>{
+</span><span>                State</span><span style="color:#f29e74;">::</span><span>Pending(r) </span><span style="color:#f29e74;">=&gt; </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(State</span><span style="color:#f29e74;">::</span><span>Pending(</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Mode(fid</span><span style="color:#ccc9c2cc;">,</span><span> name</span><span style="color:#ccc9c2cc;">,</span><span> perm</span><span style="color:#ccc9c2cc;">,</span><span> r)))</span><span style="color:#ccc9c2cc;">,
+</span><span>                State</span><span style="color:#f29e74;">::</span><span>Done(mode) </span><span style="color:#f29e74;">=&gt; </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(State</span><span style="color:#f29e74;">::</span><span>Done(Create { fid</span><span style="color:#ccc9c2cc;">,</span><span> name</span><span style="color:#ccc9c2cc;">,</span><span> perm</span><span style="color:#ccc9c2cc;">,</span><span> mode }))</span><span style="color:#ccc9c2cc;">,
+</span><span>            }</span><span style="color:#ccc9c2cc;">,
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>Ok, enough is enough. Time to commit some crimes.</p>
+<br>
+<h1 id="committing-crimes"><a class="zola-anchor" href="#committing-crimes" aria-label="Anchor link for: committing-crimes">Committing crimes</a></h1>
+<p>When we had the I/O threaded through the protocol logic everything was easy to write and easy
+to read (yay!). We just had this problem that we were stuck with a single I/O implementation
+(boo). So we lifted the I/O out and now we had code reuse (yay!) but then writing and maintaining
+the code started to get out of hand (boo).</p>
+<p>Really what we want is to have our cake and eat it. 🍰</p>
+<p>So how do we do <em>that</em>?</p>
+<p>When I first started learning Python one of my heroes was (and still is) <a href="http://www.dabeaz.com/talks.html">Dave Beazley</a>. (If you've
+never watched Dave's presentations before then stop reading now and go and take a look. You won't be
+disappointed.) Dave has a wonderful way of looking at an existing tool, in his case frequently the
+Python interpreter, and working out what sorts of unexpected things you can do with it. Famously he
+has played around a lot with Python's generator functions and in particular he's given a number of
+talks on what you can do with the <a href="https://docs.python.org/3/reference/expressions.html#generator.send">send</a> method that allows you to write coroutines.</p>
+<p>Thinking back to Dave's talks, and remembering that Rust's <code>asyc/await</code> de-sugars to a state machine
+based Future (we finally got there!) we might just have a ready-made mechanism for writing our sans
+I/O API. All we're missing is the ability to communicate between the state machine and the I/O loop
+driving it.</p>
+<blockquote>
+<p><em>"A future in Rust is a state machine, async/await is used to define futures,
+therefore I can use async/await to define an arbitrary state machine"</em></p>
+</blockquote>
+<p>If we take a look at how <code>yield</code> and <code>send</code> work with generators in Python we can get a pretty good
+idea of the sort of API we want to try and replicate. Lets take a quick break from parsing 9p messages
+for now and instead do something even simpler: doubling integers.</p>
+<pre data-lang="python" style="background-color:#212733;color:#ccc9c2;" class="language-python "><code class="language-python" data-lang="python"><span style="font-style:italic;color:#5c6773;"># example.py
+</span><span style="color:#ffa759;">def </span><span style="color:#ffd580;">request_doubling</span><span>(</span><span style="color:#ffcc66;">nums</span><span>):
+</span><span>    </span><span style="color:#ffa759;">for </span><span>n </span><span style="color:#ffa759;">in </span><span>nums:
+</span><span>        </span><span style="color:#f28779;">print</span><span>(</span><span style="color:#ffa759;">f</span><span style="color:#bae67e;">&quot;  requesting that </span><span>{n}</span><span style="color:#bae67e;"> gets doubled...&quot;</span><span>)
+</span><span>        doubled </span><span style="color:#f29e74;">= </span><span style="color:#ffa759;">yield </span><span>n
+</span><span>        </span><span style="color:#f28779;">print</span><span>(</span><span style="color:#ffa759;">f</span><span style="color:#bae67e;">&quot;  2 x </span><span>{n}</span><span style="color:#bae67e;"> = </span><span>{doubled}</span><span style="color:#bae67e;">&quot;</span><span>)
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">return </span><span style="color:#bae67e;">&quot;done&quot;
+</span><span>
+</span><span>
+</span><span style="color:#f28779;">print</span><span>(</span><span style="color:#bae67e;">&quot;initializing generator&quot;</span><span>)
+</span><span>gen </span><span style="color:#f29e74;">= </span><span style="color:#ffd580;">request_doubling</span><span>([</span><span style="color:#ffcc66;">1</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">2</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">3</span><span>])
+</span><span style="color:#f28779;">print</span><span>(gen)
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;"># when a generator first starts all we can do is call next()
+</span><span>n </span><span style="color:#f29e74;">= </span><span style="color:#f28779;">next</span><span>(gen)
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;"># after that each send() is replying to the previous one and
+</span><span style="font-style:italic;color:#5c6773;"># receiving the next value out of the generator
+</span><span style="color:#ffa759;">while </span><span style="color:#ffcc66;">True</span><span>:
+</span><span>    </span><span style="color:#ffa759;">try</span><span>:
+</span><span>        </span><span style="color:#f28779;">print</span><span>(</span><span style="color:#bae67e;">&quot;sending result &amp; requesting next value&quot;</span><span>)
+</span><span>        n </span><span style="color:#f29e74;">= </span><span>gen</span><span style="color:#f29e74;">.</span><span style="color:#ffd580;">send</span><span>(</span><span style="color:#ffcc66;">2 </span><span style="color:#f29e74;">* </span><span>n)
+</span><span>    </span><span style="color:#ffa759;">except </span><span style="font-style:italic;color:#5ccfe6;">StopIteration </span><span style="color:#ffa759;">as </span><span>res:
+</span><span>        </span><span style="color:#f28779;">print</span><span>(</span><span style="color:#ffa759;">f</span><span style="color:#bae67e;">&quot;generator finished with result=</span><span>{res</span><span style="color:#f29e74;">.</span><span>value}</span><span style="color:#bae67e;">&quot;</span><span>)
+</span><span>        </span><span style="color:#ffa759;">break
+</span></code></pre>
+<p>Running this gives us the following output:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>initializing generator
+</span><span>&lt;generator object request_doubling at 0x72848c539210&gt;
+</span><span>  requesting that 1 gets doubled...
+</span><span>sending result &amp; requesting next value
+</span><span>  2 x 1 = 2
+</span><span>  requesting that 2 gets doubled...
+</span><span>sending result &amp; requesting next value
+</span><span>  2 x 2 = 4
+</span><span>  requesting that 3 gets doubled...
+</span><span>sending result &amp; requesting next value
+</span><span>  2 x 3 = 6
+</span><span>generator finished with result=done
+</span></code></pre>
+<p>There are a couple of important moving parts here so lets go over them and see how we can
+replicate them in Rust:</p>
+<ol>
+<li>The <code>request_doubling</code> function is returning a Generator that requires something external to drive it.
+This is going to be our state machine and what we're after is a way of writing it as simple imperative
+code rather than explicitly writing out the different states of the state machine. Using <code>async/await</code>
+for this is going to allow us to return a Future that we can later poll to run the state machine.
+Exactly <em>how</em> we run it is the main problem to solve (more on that later).</li>
+<li>The <code>doubled = yield n</code> line is both sending and receiving a value by communicating with whatever is
+driving the Generator. In Python everything is dynamically typed but we're going to need to find a way
+of specifying the type of the values being sent and received.</li>
+<li>Outside of the Generator we need to kick things off by first calling <code>next</code> as we're not allowed to send
+a value into a generator that's just started. After that, each call to <code>send</code> lining up with subsequent
+<code>yields</code> from within the generator. This "priming the pump" step is a little annoying so we'll see if we
+can avoid it in what we put together for our API.</li>
+<li>When the Generator is finished it can return a value (by raising a <code>StopIteration</code> exception in Python
+but we'll gloss over that 😬). For the Rust side of things we need to pay attention to the
+fact that the type of this return value is something else that we need to define as part of the contract
+between the state machine and whatever is running it.</li>
+</ol>
+<h3 id="stubbing-out-an-interface"><a class="zola-anchor" href="#stubbing-out-an-interface" aria-label="Anchor link for: stubbing-out-an-interface">Stubbing out an interface</a></h3>
+<p>So, we're going to need two traits: one for the state machine and one for the thing running it. They need
+to point at each other and they need to keep track of the shared types. With that in mind, here's a rough
+sketch of how this might look.</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">trait </span><span style="color:#73d0ff;">StateMachine </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Snd</span><span style="color:#ccc9c2cc;">; </span><span style="font-style:italic;color:#5c6773;">// the type we&#39;re going to yield
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Rcv</span><span style="color:#ccc9c2cc;">; </span><span style="font-style:italic;color:#5c6773;">// the type coming back from a yield
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Out</span><span style="color:#ccc9c2cc;">; </span><span style="font-style:italic;color:#5c6773;">// the type we&#39;re going to return
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">run</span><span>() </span><span style="color:#ccc9c2cc;">-&gt;</span><span> impl Future&lt;Output=</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Out&gt;</span><span style="color:#ccc9c2cc;">;
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">enum </span><span style="color:#73d0ff;">Step</span><span>&lt;Snd, Out&gt; {
+</span><span>    Pending(Snd)</span><span style="color:#ccc9c2cc;">,
+</span><span>    Complete(Out)</span><span style="color:#ccc9c2cc;">,
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">trait </span><span style="color:#73d0ff;">Runner </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Snd</span><span style="color:#ccc9c2cc;">; </span><span style="font-style:italic;color:#5c6773;">// the type we expect to be yielded
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Rcv</span><span style="color:#ccc9c2cc;">; </span><span style="font-style:italic;color:#5c6773;">// the type we&#39;ll return from a yield
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">send</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffcc66;">self</span><span>, </span><span style="color:#ffcc66;">value</span><span style="color:#ccc9c2cc;">: </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Rcv)</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">step</span><span>&lt;Out, F&gt;(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffcc66;">self</span><span>, </span><span style="color:#ffcc66;">fut</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut </span><span>Pin&lt;</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> F&gt;) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>Step&lt;</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Snd, Out&gt;
+</span><span>    </span><span style="color:#ffa759;">where
+</span><span>        F</span><span style="color:#ccc9c2cc;">: </span><span>Future&lt;Output = Out&gt;;
+</span><span>}
+</span></code></pre>
+<p>That gets us <em>close</em> but not close enough: we're still missing a mechanism for passing values between
+the state machine and the runner, and while we <em>are</em> pinning down the types being passed back and forth
+we're not yet ensuring that both sides agree on the types they need to use. But, if we take a step back
+and instead look at the <a href="https://eventhelix.com/rust/rust-to-assembly-async-await/">Future</a> trait itself we might be able to spot somewhere that we can smuggle
+some data in and out of the "state machine" while it's running:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">pub trait </span><span style="color:#73d0ff;">Future </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Output</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">poll</span><span>(</span><span style="color:#ffcc66;">self</span><span>: Pin&lt;</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut Self</span><span>&gt;, </span><span style="color:#ffcc66;">cx</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut </span><span>Context&lt;&#39;</span><span style="color:#f29e74;">_</span><span>&gt;) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>Poll&lt;</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Output&gt;</span><span style="color:#ccc9c2cc;">;
+</span><span>}
+</span></code></pre>
+<p>Hmm...so we get given a <a href="https://doc.rust-lang.org/std/task/struct.Context.html">Context</a> it seems. What can we do with that? Well according to the docs
+"currently, Context only serves to provide access to a <code>&amp;Waker</code> which can be used to wake the current
+task." Fair enough. Lets take a look at what having a <a href="https://doc.rust-lang.org/std/task/struct.Waker.html">Waker</a> gets us then 👀</p>
+<blockquote>
+<p>pub fn data(&amp;self) -&gt; *const ()  // Gets the data pointer used to create this Waker.</p>
+</blockquote>
+<p>Now <em>that</em> we can work with. Sure its a raw pointer to an empty tuple (Rust's equivalent of a void
+pointer) but we did say we were prepared to commit some crimes, so lets cast some pointers! We can
+only get at this if we hand write a Future and implement <code>poll</code> directly so lets whip up something
+simple(ish) and see what mischief we can get into:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">use </span><span>std</span><span style="color:#f29e74;">::</span><span>{
+</span><span>    future</span><span style="color:#f29e74;">::</span><span>Future</span><span style="color:#ccc9c2cc;">,
+</span><span>    pin</span><span style="color:#f29e74;">::</span><span>{Pin</span><span style="color:#ccc9c2cc;">,</span><span> pin}</span><span style="color:#ccc9c2cc;">,
+</span><span>    sync</span><span style="color:#f29e74;">::</span><span>Arc</span><span style="color:#ccc9c2cc;">,
+</span><span>    task</span><span style="color:#f29e74;">::</span><span>{Context</span><span style="color:#ccc9c2cc;">,</span><span> Poll</span><span style="color:#ccc9c2cc;">,</span><span> Wake</span><span style="color:#ccc9c2cc;">,</span><span> Waker}</span><span style="color:#ccc9c2cc;">,
+</span><span>}</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span style="color:#ffa759;">struct </span><span style="color:#73d0ff;">Data</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">&#39;static str</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;">// We don&#39;t actually need to handle things correctly here so lets just no-op
+</span><span style="color:#ffa759;">impl </span><span>Wake </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">Data </span><span>{
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">wake</span><span>(</span><span style="color:#ffcc66;">self</span><span>: Arc&lt;</span><span style="color:#ffa759;">Self</span><span>&gt;) {}
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">wake_by_ref</span><span>(</span><span style="color:#ffcc66;">self</span><span>: </span><span style="color:#f29e74;">&amp;</span><span>Arc&lt;</span><span style="color:#ffa759;">Self</span><span>&gt;) {}
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">struct </span><span style="color:#73d0ff;">SneakyFuture</span><span style="color:#ccc9c2cc;">;
+</span><span style="color:#ffa759;">impl </span><span>Future </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">SneakyFuture </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Output </span><span style="color:#f29e74;">= &amp;</span><span style="color:#ffa759;">&#39;static str</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">poll</span><span>(</span><span style="color:#ffcc66;">self</span><span>: Pin&lt;</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut Self</span><span>&gt;, </span><span style="color:#ffcc66;">ctx</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut </span><span>Context&lt;&#39;</span><span style="color:#f29e74;">_</span><span>&gt;) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>Poll&lt;</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Output&gt; {
+</span><span>        </span><span style="font-style:italic;color:#5c6773;">// SAFETY: highly questionable
+</span><span>        </span><span style="color:#ffa759;">let</span><span> data </span><span style="color:#f29e74;">= </span><span style="color:#ffa759;">unsafe </span><span>{
+</span><span>            (ctx</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">waker</span><span>()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">data</span><span>() </span><span style="color:#f29e74;">as </span><span style="color:#ffa759;">*const</span><span> Data)
+</span><span>                </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">as_ref</span><span>()
+</span><span>                </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>()
+</span><span>                </span><span style="color:#f29e74;">.</span><span style="color:#ffcc66;">0
+</span><span>        }</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>        Poll</span><span style="color:#f29e74;">::</span><span>Ready(data)
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">main</span><span>() {
+</span><span>    </span><span style="color:#ffa759;">let</span><span> state </span><span style="color:#f29e74;">= </span><span>Arc</span><span style="color:#f29e74;">::</span><span>new(Data(</span><span style="color:#bae67e;">&quot;Hello, world!&quot;</span><span>))</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let</span><span> waker </span><span style="color:#f29e74;">= </span><span>Waker</span><span style="color:#f29e74;">::</span><span>from(state)</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let mut</span><span> ctx </span><span style="color:#f29e74;">= </span><span>Context</span><span style="color:#f29e74;">::</span><span>from_waker(</span><span style="color:#f29e74;">&amp;</span><span>waker)</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let</span><span> fut </span><span style="color:#f29e74;">= </span><span style="color:#f28779;">pin!</span><span>(SneakyFuture)</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">match</span><span> fut</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">poll</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> ctx) {
+</span><span>        Poll</span><span style="color:#f29e74;">::</span><span>Pending </span><span style="color:#f29e74;">=&gt; </span><span style="color:#f28779;">panic!</span><span>(</span><span style="color:#bae67e;">&quot;should only return ready&quot;</span><span>)</span><span style="color:#ccc9c2cc;">,
+</span><span>        Poll</span><span style="color:#f29e74;">::</span><span>Ready(data) </span><span style="color:#f29e74;">=&gt; </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;got some data -&gt; </span><span style="color:#ffcc66;">{data}</span><span style="color:#bae67e;">&quot;</span><span>)</span><span style="color:#ccc9c2cc;">,
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>I've set up this example as a <a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2024&amp;gist=65a27fa84db70fec9d04c30df5db2e68">playground link</a> for you to try out and confirm for yourself
+that it does in fact print "got some data -&gt; Hello, world!" when you run it 🎉</p>
+<p>Half way there (not).</p>
+<p>That allows us to read some data out of the <code>Waker</code>, but what about storing data? Well, lets try
+writing another future and seeing if we can get that to work as well:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="font-style:italic;color:#5c6773;">// Adding this to the previous example...
+</span><span style="color:#ffa759;">struct </span><span style="color:#73d0ff;">ReallySneakyFuture</span><span style="color:#ccc9c2cc;">;
+</span><span style="color:#ffa759;">impl </span><span>Future </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">ReallySneakyFuture </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Output </span><span style="color:#f29e74;">= </span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">poll</span><span>(</span><span style="color:#ffcc66;">self</span><span>: Pin&lt;</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut Self</span><span>&gt;, </span><span style="color:#ffcc66;">ctx</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut </span><span>Context&lt;&#39;</span><span style="color:#f29e74;">_</span><span>&gt;) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>Poll&lt;</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Output&gt; {
+</span><span>        </span><span style="font-style:italic;color:#5c6773;">// SAFETY: even more highly questionable
+</span><span>        </span><span style="color:#ffa759;">unsafe </span><span>{
+</span><span>            (ctx</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">waker</span><span>()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">data</span><span>() </span><span style="color:#f29e74;">as </span><span style="color:#ffa759;">*mut </span><span>() </span><span style="color:#f29e74;">as </span><span style="color:#ffa759;">*mut</span><span> Data)
+</span><span>                </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">as_mut</span><span>()
+</span><span>                </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>()
+</span><span>                </span><span style="color:#f29e74;">.</span><span style="color:#ffcc66;">0 </span><span style="color:#f29e74;">= </span><span style="color:#bae67e;">&quot;psych! new data!&quot;
+</span><span>        }</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>        Poll</span><span style="color:#f29e74;">::</span><span>Ready(())
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;">// ...and swapping out the main function
+</span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">main</span><span>() {
+</span><span>    </span><span style="color:#ffa759;">let</span><span> state </span><span style="color:#f29e74;">= </span><span>Arc</span><span style="color:#f29e74;">::</span><span>new(Data(</span><span style="color:#bae67e;">&quot;Hello, world!&quot;</span><span>))</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let</span><span> waker </span><span style="color:#f29e74;">= </span><span>Waker</span><span style="color:#f29e74;">::</span><span>from(state</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">clone</span><span>())</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let mut</span><span> ctx </span><span style="color:#f29e74;">= </span><span>Context</span><span style="color:#f29e74;">::</span><span>from_waker(</span><span style="color:#f29e74;">&amp;</span><span>waker)</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">match </span><span style="color:#f28779;">pin!</span><span>(SneakyFuture)</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">poll</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> ctx) {
+</span><span>        Poll</span><span style="color:#f29e74;">::</span><span>Pending </span><span style="color:#f29e74;">=&gt; </span><span style="color:#f28779;">panic!</span><span>(</span><span style="color:#bae67e;">&quot;should only return ready&quot;</span><span>)</span><span style="color:#ccc9c2cc;">,
+</span><span>        Poll</span><span style="color:#f29e74;">::</span><span>Ready(data) </span><span style="color:#f29e74;">=&gt; </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;got some data -&gt; </span><span style="color:#ffcc66;">{data}</span><span style="color:#bae67e;">&quot;</span><span>)</span><span style="color:#ccc9c2cc;">,
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">match </span><span style="color:#f28779;">pin!</span><span>(ReallySneakyFuture)</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">poll</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> ctx) {
+</span><span>        Poll</span><span style="color:#f29e74;">::</span><span>Pending </span><span style="color:#f29e74;">=&gt; </span><span style="color:#f28779;">panic!</span><span>(</span><span style="color:#bae67e;">&quot;should only return ready&quot;</span><span>)</span><span style="color:#ccc9c2cc;">,
+</span><span>        Poll</span><span style="color:#f29e74;">::</span><span>Ready(</span><span style="color:#f29e74;">_</span><span>) </span><span style="color:#f29e74;">=&gt; </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;did sneaky things...&quot;</span><span>)</span><span style="color:#ccc9c2cc;">,
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;contents of state = </span><span style="color:#ffcc66;">{}</span><span style="color:#bae67e;">&quot;</span><span style="color:#ccc9c2cc;">,</span><span> state</span><span style="color:#f29e74;">.</span><span style="color:#ffcc66;">0</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>}
+</span></code></pre>
+<p>There's another <a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2024&amp;gist=4bdd5d7bd9e6654ab93d35e35bc36428">playground link</a> for this one and if you run it you should see the following:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>got some data -&gt; Hello, world!
+</span><span>did sneaky things...
+</span><span>contents of state = psych! new data!
+</span></code></pre>
+<p>Getting closer!</p>
+<h3 id="getting-data-out-and-responses-back-in"><a class="zola-anchor" href="#getting-data-out-and-responses-back-in" aria-label="Anchor link for: getting-data-out-and-responses-back-in">Getting data out and responses back in</a></h3>
+<p>Let's recap where we're at so far: we've managed to get data out of a Waker given to us by the
+thing polling us (kind of like "send" in Python) and we can stash data in that same Waker so it
+is accessible by the thing polling us (kind of like "yield" in Python). At the moment we have
+this split over two separate futures that we have to poll in sequence, but that's an easy enough
+thing to fix: what we really want is to recreate our doubling example. For that, we need the future
+that acts like a <code>yield</code> and then we'll need to call it from inside another async function that
+is behaving like the generator from the Python example:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="font-style:italic;color:#5c6773;">// Now we need to store a usize instead of a string and we need to be able to
+</span><span style="font-style:italic;color:#5c6773;">// mutate that usize from the poll loop
+</span><span style="color:#ffa759;">struct </span><span style="color:#73d0ff;">Data</span><span>(Mutex&lt;</span><span style="color:#ffa759;">usize</span><span>&gt;)</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;">// Our yield future needs to make sure that it returns Poll::Pending once in order to
+</span><span style="font-style:italic;color:#5c6773;">// yield control back to the poll loop. The second time we&#39;re polled we can read back
+</span><span style="font-style:italic;color:#5c6773;">// the value from the shared state and return it to the async function that called us.
+</span><span style="color:#ffa759;">struct </span><span style="color:#73d0ff;">Yield </span><span>{
+</span><span>    polled</span><span style="color:#ccc9c2cc;">: </span><span style="color:#ffa759;">bool</span><span>,
+</span><span>    n</span><span style="color:#ccc9c2cc;">: </span><span style="color:#ffa759;">usize</span><span>,
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">impl </span><span>Future </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">Yield </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Output </span><span style="color:#f29e74;">= </span><span style="color:#ffa759;">usize</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">poll</span><span>(</span><span style="color:#ffa759;">mut </span><span style="color:#ffcc66;">self</span><span>: Pin&lt;</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut Self</span><span>&gt;, </span><span style="color:#ffcc66;">ctx</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut </span><span>Context&lt;&#39;</span><span style="color:#f29e74;">_</span><span>&gt;) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>Poll&lt;</span><span style="color:#ffa759;">usize</span><span>&gt; {
+</span><span>        </span><span style="color:#ffa759;">if </span><span style="font-style:italic;color:#5ccfe6;">self</span><span style="color:#f29e74;">.</span><span>polled {
+</span><span>            </span><span style="font-style:italic;color:#5c6773;">// SAFETY: we can only poll this future using a waker wrapping Data
+</span><span>            </span><span style="color:#ffa759;">let</span><span> data </span><span style="color:#f29e74;">= </span><span style="color:#ffa759;">unsafe </span><span>{
+</span><span>                </span><span style="color:#f29e74;">*</span><span>(ctx</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">waker</span><span>()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">data</span><span>() </span><span style="color:#f29e74;">as </span><span style="color:#ffa759;">*mut </span><span>() </span><span style="color:#f29e74;">as </span><span style="color:#ffa759;">*mut</span><span> Data)
+</span><span>                    </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">as_mut</span><span>()
+</span><span>                    </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>()
+</span><span>                    </span><span style="color:#f29e74;">.</span><span style="color:#ffcc66;">0
+</span><span>                    </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">lock</span><span>()
+</span><span>                    </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>()
+</span><span>            }</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>            Poll</span><span style="color:#f29e74;">::</span><span>Ready(data)
+</span><span>        } </span><span style="color:#ffa759;">else </span><span>{
+</span><span>            </span><span style="font-style:italic;color:#5ccfe6;">self</span><span style="color:#f29e74;">.</span><span>polled </span><span style="color:#f29e74;">= </span><span style="color:#ffcc66;">true</span><span style="color:#ccc9c2cc;">;
+</span><span>            </span><span style="font-style:italic;color:#5c6773;">// SAFETY: we can only poll this future using a waker wrapping Data
+</span><span>            </span><span style="color:#ffa759;">unsafe </span><span>{
+</span><span>                </span><span style="color:#f29e74;">*</span><span>(ctx</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">waker</span><span>()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">data</span><span>() </span><span style="color:#f29e74;">as </span><span style="color:#ffa759;">*mut </span><span>() </span><span style="color:#f29e74;">as </span><span style="color:#ffa759;">*mut</span><span> Data)
+</span><span>                    </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">as_mut</span><span>()
+</span><span>                    </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>()
+</span><span>                    </span><span style="color:#f29e74;">.</span><span style="color:#ffcc66;">0
+</span><span>                    </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">lock</span><span>()
+</span><span>                    </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>() </span><span style="color:#f29e74;">= </span><span style="font-style:italic;color:#5ccfe6;">self</span><span style="color:#f29e74;">.</span><span>n</span><span style="color:#ccc9c2cc;">;
+</span><span>            }</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>            Poll</span><span style="color:#f29e74;">::</span><span>Pending
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;">// The bit we&#39;ve been waiting for!
+</span><span style="font-style:italic;color:#5c6773;">// Out generator / state machine / abuse of async ends up looking like a normal Rust
+</span><span style="font-style:italic;color:#5c6773;">// function. But...it really isn&#39;t: the Yield future will only work if we poll it in
+</span><span style="font-style:italic;color:#5c6773;">// the right way.
+</span><span>async </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">request_doubling</span><span>(</span><span style="color:#ffcc66;">nums</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span>[</span><span style="color:#ffa759;">usize</span><span>]) </span><span style="color:#ccc9c2cc;">-&gt; </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">&#39;static str </span><span>{
+</span><span>    </span><span style="color:#ffa759;">for </span><span style="color:#f29e74;">&amp;</span><span>n </span><span style="color:#f29e74;">in</span><span> nums</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">iter</span><span>() {
+</span><span>        </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;  requesting that </span><span style="color:#ffcc66;">{n}</span><span style="color:#bae67e;"> gets doubled...&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#ffa759;">let</span><span> doubled </span><span style="color:#f29e74;">=</span><span> Yield { polled</span><span style="color:#ccc9c2cc;">: </span><span style="color:#ffcc66;">false</span><span style="color:#ccc9c2cc;">,</span><span> n }</span><span style="color:#f29e74;">.</span><span>await</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;  2 x </span><span style="color:#ffcc66;">{n}</span><span style="color:#bae67e;"> = </span><span style="color:#ffcc66;">{doubled}</span><span style="color:#bae67e;">&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#bae67e;">&quot;done&quot;
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;">// Now we want to poll the future until it is complete rather than just once
+</span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">main</span><span>() {
+</span><span>    </span><span style="color:#ffa759;">let</span><span> state </span><span style="color:#f29e74;">= </span><span>Arc</span><span style="color:#f29e74;">::</span><span>new(Data(Mutex</span><span style="color:#f29e74;">::</span><span>new(</span><span style="color:#ffcc66;">0</span><span>)))</span><span style="color:#ccc9c2cc;">; </span><span style="font-style:italic;color:#5c6773;">// starting value doesn&#39;t matter
+</span><span>    </span><span style="color:#ffa759;">let</span><span> waker </span><span style="color:#f29e74;">= </span><span>Waker</span><span style="color:#f29e74;">::</span><span>from(state</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">clone</span><span>())</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let mut</span><span> ctx </span><span style="color:#f29e74;">= </span><span>Context</span><span style="color:#f29e74;">::</span><span>from_waker(</span><span style="color:#f29e74;">&amp;</span><span>waker)</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;creating future&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let mut</span><span> fut </span><span style="color:#f29e74;">= </span><span style="color:#f28779;">pin!</span><span>(</span><span style="color:#f28779;">request_doubling</span><span>(</span><span style="color:#f29e74;">&amp;</span><span>[</span><span style="color:#ffcc66;">1</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">2</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">3</span><span>]))</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">loop </span><span>{
+</span><span>        </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;polling&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#ffa759;">match</span><span> fut</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">as_mut</span><span>()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">poll</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> ctx) {
+</span><span>            Poll</span><span style="color:#f29e74;">::</span><span>Pending </span><span style="color:#f29e74;">=&gt; </span><span>{
+</span><span>                </span><span style="color:#ffa759;">let</span><span> n </span><span style="color:#f29e74;">= *</span><span>state</span><span style="color:#f29e74;">.</span><span style="color:#ffcc66;">0.</span><span style="color:#f28779;">lock</span><span>()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>                </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;setting result&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>                </span><span style="color:#f29e74;">*</span><span>state</span><span style="color:#f29e74;">.</span><span style="color:#ffcc66;">0.</span><span style="color:#f28779;">lock</span><span>()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>() </span><span style="color:#f29e74;">= </span><span style="color:#ffcc66;">2 </span><span style="color:#f29e74;">*</span><span> n</span><span style="color:#ccc9c2cc;">;
+</span><span>            }
+</span><span>
+</span><span>            Poll</span><span style="color:#f29e74;">::</span><span>Ready(data) </span><span style="color:#f29e74;">=&gt; </span><span>{
+</span><span>                </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;future finished with result=</span><span style="color:#ffcc66;">{data}</span><span style="color:#bae67e;">&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>                </span><span style="color:#ffa759;">break</span><span style="color:#ccc9c2cc;">;
+</span><span>            }
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>Obligatory <a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2024&amp;gist=5a378982f55f941e064ff7075df65380">playground link</a>, and if you run this one you should see...</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>creating future
+</span><span>polling
+</span><span>  requesting that 1 gets doubled...
+</span><span>setting result
+</span><span>polling
+</span><span>  2 x 1 = 2
+</span><span>  requesting that 2 gets doubled...
+</span><span>setting result
+</span><span>polling
+</span><span>  2 x 2 = 4
+</span><span>  requesting that 3 gets doubled...
+</span><span>setting result
+</span><span>polling
+</span><span>  2 x 3 = 6
+</span><span>future finished with result=done
+</span></code></pre>
+<p>Success! 🎉 🎉 🎉</p>
+<br>
+<h1 id="the-rest-of-the-owl"><a class="zola-anchor" href="#the-rest-of-the-owl" aria-label="Anchor link for: the-rest-of-the-owl">The rest of the owl</a></h1>
+<p>At this stage we have successfully poked Rust into letting us have something that's in roughly the
+same ballpark as Python's coroutine feature, but we're still a long way off from making this
+something that's general purpose.</p>
+<ul>
+<li>The shared state is currently hard coded as being a usize in and a usize out.</li>
+<li>The future we write for our state machine is callable as a normal async function, but actually
+trying to run it will blow up when we try to peek inside the Waker and discover it isn't what
+we're expecting.</li>
+<li>We don't have any sort of API contract between the state machines we want to write and the logic
+of the poll loop that is going to drive them to completion.</li>
+</ul>
+<p>I could walk you through all of the steps in how we can address these issues but this blog post is
+already pretty long and we're still not any closer to writing our sans I/O API. So instead I'll
+just introduce you to <a href="https://github.com/sminez/crimes">crimes</a>: a crate I've written that provides a typesafe API around the
+questionable hacking we've just been looking at.</p>
+<blockquote>
+<p>I was also considering "ohnoroutines" for the crate name, but requiring users of the crate to type
+"use crimes" in their source code was too good to pass up.</p>
+</blockquote>
+<p>The API itself is pretty minimal: two traits to implement, two helper structs for binding everything
+together and the <code>Step</code> enum we proposed earlier. First lets take a look at the traits:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">pub trait </span><span style="color:#73d0ff;">RunState </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Snd</span><span style="color:#ccc9c2cc;">:</span><span> Unpin </span><span style="color:#f29e74;">+ </span><span style="color:#ffa759;">&#39;static</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Rcv</span><span style="color:#ccc9c2cc;">:</span><span> Unpin </span><span style="color:#f29e74;">+ </span><span style="color:#ffa759;">&#39;static</span><span style="color:#ccc9c2cc;">;
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">pub trait </span><span style="color:#73d0ff;">StateMachine</span><span>: Sized {
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Snd</span><span style="color:#ccc9c2cc;">:</span><span> Unpin </span><span style="color:#f29e74;">+ </span><span style="color:#ffa759;">&#39;static</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Rcv</span><span style="color:#ccc9c2cc;">:</span><span> Unpin </span><span style="color:#f29e74;">+ </span><span style="color:#ffa759;">&#39;static</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Out</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="font-style:italic;color:#5c6773;">/// Return a future that can be executed by a [Runner] to run this state machine to completion.
+</span><span>    </span><span style="font-style:italic;color:#5c6773;">///
+</span><span>    </span><span style="font-style:italic;color:#5c6773;">/// # Panics
+</span><span>    </span><span style="font-style:italic;color:#5c6773;">/// This [Future] must be executed using a [Runner] rather than awaiting it normally. Any calls
+</span><span>    </span><span style="font-style:italic;color:#5c6773;">/// to async methods or functions other than [Handle::pending] will panic.
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">run</span><span>(</span><span style="color:#ffcc66;">handle</span><span style="color:#ccc9c2cc;">: </span><span>Handle&lt;</span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Snd, </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Rcv&gt;) </span><span style="color:#ccc9c2cc;">-&gt;</span><span> impl Future&lt;Output = </span><span style="color:#ffa759;">Self</span><span style="color:#f29e74;">::</span><span>Out&gt; </span><span style="color:#f29e74;">+ </span><span style="font-style:italic;color:#5ccfe6;">Send</span><span style="color:#ccc9c2cc;">;
+</span><span>}
+</span></code></pre>
+<p><code>RunState</code> is a marker trait that defines a pair of types associated with yielding that a given
+state machine runner is able to support. In order to actually execute a state machine we need to
+create a <code>Runner</code>, the first of our two helper structs (more on that in a bit). <code>StateMachine</code>
+is our state machine trait (surprisingly enough) where we specify the types we want to associate
+with yielding and our output type. As you might expect, these need to line up with the types
+provided by the <code>Runner</code> that is going to be executing the state machine. The purpose of the
+<code>run</code> method is to return a Future that represents the state machine we want to execute, but to
+be able to call run we need to provide a <code>Handle</code>, the second of our two helper structs.</p>
+<blockquote>
+<p>If you're wondering about the Unpin and 'static bounds on all the types, they're there to make
+things play nice with tokio.</p>
+</blockquote>
+<p>So, what's a Handle? There's not much to it:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">pub struct </span><span style="color:#73d0ff;">Handle</span><span>&lt;S, R&gt;
+</span><span>where
+</span><span>    S: Unpin + &#39;static,
+</span><span>    R: Unpin + &#39;static,
+</span><span>{
+</span><span>    _snd</span><span style="color:#ccc9c2cc;">: </span><span>PhantomData&lt;S&gt;,
+</span><span>    _rcv</span><span style="color:#ccc9c2cc;">: </span><span>PhantomData&lt;R&gt;,
+</span><span>}
+</span></code></pre>
+<p>But, importantly, you can't ever create a Handle: the only way to get one is by asking a <code>Runner</code>
+to do it for you, ensuring that the yield types for the Runner match those expected by the
+state machine. Once your state machine is executing, the Handle can be used to yield back to
+the Runner by calling its <code>yield_value</code> method (which under the hood just runs the <code>Yield</code> future
+we wrote previously).</p>
+<p>Let's take a look at what it's like to <code>use crimes</code> to parse 9p messages (remember those?):</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">use </span><span>crimes</span><span style="color:#f29e74;">::</span><span>{Handle</span><span style="color:#ccc9c2cc;">,</span><span> RunState</span><span style="color:#ccc9c2cc;">,</span><span> Runner</span><span style="color:#ccc9c2cc;">,</span><span> StateMachine</span><span style="color:#ccc9c2cc;">,</span><span> Step}</span><span style="color:#ccc9c2cc;">;
+</span><span style="color:#ffa759;">use </span><span>std</span><span style="color:#f29e74;">::</span><span>{io</span><span style="color:#ccc9c2cc;">, </span><span>marker</span><span style="color:#f29e74;">::</span><span>PhantomData}</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;">// The string &quot;Hello, 世界&quot; encoded in 9p binary format
+</span><span style="color:#ffa759;">const </span><span style="color:#ffcc66;">HELLO_WORLD</span><span style="color:#ccc9c2cc;">: </span><span>[</span><span style="color:#ffa759;">u8</span><span style="color:#ccc9c2cc;">; </span><span style="color:#ffcc66;">15</span><span>] </span><span style="color:#f29e74;">= </span><span>[
+</span><span>    </span><span style="color:#ffcc66;">0x0d</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0x00</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0x48</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0x65</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0x6c</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0x6c</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0x6f</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0x2c</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0x20</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0xe4</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0xb8</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0x96</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0xe7</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0x95</span><span style="color:#ccc9c2cc;">, </span><span style="color:#ffcc66;">0x8c</span><span style="color:#ccc9c2cc;">,
+</span><span>]</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">main</span><span>() </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;()&gt; {
+</span><span>    </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;&gt;&gt; reading using std::io::Read&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let</span><span> v</span><span style="color:#ccc9c2cc;">: </span><span style="font-style:italic;color:#5ccfe6;">String </span><span style="color:#f29e74;">= </span><span style="color:#f28779;">read_9p_sync_from_bytes</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut </span><span>io</span><span style="color:#f29e74;">::</span><span>Cursor</span><span style="color:#f29e74;">::</span><span>new(</span><span style="color:#ffcc66;">HELLO_WORLD</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">to_vec</span><span>()))</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;  got val: </span><span style="color:#ffcc66;">{v:?}</span><span style="color:#95e6cb;">\n</span><span style="color:#bae67e;">&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(())
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;">// This is what our blocking I/O read loop ends up looking like
+</span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">read_9p_sync_from_bytes</span><span>&lt;T</span><span style="color:#ccc9c2cc;">:</span><span> Read9p, R</span><span style="color:#ccc9c2cc;">: </span><span>io</span><span style="color:#f29e74;">::</span><span>Read&gt;(</span><span style="color:#ffcc66;">r</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> R) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;T&gt; {
+</span><span>    </span><span style="color:#ffa759;">let</span><span> runner </span><span style="color:#f29e74;">= </span><span>Runner</span><span style="color:#f29e74;">::</span><span>new(NinepState)</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let mut</span><span> state_machine </span><span style="color:#f29e74;">=</span><span> runner</span><span style="color:#f29e74;">.</span><span>init</span><span style="color:#f29e74;">::</span><span>&lt;NineP&lt;T&gt;&gt;()</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">loop </span><span>{
+</span><span>        </span><span style="color:#ffa759;">match</span><span> runner</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">step</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> state_machine) {
+</span><span>            Step</span><span style="color:#f29e74;">::</span><span>Complete(res) </span><span style="color:#f29e74;">=&gt; </span><span style="color:#ffa759;">return</span><span> res</span><span style="color:#ccc9c2cc;">,
+</span><span>            Step</span><span style="color:#f29e74;">::</span><span>Pending(n) </span><span style="color:#f29e74;">=&gt; </span><span>{
+</span><span>                </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;</span><span style="color:#ffcc66;">{n}</span><span style="color:#bae67e;"> bytes requested&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>                </span><span style="color:#ffa759;">let mut</span><span> buf </span><span style="color:#f29e74;">= </span><span style="color:#f28779;">vec!</span><span>[</span><span style="color:#ffcc66;">0</span><span style="color:#ccc9c2cc;">;</span><span> n]</span><span style="color:#ccc9c2cc;">;
+</span><span>                r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">read_exact</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> buf)</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>                runner</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">send</span><span>(buf)</span><span style="color:#ccc9c2cc;">;
+</span><span>            }
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;">// We don&#39;t need anything special for our run state so we can just use an empty struct
+</span><span style="color:#ffa759;">struct </span><span style="color:#73d0ff;">NinepState</span><span style="color:#ccc9c2cc;">;
+</span><span style="color:#ffa759;">impl </span><span>RunState </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">NinepState </span><span>{
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Snd </span><span style="color:#f29e74;">= </span><span style="color:#ffa759;">usize</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Rcv </span><span style="color:#f29e74;">= </span><span style="font-style:italic;color:#5ccfe6;">Vec</span><span>&lt;</span><span style="color:#ffa759;">u8</span><span>&gt;</span><span style="color:#ccc9c2cc;">;
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;">// Defining a wrapper trait lets us implement it directly on the types we care about even if we
+</span><span style="font-style:italic;color:#5c6773;">// don&#39;t own them
+</span><span style="color:#ffa759;">trait </span><span style="color:#73d0ff;">Read9p</span><span>: Sized {
+</span><span>    </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">read_9p</span><span>(</span><span style="color:#ffcc66;">handle</span><span style="color:#ccc9c2cc;">: </span><span>Handle&lt;</span><span style="color:#ffa759;">usize</span><span>, </span><span style="font-style:italic;color:#5ccfe6;">Vec</span><span>&lt;</span><span style="color:#ffa759;">u8</span><span>&gt;&gt;) </span><span style="color:#ccc9c2cc;">-&gt;</span><span> impl Future&lt;Output = io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;</span><span style="color:#ffa759;">Self</span><span>&gt;&gt; </span><span style="color:#f29e74;">+ </span><span style="font-style:italic;color:#5ccfe6;">Send</span><span style="color:#ccc9c2cc;">;
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;">// But when it comes to implementing StateMachine, we need to use a wrapper type to avoid the
+</span><span style="font-style:italic;color:#5c6773;">// orphan rule
+</span><span style="color:#ffa759;">struct </span><span style="color:#73d0ff;">NineP</span><span>&lt;T&gt;(PhantomData&lt;T&gt;)</span><span style="color:#ccc9c2cc;">;
+</span><span style="color:#ffa759;">impl</span><span>&lt;T</span><span style="color:#ccc9c2cc;">:</span><span> Read9p&gt; StateMachine </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">NineP</span><span>&lt;T&gt; {
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Snd </span><span style="color:#f29e74;">= </span><span style="color:#ffa759;">usize</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Rcv </span><span style="color:#f29e74;">= </span><span style="font-style:italic;color:#5ccfe6;">Vec</span><span>&lt;</span><span style="color:#ffa759;">u8</span><span>&gt;</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">type </span><span style="color:#73d0ff;">Out </span><span style="color:#f29e74;">= </span><span>io</span><span style="color:#f29e74;">::</span><span>Result&lt;T&gt;</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    async </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">run</span><span>(</span><span style="color:#ffcc66;">handle</span><span style="color:#ccc9c2cc;">: </span><span>Handle&lt;</span><span style="color:#ffa759;">usize</span><span>, </span><span style="font-style:italic;color:#5ccfe6;">Vec</span><span>&lt;</span><span style="color:#ffa759;">u8</span><span>&gt;&gt;) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;T&gt; {
+</span><span>        T</span><span style="color:#f29e74;">::</span><span>read_9p(handle)</span><span style="color:#f29e74;">.</span><span>await
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">impl </span><span>Read9p </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">u16 </span><span>{
+</span><span>    async </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">read_9p</span><span>(</span><span style="color:#ffcc66;">handle</span><span style="color:#ccc9c2cc;">: </span><span>Handle&lt;</span><span style="color:#ffa759;">usize</span><span>, </span><span style="font-style:italic;color:#5ccfe6;">Vec</span><span>&lt;</span><span style="color:#ffa759;">u8</span><span>&gt;&gt;) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt; {
+</span><span>        </span><span style="color:#ffa759;">let</span><span> n </span><span style="color:#f29e74;">= </span><span>size_of</span><span style="color:#f29e74;">::</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt;()</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#ffa759;">let</span><span> buf </span><span style="color:#f29e74;">=</span><span> handle</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">yield_value</span><span>(n)</span><span style="color:#f29e74;">.</span><span>await</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#ffa759;">let</span><span> data </span><span style="color:#f29e74;">=</span><span> buf[</span><span style="color:#ffcc66;">0</span><span style="color:#f29e74;">..</span><span>n]</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">try_into</span><span>()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(</span><span style="color:#ffa759;">u16</span><span style="color:#f29e74;">::</span><span>from_le_bytes(data))
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="color:#ffa759;">impl </span><span>Read9p </span><span style="color:#ffa759;">for </span><span style="color:#73d0ff;">String </span><span>{
+</span><span>    async </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">read_9p</span><span>(</span><span style="color:#ffcc66;">handle</span><span style="color:#ccc9c2cc;">: </span><span>Handle&lt;</span><span style="color:#ffa759;">usize</span><span>, </span><span style="font-style:italic;color:#5ccfe6;">Vec</span><span>&lt;</span><span style="color:#ffa759;">u8</span><span>&gt;&gt;) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;</span><span style="font-style:italic;color:#5ccfe6;">String</span><span>&gt; {
+</span><span>        </span><span style="color:#ffa759;">let</span><span> len </span><span style="color:#f29e74;">= </span><span>NineP</span><span style="color:#f29e74;">::</span><span>&lt;</span><span style="color:#ffa759;">u16</span><span>&gt;</span><span style="color:#f29e74;">::</span><span>run(handle)</span><span style="color:#f29e74;">.</span><span>await</span><span style="color:#f29e74;">? as </span><span style="color:#ffa759;">usize</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#ffa759;">let</span><span> buf </span><span style="color:#f29e74;">=</span><span> handle</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">yield_value</span><span>(len)</span><span style="color:#f29e74;">.</span><span>await</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="font-style:italic;color:#5ccfe6;">String</span><span style="color:#f29e74;">::</span><span>from_utf8(buf)
+</span><span>            </span><span style="color:#f29e74;">.</span><span style="color:#f28779;">map_err</span><span>(|</span><span style="color:#ffcc66;">e</span><span>| io</span><span style="color:#f29e74;">::</span><span>Error</span><span style="color:#f29e74;">::</span><span>new(io</span><span style="color:#f29e74;">::</span><span>ErrorKind</span><span style="color:#f29e74;">::</span><span>InvalidData</span><span style="color:#ccc9c2cc;">,</span><span> e</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">to_string</span><span>()))
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>That doesn't look too bad! Running it gives us the following output:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>&gt;&gt; reading using std::io::Read
+</span><span>2 bytes requested
+</span><span>13 bytes requested
+</span><span>  got val: &quot;Hello, 世界&quot;
+</span></code></pre>
+<p>So, moment of truth...what do we need to do in order to also support non-blocking I/O? Two
+things:</p>
+<ol>
+<li>Convert our main function to be async</li>
+<li>Write an async version of the I/O loop</li>
+</ol>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">use </span><span>tokio</span><span style="color:#f29e74;">::</span><span>io</span><span style="color:#f29e74;">::</span><span>{AsyncRead</span><span style="color:#ccc9c2cc;">,</span><span> AsyncReadExt}</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span style="color:#ccc9c2cc;">#</span><span>[</span><span style="color:#ffd580;">tokio</span><span>::</span><span style="color:#ffd580;">main</span><span>]
+</span><span>async </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">main</span><span>() </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;()&gt; {
+</span><span>    </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;&gt;&gt; reading using std::io::Read&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let</span><span> s</span><span style="color:#ccc9c2cc;">: </span><span style="font-style:italic;color:#5ccfe6;">String </span><span style="color:#f29e74;">= </span><span style="color:#f28779;">read_9p_sync_from_bytes</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut </span><span>io</span><span style="color:#f29e74;">::</span><span>Cursor</span><span style="color:#f29e74;">::</span><span>new(</span><span style="color:#ffcc66;">HELLO_WORLD</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">to_vec</span><span>()))</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;  got val: </span><span style="color:#ffcc66;">{s:?}</span><span style="color:#95e6cb;">\n</span><span style="color:#bae67e;">&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;&gt;&gt; reading using tokio::io::AsyncRead&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let</span><span> s</span><span style="color:#ccc9c2cc;">: </span><span style="font-style:italic;color:#5ccfe6;">String </span><span style="color:#f29e74;">= </span><span style="color:#f28779;">read_9p_async_from_bytes</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut </span><span>io</span><span style="color:#f29e74;">::</span><span>Cursor</span><span style="color:#f29e74;">::</span><span>new(</span><span style="color:#ffcc66;">HELLO_WORLD</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">to_vec</span><span>()))</span><span style="color:#f29e74;">.</span><span>await</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;  got val: </span><span style="color:#ffcc66;">{s:?}</span><span style="color:#bae67e;">&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(())
+</span><span>}
+</span><span>
+</span><span>async </span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">read_9p_async_from_bytes</span><span>&lt;T</span><span style="color:#ccc9c2cc;">:</span><span> Read9p, R</span><span style="color:#ccc9c2cc;">:</span><span> AsyncRead </span><span style="color:#f29e74;">+</span><span> Unpin&gt;(</span><span style="color:#ffcc66;">r</span><span style="color:#ccc9c2cc;">: </span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> R) </span><span style="color:#ccc9c2cc;">-&gt; </span><span>io</span><span style="color:#f29e74;">::</span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;T&gt; {
+</span><span>    </span><span style="color:#ffa759;">let</span><span> runner </span><span style="color:#f29e74;">= </span><span>Runner</span><span style="color:#f29e74;">::</span><span>new(NinepState)</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let mut</span><span> state_machine </span><span style="color:#f29e74;">=</span><span> runner</span><span style="color:#f29e74;">.</span><span>init</span><span style="color:#f29e74;">::</span><span>&lt;NineP&lt;T&gt;&gt;()</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">loop </span><span>{
+</span><span>        </span><span style="color:#ffa759;">match</span><span> runner</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">step</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> state_machine) {
+</span><span>            Step</span><span style="color:#f29e74;">::</span><span>Complete(res) </span><span style="color:#f29e74;">=&gt; </span><span style="color:#ffa759;">return</span><span> res</span><span style="color:#ccc9c2cc;">,
+</span><span>            Step</span><span style="color:#f29e74;">::</span><span>Pending(n) </span><span style="color:#f29e74;">=&gt; </span><span>{
+</span><span>                </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;</span><span style="color:#ffcc66;">{n}</span><span style="color:#bae67e;"> bytes requested&quot;</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>                </span><span style="color:#ffa759;">let mut</span><span> buf </span><span style="color:#f29e74;">= </span><span style="color:#f28779;">vec!</span><span>[</span><span style="color:#ffcc66;">0</span><span style="color:#ccc9c2cc;">;</span><span> n]</span><span style="color:#ccc9c2cc;">;
+</span><span>                r</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">read_exact</span><span>(</span><span style="color:#f29e74;">&amp;</span><span style="color:#ffa759;">mut</span><span> buf)</span><span style="color:#f29e74;">.</span><span>await</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>                runner</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">send</span><span>(buf)</span><span style="color:#ccc9c2cc;">;
+</span><span>            }
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>Running this gives us output both from the blocking I/O reader and the non-blocking one:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>&gt;&gt; reading using std::io::Read
+</span><span>2 bytes requested
+</span><span>13 bytes requested
+</span><span>  got val: &quot;Hello, 世界&quot;
+</span><span>
+</span><span>&gt;&gt; reading using tokio::io::AsyncRead
+</span><span>2 bytes requested
+</span><span>13 bytes requested
+</span><span>  got val: &quot;Hello, 世界&quot;
+</span></code></pre>
+<p>😎</p>
+<br>
+<h1 id="we-made-it"><a class="zola-anchor" href="#we-made-it" aria-label="Anchor link for: we-made-it">We made it!</a></h1>
+<p>It took some work (and some abuse of async/await) but we got there: a underlying sans I/O API
+that only requires some minimal boilerplate for plugging in our choice of blocking or
+non-blocking I/O. The top level <code>crimes</code> API even looks vaguely respectable (so long as you
+don't mind the comment about panics on the <code>StateMachine::read</code> method) and <em>seems</em> to do the
+trick for providing a sans I/O API for my 9p crate which was what kicked this all off in the
+first place. 💪</p>
+<p>If you like this idea in principle but would prefer that it was a first class "thing" (and more
+robust), then take a look at <a href="https://dev-doc.rust-lang.org/beta/unstable-book/language-features/generators.html">the work being done to bring generators to Rust</a> as part of
+RFC 2033. Some fantastic work is going on over there and I for one can't wait until they find
+their way into the language 🦀</p>
+<p>Until next time, look after yourself, and happy hacking.</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Thanks for reading! Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://www.sminez.dev/the-subtle-art-of-winging-it/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">the subtle art of winging it</span>
+                            </a>
+                        </span>
+                    
+                    
+                        <span class="button next">
+                            <a href="https://www.sminez.dev/match-it-again-sam/">
+                                <span class="button__text">Match it again Sam</span>&nbsp;
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    </div>
+            </div>
+        
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright">
+                        <span>© 
+    2025
+ Innes Anderson-Morrison (sminez)</span>
+                    <span class="copyright-theme">
+                        <span class="copyright-theme-sep">:: </span>
+                        Theme: <a href="https://github.com/pawroman/zola-theme-terminimal/">Terminimal</a> by pawroman
+                    </span>
+                </div>
+            </div>
+    </footer>
+    
+
+</div>
+</body>
+
+</html>

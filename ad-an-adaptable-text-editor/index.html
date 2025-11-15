@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>sminez.dev</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://www.sminez.dev/style.css">
+    <link rel="stylesheet" href="https://www.sminez.dev/color/orange.css">
+
+        <link rel="stylesheet" href="https://www.sminez.dev/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://www.sminez.dev/font-hack-subset.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="sminez.dev">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.sminez.dev/ad-an-adaptable-text-editor/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="sminez.dev">
+    <meta property="twitter:domain" content="www.sminez.dev">
+    <meta property="twitter:url" content="https://www.sminez.dev/ad-an-adaptable-text-editor/">
+
+                <link rel="alternate" type="application/rss+xml" title="sminez.dev RSS Feed" href="https://www.sminez.dev/rss.xml" />
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://www.sminez.dev" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            sminez.dev
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://www.sminez.dev/about">about</a></li>
+            
+                <li class="active"><a href="https://www.sminez.dev">blog</a></li>
+            
+                <li><a href="https://www.sminez.dev/archive">archive</a></li>
+            
+                <li><a href="https://www.sminez.dev/tags">tags</a></li>
+            
+                <li><a href="https://www.sminez.dev/projects">projects</a></li>
+            
+                <li><a href="https://github.com/sminez" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://innesandersonmor.myportfolio.com/work" target="_blank" rel="noopener noreferrer">photography</a></li>
+            
+                <li><a href="https://www.youtube.com/channel/UC04N-5DxEWH4ioK0bvZmF_Q" target="_blank" rel="noopener noreferrer">youtube</a></li>
+            
+                <li><a href="https://www.sminez.dev/rss.xml">rss</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://www.sminez.dev/ad-an-adaptable-text-editor/">the origin of ad: an adaptable text editor</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2024-10-02
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://www.sminez.dev/tags/ad/">#ad</a>&nbsp;
+                <a class="post-tag" href="https://www.sminez.dev/tags/programming/">#programming</a>&nbsp;
+                <a class="post-tag" href="https://www.sminez.dev/tags/rust/">#rust</a></span>
+    
+
+        <div class="post-content">
+            <p>As is probably the case with a lot of programmers, I've been searching for my "ideal"
+text editor for programming for quite a while now. Over the years I've picked up,
+configured and moved on from a long list of editors and IDEs so it was only really a
+matter of time before I found myself wondering how hard it would be to write my own
+from scratch one rainy afternoon.</p>
+<p>Spoilers: turns out it's actually a fair amount of work. Who knew.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/jb2pAi5hLUg?si=BCPn_LhqCvdtP-9m"
+ title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write;
+ encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"
+ allowfullscreen>
+</iframe>
+<span id="continue-reading"></span>
+<p>To be fair, a large part of <em>why</em> my project in particular has ended up being a lot
+of work is thanks to some arguably questionable design limitations I placed on the
+initial project. Most importantly, I decided that I was going to limit myself to the
+bare minimum of dependencies. By which I mean <code>libc</code> and not much else (I caved and
+ended up pulling in bitflags). Beyond that I also had a somewhat unconventional
+feature set in mind; one composed of my favourite pieces of functionality found in
+various text editors I've played around with during my career.</p>
+<p>Some of the feature set are probably quite obvious. When it comes to picking sides
+in the great holy war of Vim vs Emacs, I'm on the side of team modal editing (despite
+having had a lot of fun implementing <a href="https://github.com/sminez/gigl">LISP interpretors</a>
+in the past). But when it comes to the rest of the built in functionality in vim I'll
+be honest, I don't tend to make much use of it. I don't really write macros, I always
+forget how to yank text to specific registers and on the rare occasion I remember that
+'.' is a thing I tend to spend more time trying to work out how to make an edit I can
+repeat than it would have taken to just repeat it by hand.</p>
+<p>That's not intended as criticism of vim. I've played around with more vim plugins than
+I care to mention and my <code>.vimrc</code> has been through many (many) rewrites over the years.
+I've taken detours off to try out emacs several times (and vscode, kakoune, helix...)
+but I always come back to good old, familiar vim.</p>
+<p>It's my comfort zone.</p>
+<p>So... why bother writing my own editor then?</p>
+<br>
+<h3 id="an-ide-done-right"><a class="zola-anchor" href="#an-ide-done-right" aria-label="Anchor link for: an-ide-done-right">An IDE done right</a></h3>
+<p>Years ago now, back during my first programming job at a small startup in Leeds, I
+came across a fantastic <a href="https://research.swtch.com/acme">video from Russ Cox</a> where
+he provided a tour of a text editor from the 90s written by <a href="http://herpolhode.com/rob/">Rob Pike</a>
+for the Plan 9 operating system. If you've never watched this screencast before I
+highly recommend that you take a look at it now. It's a little over 20 minutes long
+and its a delightfully minimalist tour of a fascinating piece of software.</p>
+<p>Near the start of the screencast, Russ refers to acme as "an IDE done right", redefining
+IDE as an "integratING development environment" rather than "integratED". The key
+distinction being an inversion of how you think about the relationship between the
+IDE and the rest of the system:</p>
+<ul>
+<li>
+<p>In a traditional IDE you get itegrated debugging, compiling, linting, version
+control, refactoring tools, ... and (typically) a whole lot more. The tools
+need to be adapted, rewritten or embedded to become part of the IDE itself.</p>
+</li>
+<li>
+<p>In acme, you get an interface that make it easy for your existing tools to
+interact with and control the state of your editor. The tools stay as they are
+and the IDE "just" handles the plumbing.</p>
+</li>
+</ul>
+<p>I <em>loved</em> this approach to interacting with and extending acme. I was also really
+taken with Plan 9 though as the folks at 9front are quick to point out,
+<a href="http://fqa.9front.org/fqa0.html#0.1.4">plan 9 is not for you</a> (in this case, me).
+The idea that you treat your text editor as a glue layer to bind together the rest
+of the tooling on your system was endlessly appealing and while there are a number
+of things from plan 9 that have made it out into the wider world, I'm always surprised
+that its text editors haven't received more attention. There is a small but growing
+community of people interested in exploring them, largely via the fantastic
+<a href="https://github.com/9fans/plan9port">plan9port</a> project but that involves bringing
+along <em>all</em> of the plan 9 userspace programs. Certainly fun (I use it on all of my
+machines) but a kind of a steep asking price if all you want is to try out a new text
+editor to see if it's right for you. Which is a shame, because it really is worth
+trying out.</p>
+<br>
+<h3 id="time-to-embark-on-a-questionable-project"><a class="zola-anchor" href="#time-to-embark-on-a-questionable-project" aria-label="Anchor link for: time-to-embark-on-a-questionable-project">Time to embark on a questionable project</a></h3>
+<p>So, if I'm so taken with acme why isn't that my editor of choice?</p>
+<p>While I absolutely love acme's approach to extending the functionality of the editor
+and the expressive power if provides to text via <a href="http://doc.cat-v.org/plan_9/4th_edition/papers/plumb">the plumber</a>,
+I'm simply to fond of modal editing and being able to write my own keyboard shortcuts.
+The actual "editor" part of acme is (unsurprisingly for plan 9) also incredibly minimal
+and what I <em>really</em> want is something with a little bit more flexibility.</p>
+<p>The trick of course is to add something to this fantastic, minimalist editor without
+completely wrecking what makes it so fun and powerful in the first place. Not a simple
+task to be sure but I <em>think</em> I've done alright.</p>
+<p>With that in mind, I set out some ground rules for my new project:</p>
+<ol>
+<li>
+<p>Extending the functionality of the editor is limited to the filesystem interface and
+the plumber. Keybindings will be a thing but they're just convenient shortcuts for
+executing helper programs. (No LISP or Lua interpretors)</p>
+</li>
+<li>
+<p>Everything about the editor should be focused around the text within the editor. Be
+that editing the text, selecting and manipulating the text or treating the text as
+input for acme style executing and loading.</p>
+</li>
+<li>
+<p>"Built-ins" should be kept to a minimum. It's fine to provide a bunch of helper scripts
+and other programs that interact with the editor, but the core of the editor should
+be easy to understand and keep in your head.</p>
+</li>
+</ol>
+<p>All that was left to decide on was a name.</p>
+<p>Originally I called it "rocket powered unicycle", as a bit of a knod to the acme / road
+runner inspired feature set (and unsubtle warning on how advisable it might be to use
+the thing) but eventually I settled on <code>ad</code>. It's short for "adaptable" and also has the
+important quality of being really quick and satisying to type on the command line.</p>
+<br>
+<h3 id="where-things-stand-today"><a class="zola-anchor" href="#where-things-stand-today" aria-label="Anchor link for: where-things-stand-today">Where things stand today</a></h3>
+<p>The YouTube video at the top of this article is a quick tour / demo of the current state
+of the project as of version <code>0.1.2</code>. There is still a fair number of bugs to work out
+and some features that need fleshing out but things are now in a state where the editor
+is usable and, at least in my opinion, a lot of fun to play around with.</p>
+<p>I'm planning on writing some more blog posts on the internals of <code>ad</code> and the features
+it contains as I continue to work on it so stay tuned for more.</p>
+<p>If you want to check it out, the project is available at <a href="https://github.com/sminez/ad">https://github.com/sminez/ad</a>
+and published to crates.io as <a href="https://crates.io/crates/ad-editor">ad-editor</a> (though
+you'll still need to check out the repo in order to get the default config files and
+helper scripts).</p>
+<p>Until next time, happy hacking hacking!</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Thanks for reading! Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://www.sminez.dev/where-did-penrose-come-from/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">Where did Penrose come from?</span>
+                            </a>
+                        </span>
+                    
+                    
+                        <span class="button next">
+                            <a href="https://www.sminez.dev/the-subtle-art-of-winging-it/">
+                                <span class="button__text">the subtle art of winging it</span>&nbsp;
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    </div>
+            </div>
+        
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright">
+                        <span>© 
+    2025
+ Innes Anderson-Morrison (sminez)</span>
+                    <span class="copyright-theme">
+                        <span class="copyright-theme-sep">:: </span>
+                        Theme: <a href="https://github.com/pawroman/zola-theme-terminimal/">Terminimal</a> by pawroman
+                    </span>
+                </div>
+            </div>
+    </footer>
+    
+
+</div>
+</body>
+
+</html>

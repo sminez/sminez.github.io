@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>sminez.dev</title>
+      <link>https://www.sminez.dev</link>
+      <description></description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://www.sminez.dev/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Mon, 10 Nov 2025 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Match it again Sam</title>
+          <pubDate>Mon, 10 Nov 2025 00:00:00 +0000</pubDate>
+          <author>Innes Anderson-Morrison</author>
+          <link>https://www.sminez.dev/match-it-again-sam/</link>
+          <guid>https://www.sminez.dev/match-it-again-sam/</guid>
+          <description xml:base="https://www.sminez.dev/match-it-again-sam/">&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;Implementing a structural regular expressions engine for x&#x2F;fun and.*&#x2F; v&#x2F;profit&#x2F;&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;If you have you ever looked at regular expressions and thought &lt;em&gt;&quot;gee, these sure are useful
+but I wish there was more going on&quot;&lt;&#x2F;em&gt;, then do &lt;em&gt;I&lt;&#x2F;em&gt; have a blog post for you!&lt;&#x2F;p&gt;
+&lt;p&gt;OK, hear me out. I promise there&#x27;s some fun stuff in here that&#x27;s worth a look. It might
+only be worth an &quot;oh god why?&quot; kind of look, but worth a look none the less.&lt;&#x2F;p&gt;
+&lt;p&gt;Allow me to introduce you to the delightful world of &lt;em&gt;structural&lt;&#x2F;em&gt; regular expressions.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;xkcd.com&#x2F;1171&quot;&gt;&lt;img src=&quot;https:&#x2F;&#x2F;imgs.xkcd.com&#x2F;comics&#x2F;perl_problems.png&quot; alt=&quot;xkcd perl&quot; &#x2F;&gt;&lt;&#x2F;a&gt;
+Obligatory XKCD.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Socrates is a state machine</title>
+          <pubDate>Tue, 25 Feb 2025 00:00:00 +0000</pubDate>
+          <author>Innes Anderson-Morrison</author>
+          <link>https://www.sminez.dev/socrates-is-a-state-machine/</link>
+          <guid>https://www.sminez.dev/socrates-is-a-state-machine/</guid>
+          <description xml:base="https://www.sminez.dev/socrates-is-a-state-machine/">&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;&quot;All men are mortal, Socrates is a man, therefore Socrates is mortal.&quot;&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;Or, &quot;Writing sans I&#x2F;O APIs by abusing Rust&#x27;s language features&quot;&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;If you&#x27;ve ever looked into how Rust &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;future&#x2F;trait.Future.html&quot;&gt;Futures&lt;&#x2F;a&gt; work you&#x27;ve probably read at some point
+that &lt;code&gt;async&#x2F;await&lt;&#x2F;code&gt; syntax &lt;a href=&quot;https:&#x2F;&#x2F;eventhelix.com&#x2F;rust&#x2F;rust-to-assembly-async-await&#x2F;&quot;&gt;de-sugars into a state machine&lt;&#x2F;a&gt;. If you like to poke at
+things to see what happens then you might also have wondered if this fact can be &lt;del&gt;ab&lt;&#x2F;del&gt;used
+to instead write other sorts of state machines like, oh I don&#x27;t know, the state machines you
+might need for implementing a &lt;a href=&quot;https:&#x2F;&#x2F;sans-io.readthedocs.io&#x2F;&quot;&gt;sans I&#x2F;O&lt;&#x2F;a&gt; network protocol API.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;Does this work?&lt;&#x2F;em&gt; → Yes.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;Does this constitute &quot;crimes&quot;?&lt;&#x2F;em&gt; → Also yes.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;Am I a little bit too happy with how this turned out?&lt;&#x2F;em&gt; → Maybe...&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>the subtle art of winging it</title>
+          <pubDate>Sun, 03 Nov 2024 00:00:00 +0000</pubDate>
+          <author>Innes Anderson-Morrison</author>
+          <link>https://www.sminez.dev/the-subtle-art-of-winging-it/</link>
+          <guid>https://www.sminez.dev/the-subtle-art-of-winging-it/</guid>
+          <description xml:base="https://www.sminez.dev/the-subtle-art-of-winging-it/">&lt;p&gt;&lt;em&gt;Or, &quot;How I learned to fuck around and find out&quot;&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;I have a bad habit of telling people that I like to have interesting problems to work on.
+On its own this isn&#x27;t so bad, but saying this in interviews quickly ensures that your
+day-to-day involves being air dropped into weird and wonderful situations with varying
+amounts of context and high expectations.&lt;&#x2F;p&gt;
+&lt;p&gt;So, how do you get better at coping in this sort of environment?&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>the origin of ad: an adaptable text editor</title>
+          <pubDate>Wed, 02 Oct 2024 00:00:00 +0000</pubDate>
+          <author>Innes Anderson-Morrison</author>
+          <link>https://www.sminez.dev/ad-an-adaptable-text-editor/</link>
+          <guid>https://www.sminez.dev/ad-an-adaptable-text-editor/</guid>
+          <description xml:base="https://www.sminez.dev/ad-an-adaptable-text-editor/">&lt;p&gt;As is probably the case with a lot of programmers, I&#x27;ve been searching for my &quot;ideal&quot;
+text editor for programming for quite a while now. Over the years I&#x27;ve picked up,
+configured and moved on from a long list of editors and IDEs so it was only really a
+matter of time before I found myself wondering how hard it would be to write my own
+from scratch one rainy afternoon.&lt;&#x2F;p&gt;
+&lt;p&gt;Spoilers: turns out it&#x27;s actually a fair amount of work. Who knew.&lt;&#x2F;p&gt;
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;embed&#x2F;jb2pAi5hLUg?si=BCPn_LhqCvdtP-9m&quot;
+ title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write;
+ encrypted-media; gyroscope; picture-in-picture; web-share&quot; referrerpolicy=&quot;strict-origin-when-cross-origin&quot;
+ allowfullscreen&gt;
+&lt;&#x2F;iframe&gt;</description>
+      </item>
+      <item>
+          <title>Where did Penrose come from?</title>
+          <pubDate>Tue, 30 Apr 2024 00:00:00 +0000</pubDate>
+          <author>Innes Anderson-Morrison</author>
+          <link>https://www.sminez.dev/where-did-penrose-come-from/</link>
+          <guid>https://www.sminez.dev/where-did-penrose-come-from/</guid>
+          <description xml:base="https://www.sminez.dev/where-did-penrose-come-from/">&lt;p&gt;In 2020 during lockdown at the height of the COVID-19 pandemic I (like so many others)
+found myself with a lot of time on my hands. A lot of people decided to take up a new
+hobby, maybe do some work on their house or perhaps get a dog.&lt;&#x2F;p&gt;
+&lt;p&gt;Me?&lt;&#x2F;p&gt;
+&lt;p&gt;I decided to write an X11 tiling window manager.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>About Me</title>
+          <pubDate>Mon, 29 Apr 2024 00:00:00 +0000</pubDate>
+          <author>Innes Anderson-Morrison</author>
+          <link>https://www.sminez.dev/about/</link>
+          <guid>https://www.sminez.dev/about/</guid>
+          <description xml:base="https://www.sminez.dev/about/">&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;www.sminez.dev&#x2F;about&#x2F;me.png&quot; alt=&quot;me&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Hi, I&#x27;m Innes! I&#x27;m a software engineer, photographer and general all around nerd. I have a habit of
+telling people that I enjoy having hard problems to solve and then wondering why a lot of my time is
+taken up solving hard problems.&lt;&#x2F;p&gt;
+&lt;p&gt;For my day job I&#x27;ve worked for and with a variety of interesting people writing software and helping to
+improve the way that people go about their day to day (details can be found on &lt;a href=&quot;https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;innes-anderson-morrison-4a67b1b9&#x2F;&quot;&gt;LinkedIn&lt;&#x2F;a&gt; if that&#x27;s
+your sort of thing but I&#x27;m not very active there).&lt;&#x2F;p&gt;
+&lt;p&gt;When I&#x27;m on my own time I have a very low tolerance for being bored so you&#x27;ll often find me working on
+my own &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;sminez&quot;&gt;open source projects&lt;&#x2F;a&gt;, taking &lt;a href=&quot;https:&#x2F;&#x2F;innesandersonmor.myportfolio.com&#x2F;work&quot;&gt;photographs&lt;&#x2F;a&gt; and helping physicists with hypercomplex
+algebra and their associated &lt;a href=&quot;https:&#x2F;&#x2F;quicycle.com&#x2F;&quot;&gt;research&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;br&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;🔑 keybase:          &lt;a href=&quot;https:&#x2F;&#x2F;keybase.io&#x2F;idam&quot;&gt;idam&lt;&#x2F;a&gt; (&lt;a href=&quot;https:&#x2F;&#x2F;sminez.github.io&#x2F;keybase.txt&quot;&gt;verification for this site&lt;&#x2F;a&gt;)&lt;br&gt;
+🐘 mastodon:    &lt;a rel=&quot;me&quot; href=&quot;https:&#x2F;&#x2F;hachyderm.io&#x2F;@sminez&quot;&gt;@sminez@hachyderm.io&lt;&#x2F;a&gt;&lt;br&gt;
+📫 email:        &lt;a href=&quot;mailto:innes.andersonmorrison@gmail.com&quot;&gt;innes.andersonmorrison&lt;&#x2F;a&gt;&lt;br&gt;
+📷 instagram:     &lt;a href=&quot;https:&#x2F;&#x2F;www.instagram.com&#x2F;innes_photo&#x2F;&quot;&gt;innes_photo&lt;&#x2F;a&gt;&lt;br&gt;
+📹 youtube: &lt;a href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;channel&#x2F;UC04N-5DxEWH4ioK0bvZmF_Q&quot;&gt;sminez&lt;&#x2F;a&gt;&lt;br&gt;
+💻 github:      &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;sminez&#x2F;&quot;&gt;sminez&lt;&#x2F;a&gt;&lt;br&gt;&lt;&#x2F;p&gt;
+&lt;!-- soundcloud: [Sminez](https:&#x2F;&#x2F;soundcloud.com&#x2F;innes-anderson-morrison)&lt;br&gt; --&gt;
+&lt;hr &#x2F;&gt;
+</description>
+      </item>
+    </channel>
+</rss>

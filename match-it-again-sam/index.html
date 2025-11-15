@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>sminez.dev</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://www.sminez.dev/style.css">
+    <link rel="stylesheet" href="https://www.sminez.dev/color/orange.css">
+
+        <link rel="stylesheet" href="https://www.sminez.dev/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://www.sminez.dev/font-hack-subset.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="sminez.dev">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.sminez.dev/match-it-again-sam/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="sminez.dev">
+    <meta property="twitter:domain" content="www.sminez.dev">
+    <meta property="twitter:url" content="https://www.sminez.dev/match-it-again-sam/">
+
+                <link rel="alternate" type="application/rss+xml" title="sminez.dev RSS Feed" href="https://www.sminez.dev/rss.xml" />
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://www.sminez.dev" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            sminez.dev
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://www.sminez.dev/about">about</a></li>
+            
+                <li class="active"><a href="https://www.sminez.dev">blog</a></li>
+            
+                <li><a href="https://www.sminez.dev/archive">archive</a></li>
+            
+                <li><a href="https://www.sminez.dev/tags">tags</a></li>
+            
+                <li><a href="https://www.sminez.dev/projects">projects</a></li>
+            
+                <li><a href="https://github.com/sminez" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://innesandersonmor.myportfolio.com/work" target="_blank" rel="noopener noreferrer">photography</a></li>
+            
+                <li><a href="https://www.youtube.com/channel/UC04N-5DxEWH4ioK0bvZmF_Q" target="_blank" rel="noopener noreferrer">youtube</a></li>
+            
+                <li><a href="https://www.sminez.dev/rss.xml">rss</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://www.sminez.dev/match-it-again-sam/">Match it again Sam</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-11-10
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://www.sminez.dev/tags/programming/">#programming</a>&nbsp;
+                <a class="post-tag" href="https://www.sminez.dev/tags/rust/">#rust</a></span>
+    
+
+        <div class="post-content">
+            <blockquote>
+<p><em>Implementing a structural regular expressions engine for x/fun and.*/ v/profit/</em></p>
+</blockquote>
+<p>If you have you ever looked at regular expressions and thought <em>"gee, these sure are useful
+but I wish there was more going on"</em>, then do <em>I</em> have a blog post for you!</p>
+<p>OK, hear me out. I promise there's some fun stuff in here that's worth a look. It might
+only be worth an "oh god why?" kind of look, but worth a look none the less.</p>
+<p>Allow me to introduce you to the delightful world of <em>structural</em> regular expressions.</p>
+<p><a href="https://xkcd.com/1171"><img src="https://imgs.xkcd.com/comics/perl_problems.png" alt="xkcd perl" /></a>
+Obligatory XKCD.</p>
+<span id="continue-reading"></span><br>
+<h1 id="i-love-the-smell-of-regular-expressions-in-the-morning"><a class="zola-anchor" href="#i-love-the-smell-of-regular-expressions-in-the-morning" aria-label="Anchor link for: i-love-the-smell-of-regular-expressions-in-the-morning">I love the smell of regular expressions in the morning</a></h1>
+<p>Introduced by Rob Pike in his <a href="http://doc.cat-v.org/plan_9/4th_edition/papers/sam/">Sam</a> text editor, and discussed in his <a href="http://doc.cat-v.org/bell_labs/structural_regexps/">1987 paper</a>,
+<em>structural regular expressions</em> provide a notation and semantics for composing the regular
+expressions we all know and love in order to more easily describe the <em>structure</em> of the
+text being searched.</p>
+<p>This composition idea allow for writing chains of smaller, easier to reason about expressions
+that drill down into the text being searched. The primary goal being to allow you break up the
+text into meaningful chunks that you care about, rather than always being forced into looping
+over lines.</p>
+<p>It's always easier to understand what is going on with a concrete example. Lets take this easy
+to start: have a look at the following text and determine the names of each of the programmers
+and what their language of choice is.</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>    name: Alice
+</span><span>    occupation: programmer
+</span><span>    language of choice: Rust
+</span><span>
+</span><span>    name: Bob
+</span><span>    language of choice: Go
+</span><span>    occupation: programmer
+</span><span>
+</span><span>    name: Claire
+</span><span>    occupation: linguist
+</span><span>    language of choice: French
+</span></code></pre>
+<p>Hopefully it only takes you a second or two to work the answer out. You might not even
+notice that the order of the fields in each record is inconsistent.</p>
+<p>Now, what if I asked you to write me a program to extract that information from the text?</p>
+<p>It's not a particularly <em>complicated</em> program to write. For example, the following python
+script gets the job done just fine:</p>
+<pre data-lang="python" style="background-color:#212733;color:#ccc9c2;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#ffa759;">with </span><span style="color:#f28779;">open</span><span>(</span><span style="color:#bae67e;">&quot;haystack.txt&quot;</span><span style="color:#ccc9c2cc;">, </span><span style="color:#bae67e;">&quot;r&quot;</span><span>) </span><span style="color:#ffa759;">as </span><span>f:
+</span><span>    haystack </span><span style="color:#f29e74;">= </span><span>f</span><span style="color:#f29e74;">.</span><span style="color:#ffd580;">read</span><span>()
+</span><span>    </span><span style="color:#ffa759;">for </span><span>chunk </span><span style="color:#ffa759;">in </span><span>haystack</span><span style="color:#f29e74;">.</span><span style="color:#ffd580;">split</span><span>(</span><span style="color:#bae67e;">&quot;</span><span style="color:#95e6cb;">\n\n</span><span style="color:#bae67e;">&quot;</span><span>):
+</span><span>        </span><span style="color:#ffa759;">if </span><span style="color:#bae67e;">&quot;programmer&quot; </span><span style="color:#f29e74;">in </span><span>chunk:
+</span><span>            </span><span style="color:#ffa759;">for </span><span>line </span><span style="color:#ffa759;">in </span><span>chunk</span><span style="color:#f29e74;">.</span><span style="color:#ffd580;">split</span><span>(</span><span style="color:#bae67e;">&quot;</span><span style="color:#95e6cb;">\n</span><span style="color:#bae67e;">&quot;</span><span>):
+</span><span>                </span><span style="color:#ffa759;">if </span><span style="color:#bae67e;">&quot;name:&quot; </span><span style="color:#f29e74;">in </span><span>line:
+</span><span>                    name </span><span style="color:#f29e74;">= </span><span>line</span><span style="color:#f29e74;">.</span><span style="color:#ffd580;">split</span><span>(</span><span style="color:#bae67e;">&quot;: &quot;</span><span>)[</span><span style="color:#ffcc66;">1</span><span>]
+</span><span>                </span><span style="color:#ffa759;">elif </span><span style="color:#bae67e;">&quot;lang&quot; </span><span style="color:#f29e74;">in </span><span>line:
+</span><span>                    lang </span><span style="color:#f29e74;">= </span><span>line</span><span style="color:#f29e74;">.</span><span style="color:#ffd580;">split</span><span>(</span><span style="color:#bae67e;">&quot;: &quot;</span><span>)[</span><span style="color:#ffcc66;">1</span><span>]
+</span><span>
+</span><span>            </span><span style="color:#f28779;">print</span><span>(</span><span style="color:#ffa759;">f</span><span style="color:#bae67e;">&quot;</span><span>{name}</span><span style="color:#bae67e;"> prefers </span><span>{lang}</span><span style="color:#bae67e;">&quot;</span><span>)
+</span><span>
+</span><span style="font-style:italic;color:#5c6773;"># Prints:
+</span><span style="font-style:italic;color:#5c6773;"># Alice prefers Rust
+</span><span style="font-style:italic;color:#5c6773;"># Bob prefers Go
+</span></code></pre>
+<p>But attempting to do this with regular expressions becomes tricky, if not downright impossible.
+We can't just look for the names and preferred languages directly as Claire isn't a programmer.
+Even if we could, we need to extract the name alongside the language, and the language can
+appear before or <em>after</em> the occupation line. So attempting to cover all cases with a single
+expression quickly starts to get messy.</p>
+<p>Really what we want is the logic from the Python script (minus the manual string manipulation):</p>
+<ul>
+<li>Split the text into paragraphs</li>
+<li>Drop any paragraphs that aren't for a programmer</li>
+<li>Extract the name and language fields</li>
+<li>Pretty print the results</li>
+</ul>
+<p>Which, coincidentally, is what the following <em>structural</em> regular expression<sup class="footnote-reference"><a href="#true-any">1</a></sup> does:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>y/\n\n/
+</span><span>g/programmer/
+</span><span>x/name: (.*)@*lang.*: (.*)/
+</span><span>p/{1} prefers {2}/
+</span></code></pre>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>Alice prefers Rust
+</span><span>Bob prefers Go
+</span></code></pre>
+<p>I'm not sure about you, but personally I think that's pretty cool.</p>
+<p>I strongly recommend that you have a read through Rob's paper. It's all of 6 pages long
+and it does a great job of demonstrating the sorts of problems that regular expression based
+tools can run into, and how a new approach could help.</p>
+<p>The paper also makes a point of calling out that what its doing is highlighting some interesting
+problems to look into, rather than offering up a fully formed solution, and that the hope is to
+encourage others to think about how they might apply these ideas elsewhere.</p>
+<p>So, with that in mind: lets take a look at how we might take these ideas and run with them!</p>
+<br>
+<h1 id="we-re-going-to-need-a-bigger-parser"><a class="zola-anchor" href="#we-re-going-to-need-a-bigger-parser" aria-label="Anchor link for: we-re-going-to-need-a-bigger-parser">We're going to need a bigger parser</a></h1>
+<p>The syntax used by Pike in <code>Sam</code> combined looping constructs and conditional filters with
+printing and editing actions such as deleting, replacing or inserting around a match of a
+regular expression. There have been a handful of other implementations over the years, notably
+Pike's later editor <a href="http://acme.cat-v.org/">acme</a>, <a href="https://github.com/martanne/vis">vis</a> and my own editor <a href="https://github.com/sminez/ad">ad</a>, all of which follow this
+same approach of coupling the composition operators with editing actions that are applied to
+each match. (Sam itself also provided a number of additional operators for working with the
+state of the editor itself that we wont cover here.)</p>
+<p>As we saw in the example above, the syntax used for this takes inspiration from classic regular
+expressions in being really quite terse. Operators and actions share a common syntax of a single
+character to identify the action followed by an argument enclosed in forward slashes.</p>
+<p>Writing a structural regular expression then involves writing a pipeline of operators ending in
+an action that is applied to any matches that are found. To kick things off, the selected text
+begins as the full haystack (or in the case of the text editors, the current selection within
+the editor). From there, the first operator is run and any matches it finds are passed along
+to subsequent expressions in the pipeline: additional operators acting with flat-map and filter
+semantics and actions being applied before processing the next match.</p>
+<p>For operators, the argument is always a regular expression <code>re</code><sup class="footnote-reference"><a href="#operators">2</a></sup>:</p>
+<ul>
+<li><code>x/re/</code> for each match of <strong>re</strong>, run the expressions that follow</li>
+<li><code>y/re/</code> between each match of <strong>re</strong>, run the expressions that follow</li>
+<li><code>g/re/</code> if <strong>re</strong> matches, run the expressions that follow</li>
+<li><code>v/re/</code> if <strong>re</strong> does <em>not</em> match, run the expressions that follow</li>
+</ul>
+<p>For actions, the argument is text to be inserted into the file.<sup class="footnote-reference"><a href="#templating">3</a></sup>:</p>
+<ul>
+<li><code>a/text/</code> append <strong>text</strong> after the match</li>
+<li><code>i/text/</code> insert <strong>text</strong> before the match</li>
+<li><code>c/text/</code> change the match to <strong>text</strong></li>
+<li><code>p/text/</code> print <strong>text</strong></li>
+<li><code>d</code> delete the match</li>
+</ul>
+<br>
+<h3 id="putting-it-all-together"><a class="zola-anchor" href="#putting-it-all-together" aria-label="Anchor link for: putting-it-all-together">Putting it all together</a></h3>
+<p>Lets revisit our expression from before:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>  y/\n\n/
+</span><span>  g/programmer/
+</span><span>  x/name: (.*)@*lang.*: (.*)/
+</span><span>  p/{1} prefers {2}/
+</span></code></pre>
+<p>If we look at each line in turn, we can follow the pipeline as it executes and see how it
+breaks apart the input text to find the answer to our question:</p>
+<ul>
+<li><code>y/\n\n/</code></li>
+</ul>
+<p>Our first operator acts as a "split" on the input text, breaking it into three blocks:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>    name: Alice
+</span><span>    occupation: programmer
+</span><span>    language of choice: Rust
+</span></code></pre>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>    name: Bob
+</span><span>    language of choice: Go
+</span><span>    occupation: programmer
+</span></code></pre>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>    name: Claire
+</span><span>    occupation: linguist
+</span><span>    language of choice: French
+</span></code></pre>
+<ul>
+<li><code>g/programmer/</code></li>
+</ul>
+<p>Next, we apply a filter to accept only those blocks that contain the expression "programmer":</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>    name: Alice
+</span><span>    occupation: programmer
+</span><span>    language of choice: Rust
+</span></code></pre>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>    name: Bob
+</span><span>    language of choice: Go
+</span><span>    occupation: programmer
+</span></code></pre>
+<ul>
+<li><code>x/name: (.*)@*lang.*: (.*)/</code></li>
+</ul>
+<p>After that we narrow the selection using another regular expression, this time extracting
+submatches so we have the available for printing:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>    name: (Alice)
+</span><span>    occupation: programmer
+</span><span>    language of choice: (Rust)
+</span></code></pre>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>    name: (Bob)
+</span><span>    language of choice: (Go)
+</span></code></pre>
+<ul>
+<li><code>p/{1} prefers {2}/</code></li>
+</ul>
+<p>Finally, we use the extracted submatches to fill in our template string and print the result:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>Alice prefers Rust
+</span><span>Bob prefers Go
+</span></code></pre>
+<p>Lovely!</p>
+<p>But, what if we also want to deal with the fact that Claire is a linguist? Luckily, the we've
+got one final piece of syntax to introduce that can help us out there as well.</p>
+<br>
+<h3 id="mrs-robinson-are-you-trying-to-extract-submatches-in-parallel-from-me"><a class="zola-anchor" href="#mrs-robinson-are-you-trying-to-extract-submatches-in-parallel-from-me" aria-label="Anchor link for: mrs-robinson-are-you-trying-to-extract-submatches-in-parallel-from-me">Mrs Robinson, are you trying to extract submatches in parallel from me?</a></h3>
+<p>The final trick we have up our sleeve is to enclose multiple pipelines in curly braces. Doing
+so marks these separate pipelines as being run in parallel with one another over each match
+that flows into the "group". Each branch of the parallel group is terminated with a semicolon
+(of course) and behaves the same as any other chain of operators ending in an action. The
+difference is that each match produced by the preceding operator in the pipeline is run through
+all branches of the parallel group <em>simultaneously</em>.</p>
+<p>Lets update our original expression to use a parallel group. We'll start the group once we've
+split the input into blocks, adding an alternative pipeline that will run when the matched
+text contains "linguist" this time:</p>
+<pre data-lang="diff" style="background-color:#212733;color:#ccc9c2;" class="language-diff "><code class="language-diff" data-lang="diff"><span> y/\n\n/ {
+</span><span>   g/programmer/
+</span><span>   x/name: (.*)@*lang.*: (.*)/
+</span><span>   p/{1} prefers {2}/;
+</span><span>
+</span><span style="color:#bae67e;">+  g/linguist/
+</span><span style="color:#bae67e;">+  x/name: (.*)@*lang.*: (.*)/
+</span><span style="color:#bae67e;">+  p/{1} has no time for this nonsense, they&#39;re busy discussing {2}/;
+</span><span> }
+</span></code></pre>
+<p>If we run this <em>new</em> expression, we'll get the output we had before (from the original
+pipeline) along with the output from our second parallel branch:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>Alice prefers Rust
+</span><span>Bob prefers Go
+</span><span>Claire has no time for this nonsense, they&#39;re busy discussing French
+</span></code></pre>
+<p>Hopefully now you're starting to see how this sort of system can be a powerful tool to have
+available! When built into a text editor, these expressions form a mini editing language
+that allows you do a bunch of useful stuff.</p>
+<p>The example we've been looking at so far has just been making use of printing. Lets try
+editing the text instead using some new, non-controversial text as our input:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>You&#39;ll make a lot of people angry if you say that Vim is better than Emacs.
+</span><span>(Really, we all know that Emacs is the best).
+</span></code></pre>
+<p>Now, before anyone gets upset, we can rewrite this to align to the other side of the editor
+holy war (if you are that way inclined) using the following structural regular expression:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>{
+</span><span>  x/Emacs/ c/Vim/;
+</span><span>  x/Vim/ c/Emacs/;
+</span><span>}
+</span></code></pre>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>You&#39;ll make a lot of people angry if you say that Emacs is better than Vim.
+</span><span>(Really, we all know that Vim is the best).
+</span></code></pre>
+<p>Using a parallel group inside of our structural regular expression allows us to swap Emacs
+for Vim (and vice versa) simultaneously, avoiding the all too common problem of accidentally
+ending up with everything turning into "Emacs" because the replacements were run sequentially.</p>
+<br>
+<h1 id="toto-i-don-t-think-we-re-in-bell-labs-anymore"><a class="zola-anchor" href="#toto-i-don-t-think-we-re-in-bell-labs-anymore" aria-label="Anchor link for: toto-i-don-t-think-we-re-in-bell-labs-anymore">Toto, I don't think we're in Bell Labs anymore</a></h1>
+<p>Everything we've seen so far can be found as part of the original <code>Sam</code> engine and its
+derivatives, and this is perfectly fine for implementing an embedded editing language for a
+text editor. But, we're missing a trick in being able to provide a <em>general purpose</em> engine
+that could be adapted for a variety of use cases.</p>
+<p>To do <em>that</em> we need to break things apart slightly.</p>
+<p>Rather than interleaving the operators and actions into a single system, we can instead write
+a generic engine that handles the "intentify interesting structure" side of the problem (the
+operators) which then feeds that structure into the handling logic of your choice (actions
+that are tailored to the problem you're trying to solve). In effect, what we end up doing is
+tagging subsections of the text being searched for later processing.</p>
+<p>Enter <a href="https://github.com/sminez/structex">structex</a>: a Rust crate I've been working on recently after overhauling the engine
+inside of <a href="https://github.com/sminez/ad">ad</a> that is my attempt to write the engine I've just outlined. In addition to
+the core functionality of the engine it provides a variety of pieces quality of life
+functionality in order to make writing custom engines a little simpler, such as a simple
+templating engine, a builder struct for configuring the behaviour of the expression compiler
+and a set of traits to allow you to provide your own underlying regular expression engine if
+needed.</p>
+<p>Let's take a look at how we can use <code>structex</code> to write a minimal CLI tool that is capable
+of running the grep-like pretty-printing expression we started with. If you have a local Rust
+toolchain installed you can try running this by setting up a new project and adding the <code>regex</code>
+and <code>structex</code> crates.</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">use </span><span>std</span><span style="color:#f29e74;">::</span><span>collections</span><span style="color:#f29e74;">::</span><span>HashMap</span><span style="color:#ccc9c2cc;">;
+</span><span style="color:#ffa759;">use </span><span>structex</span><span style="color:#f29e74;">::</span><span>{Structex</span><span style="color:#ccc9c2cc;">, </span><span>template</span><span style="color:#f29e74;">::</span><span>Template}</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">main</span><span>() </span><span style="color:#ccc9c2cc;">-&gt; </span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;(), </span><span style="font-style:italic;color:#5ccfe6;">Box</span><span>&lt;dyn std</span><span style="color:#f29e74;">::</span><span>error</span><span style="color:#f29e74;">::</span><span>Error&gt;&gt; {
+</span><span>    </span><span style="font-style:italic;color:#5c6773;">// (1)
+</span><span>    </span><span style="color:#ffa759;">let</span><span> args</span><span style="color:#ccc9c2cc;">: </span><span style="font-style:italic;color:#5ccfe6;">Vec</span><span>&lt;</span><span style="font-style:italic;color:#5ccfe6;">String</span><span>&gt; </span><span style="color:#f29e74;">= </span><span>std</span><span style="color:#f29e74;">::</span><span>env</span><span style="color:#f29e74;">::</span><span>args()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">skip</span><span>(</span><span style="color:#ffcc66;">1</span><span>)</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">collect</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let</span><span> se</span><span style="color:#ccc9c2cc;">: </span><span>Structex&lt;regex</span><span style="color:#f29e74;">::</span><span>Regex&gt; </span><span style="color:#f29e74;">= </span><span>Structex</span><span style="color:#f29e74;">::</span><span>new(</span><span style="color:#f29e74;">&amp;</span><span>args[</span><span style="color:#ffcc66;">0</span><span>])</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let</span><span> haystack </span><span style="color:#f29e74;">= </span><span>std</span><span style="color:#f29e74;">::</span><span>fs</span><span style="color:#f29e74;">::</span><span>read_to_string(</span><span style="color:#f29e74;">&amp;</span><span>args[</span><span style="color:#ffcc66;">1</span><span>])</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="font-style:italic;color:#5c6773;">// (2)
+</span><span>    </span><span style="color:#ffa759;">let mut</span><span> templates </span><span style="color:#f29e74;">= </span><span>HashMap</span><span style="color:#f29e74;">::</span><span>new()</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">for</span><span> action </span><span style="color:#f29e74;">in</span><span> se</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">actions</span><span>() {
+</span><span>        </span><span style="color:#ffa759;">let</span><span> arg </span><span style="color:#f29e74;">=</span><span> action</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">arg</span><span>()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>        templates</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">insert</span><span>(action</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">id</span><span>()</span><span style="color:#ccc9c2cc;">, </span><span>Template</span><span style="color:#f29e74;">::</span><span>parse(arg)</span><span style="color:#f29e74;">?</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="font-style:italic;color:#5c6773;">// (3)
+</span><span>    </span><span style="color:#ffa759;">for</span><span> caps </span><span style="color:#f29e74;">in</span><span> se</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">iter_tagged_captures</span><span>(haystack</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">as_str</span><span>()) {
+</span><span>        </span><span style="color:#ffa759;">let</span><span> id </span><span style="color:#f29e74;">=</span><span> caps</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">id</span><span>()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#f28779;">println!</span><span>(</span><span style="color:#bae67e;">&quot;</span><span style="color:#ffcc66;">{}</span><span style="color:#bae67e;">&quot;</span><span style="color:#ccc9c2cc;">,</span><span> templates[</span><span style="color:#f29e74;">&amp;</span><span>id]</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">render</span><span>(</span><span style="color:#f29e74;">&amp;</span><span>caps)</span><span style="color:#f29e74;">?</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(())
+</span><span>}
+</span></code></pre>
+<p>So what's going on here?</p>
+<ol>
+<li>We read in our arguments from the command line and use the first to compile a new
+<a href="https://docs.rs/structex/latest/structex/struct.Structex.html">Structex</a> using the regex crate as the backing engine. The second argument
+we simply read in as the haystack we're going to search.</li>
+<li>We ask our newly compiled Structex for the actions that it found in the compiled
+expression and we parse the argument to each action as a <a href="https://docs.rs/structex/latest/structex/template/struct.Template.html">Template</a> we can use
+later to pretty print the match.</li>
+<li>We call <a href="https://docs.rs/structex/latest/structex/struct.Structex.html#method.iter_tagged_captures">iter_tagged_captures</a> to find each match inside of the haystack.
+Every time a match is found it is returned to us with its associated action,
+allowing us to look up the template and pretty print the result.</li>
+</ol>
+<p>To run this, we'll need to slightly tweak the expression we used before: the <code>@</code> meta-character
+we were using is a feature of <code>ad</code>'s engine and not supported by the regex crate. Luckily,
+we can swap it out for <code>(?:.|\n)</code> and achieve the same effect.<sup class="footnote-reference"><a href="#non-capturing">4</a></sup> (Albeit with a
+much uglier syntax!)</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>$ cargo run --  &#39;
+</span><span>y/\n\n/ {
+</span><span>  g/programmer/
+</span><span>  x/name: (.*)(?:.|\n)*lang.*: (.*)/
+</span><span>  p/{1} prefers {2}/;
+</span><span>
+</span><span>  g/linguist/
+</span><span>  x/name: (.*)(?:.|\n)*lang.*: (.*)/
+</span><span>  p/{1} has no time for this nonsense, they are busy discussing {2}/;
+</span><span>}&#39; haystack.txt
+</span><span>
+</span><span>Alice prefers Rust
+</span><span>Bob prefers Go
+</span><span>Claire has no time for this nonsense, they are busy discussing French
+</span></code></pre>
+<p>Nice!</p>
+<p>But what if we want to run the second example? The one where we swapped "Emacs" and "Vim"?
+There the semantics of what we want to do are a little different. Its more like sed where
+we default to echoing out unmatched text and <em>modify</em> the text of matches inside of that
+output stream.</p>
+<p>In that case we'll want something more like this:</p>
+<pre data-lang="rust" style="background-color:#212733;color:#ccc9c2;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ffa759;">use </span><span>std</span><span style="color:#f29e74;">::</span><span>collections</span><span style="color:#f29e74;">::</span><span>HashMap</span><span style="color:#ccc9c2cc;">;
+</span><span style="color:#ffa759;">use </span><span>structex</span><span style="color:#f29e74;">::</span><span>{Structex</span><span style="color:#ccc9c2cc;">, </span><span>template</span><span style="color:#f29e74;">::</span><span>Template}</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span style="color:#ffa759;">fn </span><span style="color:#ffd580;">main</span><span>() </span><span style="color:#ccc9c2cc;">-&gt; </span><span style="font-style:italic;color:#5ccfe6;">Result</span><span>&lt;(), </span><span style="font-style:italic;color:#5ccfe6;">Box</span><span>&lt;dyn std</span><span style="color:#f29e74;">::</span><span>error</span><span style="color:#f29e74;">::</span><span>Error&gt;&gt; {
+</span><span>    </span><span style="color:#ffa759;">let</span><span> args</span><span style="color:#ccc9c2cc;">: </span><span style="font-style:italic;color:#5ccfe6;">Vec</span><span>&lt;</span><span style="font-style:italic;color:#5ccfe6;">String</span><span>&gt; </span><span style="color:#f29e74;">= </span><span>std</span><span style="color:#f29e74;">::</span><span>env</span><span style="color:#f29e74;">::</span><span>args()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">skip</span><span>(</span><span style="color:#ffcc66;">1</span><span>)</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">collect</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let</span><span> se</span><span style="color:#ccc9c2cc;">: </span><span>Structex&lt;regex</span><span style="color:#f29e74;">::</span><span>Regex&gt; </span><span style="color:#f29e74;">= </span><span>Structex</span><span style="color:#f29e74;">::</span><span>new(</span><span style="color:#f29e74;">&amp;</span><span>args[</span><span style="color:#ffcc66;">0</span><span>])</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">let</span><span> haystack </span><span style="color:#f29e74;">= </span><span>std</span><span style="color:#f29e74;">::</span><span>fs</span><span style="color:#f29e74;">::</span><span>read_to_string(</span><span style="color:#f29e74;">&amp;</span><span>args[</span><span style="color:#ffcc66;">1</span><span>])</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="font-style:italic;color:#5c6773;">// (1)
+</span><span>    </span><span style="color:#ffa759;">let mut</span><span> templates </span><span style="color:#f29e74;">= </span><span>HashMap</span><span style="color:#f29e74;">::</span><span>new()</span><span style="color:#ccc9c2cc;">;
+</span><span>    </span><span style="color:#ffa759;">for</span><span> action </span><span style="color:#f29e74;">in</span><span> se</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">actions</span><span>() {
+</span><span>        </span><span style="color:#ffa759;">if let </span><span style="font-style:italic;color:#5ccfe6;">Some</span><span>(arg) </span><span style="color:#f29e74;">=</span><span> action</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">arg</span><span>() {
+</span><span>            templates</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">insert</span><span>(action</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">id</span><span>()</span><span style="color:#ccc9c2cc;">, </span><span>Template</span><span style="color:#f29e74;">::</span><span>parse(arg)</span><span style="color:#f29e74;">?</span><span>)</span><span style="color:#ccc9c2cc;">;
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="font-style:italic;color:#5c6773;">// (2)
+</span><span>    </span><span style="color:#ffa759;">let mut</span><span> pos </span><span style="color:#f29e74;">= </span><span style="color:#ffcc66;">0</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>    </span><span style="color:#ffa759;">for</span><span> caps </span><span style="color:#f29e74;">in</span><span> se</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">iter_tagged_captures</span><span>(haystack</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">as_str</span><span>()) {
+</span><span>        </span><span style="color:#ffa759;">let</span><span> action </span><span style="color:#f29e74;">=</span><span> caps</span><span style="color:#f29e74;">.</span><span>action</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">as_ref</span><span>()</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">unwrap</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>        </span><span style="color:#ffa759;">let</span><span> id </span><span style="color:#f29e74;">=</span><span> action</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">id</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>
+</span><span>        </span><span style="font-style:italic;color:#5c6773;">// (3)
+</span><span>        </span><span style="color:#ffa759;">if</span><span> caps</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">from</span><span>() </span><span style="color:#f29e74;">&gt;</span><span> pos {
+</span><span>            </span><span style="color:#f28779;">print!</span><span>(</span><span style="color:#bae67e;">&quot;</span><span style="color:#ffcc66;">{}</span><span style="color:#bae67e;">&quot;</span><span style="color:#ccc9c2cc;">, </span><span style="color:#f29e74;">&amp;</span><span>haystack[pos</span><span style="color:#f29e74;">..</span><span>caps</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">from</span><span>()])</span><span style="color:#ccc9c2cc;">;
+</span><span>        }
+</span><span>
+</span><span>        </span><span style="font-style:italic;color:#5c6773;">// (4)
+</span><span>        </span><span style="color:#ffa759;">match</span><span> action</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">tag</span><span>() {
+</span><span>            </span><span style="color:#bae67e;">&#39;d&#39; </span><span style="color:#f29e74;">=&gt; </span><span>()</span><span style="color:#ccc9c2cc;">, </span><span style="font-style:italic;color:#5c6773;">// just consume the matched text
+</span><span>            </span><span style="color:#bae67e;">&#39;c&#39; </span><span style="color:#f29e74;">=&gt; </span><span style="color:#f28779;">print!</span><span>(</span><span style="color:#bae67e;">&quot;</span><span style="color:#ffcc66;">{}</span><span style="color:#bae67e;">&quot;</span><span style="color:#ccc9c2cc;">,</span><span> templates[</span><span style="color:#f29e74;">&amp;</span><span>id]</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">render</span><span>(</span><span style="color:#f29e74;">&amp;</span><span>caps)</span><span style="color:#f29e74;">?</span><span>)</span><span style="color:#ccc9c2cc;">,
+</span><span>            </span><span style="color:#bae67e;">&#39;i&#39; </span><span style="color:#f29e74;">=&gt; </span><span style="color:#f28779;">print!</span><span>(</span><span style="color:#bae67e;">&quot;</span><span style="color:#ffcc66;">{}{}</span><span style="color:#bae67e;">&quot;</span><span style="color:#ccc9c2cc;">,</span><span> templates[</span><span style="color:#f29e74;">&amp;</span><span>id]</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">render</span><span>(</span><span style="color:#f29e74;">&amp;</span><span>caps)</span><span style="color:#f29e74;">?</span><span style="color:#ccc9c2cc;">,</span><span> caps</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">as_slice</span><span>())</span><span style="color:#ccc9c2cc;">,
+</span><span>            </span><span style="color:#bae67e;">&#39;a&#39; </span><span style="color:#f29e74;">=&gt; </span><span style="color:#f28779;">print!</span><span>(</span><span style="color:#bae67e;">&quot;</span><span style="color:#ffcc66;">{}{}</span><span style="color:#bae67e;">&quot;</span><span style="color:#ccc9c2cc;">,</span><span> caps</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">as_slice</span><span>()</span><span style="color:#ccc9c2cc;">,</span><span> templates[</span><span style="color:#f29e74;">&amp;</span><span>id]</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">render</span><span>(</span><span style="color:#f29e74;">&amp;</span><span>caps)</span><span style="color:#f29e74;">?</span><span>)</span><span style="color:#ccc9c2cc;">,
+</span><span>            tag </span><span style="color:#f29e74;">=&gt; </span><span style="color:#f28779;">panic!</span><span>(</span><span style="color:#bae67e;">&quot;unknown action {tag}&quot;</span><span>)</span><span style="color:#ccc9c2cc;">,
+</span><span>        }
+</span><span>
+</span><span>        </span><span style="font-style:italic;color:#5c6773;">// (5)
+</span><span>        pos </span><span style="color:#f29e74;">=</span><span> caps</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">to</span><span>()</span><span style="color:#ccc9c2cc;">;
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="font-style:italic;color:#5c6773;">// (6)
+</span><span>    </span><span style="color:#ffa759;">if</span><span> pos </span><span style="color:#f29e74;">&lt;</span><span> haystack</span><span style="color:#f29e74;">.</span><span style="color:#f28779;">len</span><span>() {
+</span><span>        </span><span style="color:#f28779;">print!</span><span>(</span><span style="color:#bae67e;">&quot;</span><span style="color:#ffcc66;">{}</span><span style="color:#bae67e;">&quot;</span><span style="color:#ccc9c2cc;">, </span><span style="color:#f29e74;">&amp;</span><span>haystack[pos</span><span style="color:#f29e74;">..</span><span>])</span><span style="color:#ccc9c2cc;">;
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="font-style:italic;color:#5ccfe6;">Ok</span><span>(())
+</span><span>}
+</span></code></pre>
+<p>A little more going on this time:</p>
+<ol>
+<li>We handle our command line arguments the same way, but now when we parse our templates
+we need to skip actions that don't have a template (like our <code>d</code> delete action).</li>
+<li>In order to handle printing out unmatched text, we'll need to track where we are in
+the input before we start iterating over matches.</li>
+<li>Each time we find a match we check to see if its after our current position, if it is
+then we simply print out the unedited input up until the match.</li>
+<li>Next, we check the "tag" of the action associated with the match to determine how it
+should be handled. We still render the templates as before but how the resulting text
+makes its way into the output depends on the tag.</li>
+<li>After processing each match, we update where we are in the input before handling the
+next one.</li>
+<li>Once all of the matches have been found, we check one last time to see if we need to
+print any remaining input (otherwise we'd cut things short at the end of the final
+match!)</li>
+</ol>
+<p>Phew! OK, lets test it out:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>$ cargo run -- &#39;{
+</span><span>  x/Emacs/ c/Vim/;
+</span><span>  x/Vim/ c/Emacs/;
+</span><span>}&#39; haystack2.txt
+</span><span>
+</span><span>You&#39;ll make a lot of people angry if you say that Emacs is better than Vim.
+</span><span>(Really, we all know that Vim is the best).
+</span></code></pre>
+<p>So far so good. We also added support for other actions so lets test them out as well:</p>
+<pre style="background-color:#212733;color:#ccc9c2;"><code><span>$ cargo run -- &#39;{
+</span><span>  n/a lot of / d;        # delete the first occurrence of &quot;a lot of &quot;
+</span><span>  x/Emacs/ i/Gnu /;      # Insert &quot;Gnu &quot; before each occurrence of &quot;Emacs&quot;
+</span><span>  x/Vim/ a/ (or Vi)/;    # Append &quot; (or Vi)&quot; after each occurrence of &quot;Vim&quot;
+</span><span>}&#39; haystack2.txt
+</span><span>
+</span><span>You&#39;ll make people angry if you say that Vim (or Vi) is better than Gnu Emacs.
+</span><span>(Really, we all know that Gnu Emacs is the best).
+</span></code></pre>
+<p>It works!</p>
+<p>The <code>n</code> operator here is something we haven't seen before: it's an addition I've made to
+the semantics of Sam's engine that "narrows" to the first match of the given regular
+expression rather than looping over all matches. In effect it's similar to the classic
+sed <code>s/regex/replacement/</code> but it allows for providing further operators or the action
+of your choice in place of the fixed replacement text.</p>
+<br>
+<h1 id="wrapping-up"><a class="zola-anchor" href="#wrapping-up" aria-label="Anchor link for: wrapping-up">Wrapping up<sup class="footnote-reference"><a href="#no-misquote">5</a></sup></a></h1>
+<p>Now, there is obviously a lot of unwrapping going on in these examples and, if you experiment
+a little yourself, you'll quickly find that you can get some unexpected behaviour and
+crashes. To handle things more robustly we'd want to control what sorts of expressions were
+permitted and we'd need to be a little more careful about how we work with the actions
+associated with each match.</p>
+<p>In the structex repo I've included some more realistic versions of these two programs in
+the form of the <a href="https://github.com/sminez/structex/tree/main/examples/sgrep">sgrep</a> and <a href="https://github.com/sminez/structex/tree/main/examples/ssed">ssed</a> examples. They also make use of a copy of <code>ad</code>'s
+regex engine in order to support matching against streams, allowing you to run them over
+standard in as well as against named files. If you like the ideas presented in this blog
+post I'd encourage you to take a look and have a go at adding your own actions to see what
+sorts of tools you can come up with!</p>
+<p>To finish off I'll take one last page out of Rob Pike's book and call out some of the open
+problems and areas where it might be possible to take this idea in the future. Firstly, there
+are certainly multiple opportunities for improving the performance of this thing: the current
+design is based on flexibility and proving out this idea of splitting apart the matching engine
+and the application of actions to matches. I think that it <em>should</em> be possible to compile
+expressions down to an automata for direct, efficient execution but at that point you'd no
+longer be able to bring your own regex engine. Is that worth it? I'm not sure. But it would
+be fun to try out at some point. It would also be fun to take a stab at implementing a
+structex based awk (as proposed by Pike in his paper) but I'll be honest, getting a full
+language implemented is something I'm not sure I have time to tackle at the moment!</p>
+<p>So there we have it. A strange new tool to add to your toolbox, or, avoid like the plague
+if what you've seen here isn't to your taste. But I assume that if you've made it this far
+you've at least got a passing interest in taking this thing for a spin.</p>
+<p>Until next time, happy hacking!</p>
+<br>
+<hr />
+<br>
+<div class="footnote-definition" id="true-any"><sup class="footnote-definition-label">1</sup>
+<p>The <code>@</code> character in the expression used to the name and language fields might
+look a little odd at first glance. This is an additional meta-character in the engine used
+by <code>ad</code> that acts like the normal <code>.</code> "any" meta-character but with the added power of
+also matching newlines. Unimaginatively it is called "true any".</p>
+</div>
+<div class="footnote-definition" id="operators"><sup class="footnote-definition-label">2</sup>
+<p>The characters used for each of the operators can look a little confusing at
+first glance. <code>x</code> is shorthand for "extract matches", while <code>g</code> is a "guard" (so far so good).
+<code>y</code> on the other hand is "split on each match", with the character simply being "close to x".
+At least <code>v</code> can be remembered as an "inVerted match" I suppose.</p>
+</div>
+<div class="footnote-definition" id="templating"><sup class="footnote-definition-label">3</sup>
+<p>Sam's print didn't support templating and the template syntax shown here is
+a minimal built in system specific to the engine we're presenting in this blog post. But
+really, swapping in the templating engine of your choice is a simple change to make if you
+find yourself needing more expressive power.</p>
+</div>
+<div class="footnote-definition" id="non-capturing"><sup class="footnote-definition-label">4</sup>
+<p>The <code>?:</code> prefix here inside of the parentheses is to mark the group as
+non-capturing. Without this, this will become our second capture group and our <code>{2}</code> template
+variable will print the wrong thing!</p>
+</div>
+<div class="footnote-definition" id="no-misquote"><sup class="footnote-definition-label">5</sup>
+<p>I couldn't think of a quote to butcher for this one. I'm sorry for failing you.</p>
+</div>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Thanks for reading! Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://www.sminez.dev/socrates-is-a-state-machine/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">Socrates is a state machine</span>
+                            </a>
+                        </span>
+                    
+                    </div>
+            </div>
+        
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright">
+                        <span>© 
+    2025
+ Innes Anderson-Morrison (sminez)</span>
+                    <span class="copyright-theme">
+                        <span class="copyright-theme-sep">:: </span>
+                        Theme: <a href="https://github.com/pawroman/zola-theme-terminimal/">Terminimal</a> by pawroman
+                    </span>
+                </div>
+            </div>
+    </footer>
+    
+
+</div>
+</body>
+
+</html>

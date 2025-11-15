@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>sminez.dev</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://www.sminez.dev/style.css">
+    <link rel="stylesheet" href="https://www.sminez.dev/color/orange.css">
+
+        <link rel="stylesheet" href="https://www.sminez.dev/color/background_blue.css">
+    
+    <link rel="stylesheet" href="https://www.sminez.dev/font-hack-subset.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="sminez.dev">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.sminez.dev/the-subtle-art-of-winging-it/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="sminez.dev">
+    <meta property="twitter:domain" content="www.sminez.dev">
+    <meta property="twitter:url" content="https://www.sminez.dev/the-subtle-art-of-winging-it/">
+
+                <link rel="alternate" type="application/rss+xml" title="sminez.dev RSS Feed" href="https://www.sminez.dev/rss.xml" />
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://www.sminez.dev" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            sminez.dev
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li><a href="https://www.sminez.dev/about">about</a></li>
+            
+                <li class="active"><a href="https://www.sminez.dev">blog</a></li>
+            
+                <li><a href="https://www.sminez.dev/archive">archive</a></li>
+            
+                <li><a href="https://www.sminez.dev/tags">tags</a></li>
+            
+                <li><a href="https://www.sminez.dev/projects">projects</a></li>
+            
+                <li><a href="https://github.com/sminez" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://innesandersonmor.myportfolio.com/work" target="_blank" rel="noopener noreferrer">photography</a></li>
+            
+                <li><a href="https://www.youtube.com/channel/UC04N-5DxEWH4ioK0bvZmF_Q" target="_blank" rel="noopener noreferrer">youtube</a></li>
+            
+                <li><a href="https://www.sminez.dev/rss.xml">rss</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://www.sminez.dev/the-subtle-art-of-winging-it/">the subtle art of winging it</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2024-11-03
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://www.sminez.dev/tags/programming/">#programming</a>&nbsp;
+                <a class="post-tag" href="https://www.sminez.dev/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://www.sminez.dev/tags/software-engineering/">#software-engineering</a></span>
+    
+
+        <div class="post-content">
+            <p><em>Or, "How I learned to fuck around and find out"</em></p>
+<p>I have a bad habit of telling people that I like to have interesting problems to work on.
+On its own this isn't so bad, but saying this in interviews quickly ensures that your
+day-to-day involves being air dropped into weird and wonderful situations with varying
+amounts of context and high expectations.</p>
+<p>So, how do you get better at coping in this sort of environment?</p>
+<span id="continue-reading"></span>
+<blockquote>
+<p>This blog post is adapted from a talk I gave at the Rust Un-Conference at Canonical's
+October 2024 engineering sprint in the Hague. The talk there focused more on details from
+<code>penrose</code> and <code>ad</code> which I have blogged about previously so I won't reproduce that here.</p>
+</blockquote>
+<h1 id="but-why-driven-development"><a class="zola-anchor" href="#but-why-driven-development" aria-label="Anchor link for: but-why-driven-development">"But Why?" driven development</a></h1>
+<p><img src="https://gifdb.com/images/high/ryan-reynolds-but-why-reaction-dpsicvpejgpp14ew.gif" alt="But why?" /></p>
+<p>As with most things in software engineering, the answer to the question "how do I get
+better at X?" is of course to invent a new "Y Driven Development" paradigm (\s). Joking
+aside, there's a lot to be said for listening to your inner 4 year old and shamelessly,
+repeatedly asking "why?".</p>
+<p>A fairly consistent thing I have found with the best engineers that I've worked with over
+the years has been that they are always happy to call out when they are unsure about
+something and that they don't shy away from diving into unknown situations. The first couple
+of times you try this you'll almost certainly find that you are completely lost and spending
+all of your time reading through documentation and example code. If you're lucky there might
+be an aspect of the problem space that looks a little like something you've tackled before,
+but if not then you're going to need to establish a base camp where you can get comfortable
+as you work on mapping out what it is you need to do.</p>
+<p>One obvious place to start is to improve the odds that there will be something familiar to
+you in the problems that you encounter. This is your classic Computer Science education and
+(for the most part) the countless books, courses and YouTube videos available for you to seek
+out and consume. While this sort of material <em>is</em> important, I don't think I'm alone in
+thinking that you really need to try things out for yourself in order to learn them, and if
+the thing you're wanting to practice is finding a way forward when you are in unfamiliar
+territory then following along as someone else shows you what to do isn't really going to help.</p>
+<p>So, what do we do?</p>
+<h1 id="becoming-a-professional-amateur"><a class="zola-anchor" href="#becoming-a-professional-amateur" aria-label="Anchor link for: becoming-a-professional-amateur">Becoming a professional amateur</a></h1>
+<p>Recently a colleague of mine mentioned that they were really impressed with the fact that
+I always knew what I was doing. It didn't matter what the project was, what problem was
+being solved or how much of a heads up I'd been given, I always seemed to have a plan and
+know what the next step was. I felt a little bad letting them in on the secret, almost
+like explaining how a magic trick works.</p>
+<p>I really do have no idea what I'm doing in a lot of those situations.</p>
+<p><img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcHY2NWU1MnJpbTlzZWp1YXRvNzY5Y2Y2NjI1d3NydTFoNWlsaDY5cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/12QASni5AUN1SM/giphy.webp" alt="no idea what I&#39;m doing" /></p>
+<p>Now before my boss reads this and starts questioning their decision to hire me, I should
+point out that this is not at all the same thing as not knowing what I'm doing <em>at all</em>.
+There is a big difference between having specific knowledge of a problem domain and having
+the knowledge and experience to work things out as you go when starting on a new project.</p>
+<p>At this point in my career there are a number of things that I am pretty good at, but in
+any moderate to large software company I'll happily bet that you can find someone more
+knowledgeable than me for any topic you care to pick. What I am <em>great</em> at though is quickly
+getting up to speed and getting something working that is more than just a throwaway proof
+of concept. I've never managed to find out if this is a widely used term or not, but for me
+and the engineers I worked with at Anaplan we called this "software sketching".</p>
+<h2 id="software-sketching"><a class="zola-anchor" href="#software-sketching" aria-label="Anchor link for: software-sketching">Software Sketching</a></h2>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/How_to_draw_an_owl_meme.png/800px-How_to_draw_an_owl_meme.png" alt="rest of the owl" /></p>
+<p>Much like sketching in art, the idea is to rough out the details of what you want the final
+piece (program) to look like. For any given subject there will be things that you need to
+find references for, details you need to check and work on etc. But underpinning that there
+are a lot of reusable techniques you can learn that allow you to quickly and efficiently
+get a rough idea of what the final result is going to look like.</p>
+<p>In art this is often practiced using a sketchbook and picking something you can see in
+front of you. Your first attempts will be pretty bad, but over time you'll start to develop
+better control of getting the lines and forms you have in your head down onto the paper. As
+your technical skills improve you'll start to study and practice geometry, understanding how
+light behaves, different techniques for achieving the look and feel you are after, and so on.</p>
+<p>In programming we can do the same thing. Every year a whole bunch of us take on the
+<a href="https://adventofcode.com/">advent of code</a> or maybe you want to work your way through the
+<a href="https://projecteuler.net/">Project Euler</a> problems. That's our equivalent of the artist's
+"sit down and sketch what's in front of you" work. Its a fantastic starting point but its
+not quite the same thing as solving a real problem you are likely to face when developing
+a larger piece of software. For that we need to look at tackling something a little more
+interesting.</p>
+<h2 id="picking-a-project"><a class="zola-anchor" href="#picking-a-project" aria-label="Anchor link for: picking-a-project">Picking a project</a></h2>
+<p>There really is no substitute for tackling a <em>real</em> problem that you want to solve, and I
+do mean a problem that <em>you</em> want to solve. The key part here is to throw yourself into
+something that you personally find interesting. You're about to actively bite off way more
+than you can chew so whatever you decide to work on it needs to be something you care about
+enough to get you through the "oh my god what am I doing?" phase.</p>
+<p>For me, I have a problem that I tend to be nerd sniped easily (relevant <a href="https://xkcd.com/356/">xkcd</a>)
+and as a result I tend to spend my free time coding up weird and (sometimes) wonderful
+hobby projects:</p>
+<ul>
+<li><a href="https://github.com/sminez/gigl">LISP interpreter</a>(<a href="https://github.com/sminez/ripl">s</a>)</li>
+<li><a href="https://github.com/sminez/datools/blob/master/bin/pyk">AWK in Python</a></li>
+<li><a href="https://github.com/sminez/concepts/blob/master/docs/pattern_match_README.md">Adding destructuring pattern matching to Python 3.6</a></li>
+<li><a href="https://github.com/quicycle/mart/tree/main/arpy">16D hyper-complex algebra Calculator</a>(<a href="https://github.com/sminez/ar.jl">s</a>)</li>
+<li>A graphQL server library</li>
+<li><a href="https://github.com/sminez/sandpiles">Fractal generation</a></li>
+<li><a href="https://gist.github.com/sminez/d6ba0f88dd1e5ec7bcbd901ae9203e52">An AUR package manager written in Zsh</a></li>
+<li><a href="https://github.com/sminez/roc">Go doc for Rust</a></li>
+<li><a href="https://github.com/hachyserve/actiserve">An activity pub relay server</a></li>
+<li><a href="https://github.com/sminez/k">Far</a> <a href="https://github.com/sminez/bf">too</a> <a href="https://github.com/sminez/pa">many</a> personal CLI tools...</li>
+</ul>
+<p>And of course, <a href="https://github.com/sminez/penrose">penrose</a> and
+<a href="https://github.com/sminez/ad">ad</a>.</p>
+<p>The one thing that all of these projects have in common is that I took a look at something
+that I (at the time) had little to no experience with and I asked myself "I wonder how that
+works?" The goal was never to have something perfect, or even usable. It was to learn about
+something new and have a bit of fun doing it.</p>
+<p>Utility and "good for your CV"-ness are not the goal here: pick something that you want to
+learn more about but make sure you have a starting point. It might be working in a language
+you are particularly comfortable with, or looking at a problem you already know a little
+about. Or (my personal favourite) you could pick something you've recently read about or
+watched that has given you a few ideas on where to get started.</p>
+<p>Have something in mind? Then then let's dive in.</p>
+<h2 id="diving-in"><a class="zola-anchor" href="#diving-in" aria-label="Anchor link for: diving-in">Diving in</a></h2>
+<p>So, how do you start working on something like this?</p>
+<p>You find the simplest, dumbest thing you can write that actually compiles and runs.
+Parsing data formats? Grab some example data, throw it in a file and use your library
+of choice to start statically parsing the exact data you have already. Writing a CLI?
+Hard code some simple hand written argument parsing and just print out a short description
+of the different actions you would perform based on the arguments you receive. Working
+with REST APIs? Don't even open your text editor: start by using curl from a terminal.</p>
+<p><img src="/images/initial-penrose.jpg" alt="initial penrose" /></p>
+<p>This is the earliest image I have of <code>penrose</code> from when I first started developing it in
+2020. The top right is an st terminal window and the floating window in the middle is rofi.
+I'm 99% sure that the way this was working was that I had wrapped my head round <em>enough</em>
+of the <code>dwm</code> source code to get to grips with handling map requests and then I hard
+coded spawning the terminal and listening for a key binding to open rofi. It worked! Not
+bad for an hour of reading the docs on the Rust xlib bindings and blindly porting C code
+to Rust until it compiled.</p>
+<p>"How did you exit this window manager of yours?", you might ask.</p>
+<p>"You pkill it", I would reply.</p>
+<p>And you know what? As a starting point that is <em>fine</em>. Like I said, the goal isn't to
+write production ready code: its to poke at things to see how they work, and this was a
+great place to start poking. Over time I got the rest of the initial functionality
+working by reading through the source code of other window managers to see what they
+had in common and then implementing something similar in penrose. Once I had something
+working I could take a step back and work on identifying the pain points, the extra
+details and abstractions I didn't want to keep, the missing interfaces that would allow
+me to generalise things in nice ways.</p>
+<p>Once you get to a point where you feel like you have a decent idea of what the high
+level moving parts and how they fit together you're in a position to take a step
+back and start outlining what the "real" structure of the project should look like.
+Sometimes the sketching phase lasts a few hours, sometimes a day, sometimes a week.
+You'll almost always end up with a few pieces that you can repurpose for the actual
+codebase but more often than not what you'll take forward is a better understanding
+of the problem.</p>
+<p>Remember, this is a sketch: not the start of your masterpiece.</p>
+<h2 id="from-some-ovals-and-a-rectangle-to-an-owl"><a class="zola-anchor" href="#from-some-ovals-and-a-rectangle-to-an-owl" aria-label="Anchor link for: from-some-ovals-and-a-rectangle-to-an-owl">From some ovals and a rectangle to an owl</a></h2>
+<p>Now, I'll admit that the advice above still feels very much like "and then the owl",
+so lets wrap up with some concrete tips on things you can do to help get the ball
+rolling on a new project when you're not sure how to start.</p>
+<p>One thing to make clear is that the following advice is intended for getting a new
+project up and running, it is very much <em>not</em> universal advice that you should
+follow for anything that you are shipping to end users!</p>
+<h4 id="1-minimal-runnable-project"><a class="zola-anchor" href="#1-minimal-runnable-project" aria-label="Anchor link for: 1-minimal-runnable-project">1. Minimal runnable project</a></h4>
+<p>This one I alluded to above, but your first step should always be to get <em>something</em>
+running. It doesn't really matter what it is so long as you have a starting point
+that you can build from. For the client side of the new <a href="https://discourse.ubuntu.com/t/ubuntu-desktop-s-24-10-dev-cycle-part-5-introducing-permissions-prompting/47963">permissions prompting</a>
+feature in Ubuntu I started with an <a href="https://github.com/canonical/prompting-client/blob/1385d6c09e1d4fddcdffc64756e3e54fe74e4c22/prompt-loop.sh">80 line shell script</a>
+that was essentially just a <code>while true</code> loop around some curls and echos. Things
+are now a lot more complicated (and robust) but this was enough to start working out
+what the request flows looked like and begin to manually test the system.</p>
+<h4 id="2-focus-on-iterating-quickly"><a class="zola-anchor" href="#2-focus-on-iterating-quickly" aria-label="Anchor link for: 2-focus-on-iterating-quickly">2. Focus on iterating quickly</a></h4>
+<p>You don't want to live with your starting point code for longer than you have to,
+so that means you'll want to be set up for quickly making changes. My personal
+favourite way to do this is to start writing a simple Makefile that wraps all of the
+hacky shell commands you need to set up the project, build it and test it. Sure this
+isn't actually what Makefiles are for but <code>make</code> is available on pretty much every
+system you might want to work on and most shells provide nice autocompletion for
+targets which helps with being able to quickly run things. As you work on more
+projects you'll develop your own list of go to targets and scripts that you'll set
+up to help you get into the swing of things.</p>
+<p>Using Make specifically isn't the important part here: the thing is to develop
+your own default toolkit that you use for sketching so you don't waste time going
+down rabbit holes trying to decide what you're going to use.</p>
+<h4 id="3-fail-fast-and-loud"><a class="zola-anchor" href="#3-fail-fast-and-loud" aria-label="Anchor link for: 3-fail-fast-and-loud">3. Fail fast and loud</a></h4>
+<p>You don't want to fully ignore error cases and failure modes but its going to be a
+while before you're in a position to handle things correctly. Instead, a good way
+to start is to explicitly crash or exit the program the moment something unexpected
+happens. When you do this you'll want to dump any and all relevant state you have
+in order to make debugging what just happened easier. One benefit of this approach
+is that when you do come to handling errors properly, you've already identified
+all of the points in your code that you need to modify. But more importantly
+this makes sure that you are thinking about errors and where they occur, even if
+you're not actually handling them at the moment.</p>
+<h4 id="4-test-things-when-they-re-stable"><a class="zola-anchor" href="#4-test-things-when-they-re-stable" aria-label="Anchor link for: 4-test-things-when-they-re-stable">4. Test things when they're stable</a></h4>
+<p>Yes tests are important. They're really important. But, TDD and really focusing on
+nailing down requirements isn't the best way to start here. Pretty much by definition
+you wont have a clear idea of the direction you are going in (at least not yet) so
+you're better off keeping things simple enough that you can manually test things to
+begin with and only start adding an actual test suite once you've nailed down your
+first few pieces of functionality. If you're working in a language with a repl then
+that's a <em>fantastic</em> way to iterate and refine things as you get going. If not, then
+making sure that your main function is as bare bones as possible so you can run it
+in a loop is a close second.</p>
+<h2 id="over-to-you"><a class="zola-anchor" href="#over-to-you" aria-label="Anchor link for: over-to-you">Over to you</a></h2>
+<p><img src="/images/you-can-do-it.jpg" alt="you can do it" /></p>
+<p>So there we have it. Not exactly a step by step recipe for how to make forward
+progress in unknown territory but then that's kind of the point. The key thing is
+to get comfortable with not knowing and to focus small, incremental improvements.
+Along the way you'll pick up specific techniques and domain knowledge that will
+undoubtedly be useful for future projects, but remember to also pay attention to
+how you are learning about the problems you are solving. The meta-skill here is
+this idea of sketching the rough outline of what the "real" code will eventually
+look like.</p>
+<p>If you don't actively practice this then every new project tends to look impossible
+without someone to help set you off in the right direction. So remember, "Impossible"
+tasks can be broken down into questionable ones. Questionable tasks can be tackled.</p>
+<p>Happy hacking.</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Thanks for reading! Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://www.sminez.dev/ad-an-adaptable-text-editor/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">the origin of ad: an adaptable text editor</span>
+                            </a>
+                        </span>
+                    
+                    
+                        <span class="button next">
+                            <a href="https://www.sminez.dev/socrates-is-a-state-machine/">
+                                <span class="button__text">Socrates is a state machine</span>&nbsp;
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    </div>
+            </div>
+        
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright">
+                        <span>© 
+    2025
+ Innes Anderson-Morrison (sminez)</span>
+                    <span class="copyright-theme">
+                        <span class="copyright-theme-sep">:: </span>
+                        Theme: <a href="https://github.com/pawroman/zola-theme-terminimal/">Terminimal</a> by pawroman
+                    </span>
+                </div>
+            </div>
+    </footer>
+    
+
+</div>
+</body>
+
+</html>
