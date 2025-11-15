@@ -13,6 +13,9 @@ path = "projects"
 - [ad][1]: My attempt at writing my own terminal based text editor from scratch.
   - This has turned into a bit of a playground for API design and digging into implementing
     lower level functionality such as a regex engine and virtual file system wire protocols.
+- [structex][12]: The structural regular expression engine that powers the editing language
+  in ad.
+  - See the ["Match it again Sam"][13] post for an overview.
 - [simple test case][2]: A tiny Rust proc-macro for writing parameterised tests.
   - I prefer to have as little magic and framework between my tests and the logic under test.
 - [sandpiles][3]: Simple fractal generation using the [Abelian sandpile model][4].
@@ -21,6 +24,8 @@ path = "projects"
   - Started off just with following the wonderful [ray tracing in one weekend][11] before
     growing additional features. Taking things further is going to involve learning how to
     write shaders.
+- [dalbrack][14]: Playing around with SDL2 to make a roguelike from scratch
+  - Really this ended up being a playground for looking at procedural generation and rendering.
 
 
 <br>
@@ -57,3 +62,6 @@ a pin in it I've settled for the following two categories:
   [9]: https://github.com/sminez/penrose-from-scratch
   [10]: https://github.com/sminez/raymart
   [11]: https://raytracing.github.io/books/RayTracingInOneWeekend.html
+  [12]: https://github.com/sminez/structex
+  [13]: https://www.sminez.dev/match-it-again-sam/
+  [14]: https://github.com/sminez/dalbrack
